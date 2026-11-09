@@ -5,10 +5,12 @@ import br.ufba.vetcare.domain.Consulta
 import br.ufba.vetcare.domain.Perfil
 import br.ufba.vetcare.domain.Tutor
 import br.ufba.vetcare.domain.Usuario
+import br.ufba.vetcare.domain.Vacinacao
 import br.ufba.vetcare.domain.repository.AnimalRepository
 import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import br.ufba.vetcare.domain.repository.UsuarioRepository
+import br.ufba.vetcare.domain.repository.VacinacaoRepository
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -27,6 +29,7 @@ class DataSeeder(
     private val tutores: TutorRepository,
     private val animais: AnimalRepository,
     private val consultas: ConsultaRepository,
+    private val vacinacoes: VacinacaoRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : CommandLineRunner {
 
@@ -91,7 +94,7 @@ class DataSeeder(
                 tutor = ana,
             ),
         )
-        animais.save(
+        val luna = animais.save(
             Animal(
                 nome = "Luna",
                 especie = "Gato",
@@ -120,6 +123,30 @@ class DataSeeder(
                 dataHora = LocalDateTime.now().plusDays(1).withHour(9).withMinute(0).withSecond(0).withNano(0),
                 horarioAtivo = LocalDateTime.now().plusDays(1).withHour(9).withMinute(0).withSecond(0).withNano(0),
                 observacoes = "Retorno para avaliação vacinal.",
+            ),
+        )
+
+        // Consulta no passado para demonstrar o registro de atendimento e o prontuário.
+        consultas.save(
+            Consulta(
+                animal = luna,
+                tutor = ana,
+                veterinario = veterinario,
+                dataHora = LocalDateTime.now().minusHours(2).withMinute(0).withSecond(0).withNano(0),
+                horarioAtivo = LocalDateTime.now().minusHours(2).withMinute(0).withSecond(0).withNano(0),
+                observacoes = "Consulta de rotina.",
+            ),
+        )
+
+        vacinacoes.save(
+            Vacinacao(
+                animal = thor,
+                veterinario = veterinario,
+                tipoVacina = "V10 - Polivalente",
+                lote = "LOTE-DEMO-01",
+                dataAplicacao = LocalDate.now().minusMonths(11),
+                proximaDose = LocalDate.now().plusDays(20),
+                observacoes = "Reforço anual.",
             ),
         )
 

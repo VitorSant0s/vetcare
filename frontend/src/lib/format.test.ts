@@ -7,6 +7,7 @@ import {
   idade,
   paraInputDateTime,
   somarDiasIso,
+  statusProximaDose,
 } from '../lib/format'
 
 describe('formatadores', () => {
@@ -40,6 +41,19 @@ describe('formatadores', () => {
   it('soma dias a uma data ISO', () => {
     expect(somarDiasIso('2026-11-09', 7)).toBe('2026-11-16')
     expect(somarDiasIso('2026-12-30', 3)).toBe('2027-01-02')
+  })
+
+  it('classifica a próxima dose da vacina', () => {
+    const emDezDias = new Date()
+    emDezDias.setDate(emDezDias.getDate() + 10)
+    const dez = paraInputDateTime(emDezDias).slice(0, 10)
+    expect(statusProximaDose(dez)).toEqual({ texto: 'Em 10 dias', tom: 'ambar' })
+    expect(statusProximaDose(null).tom).toBe('neutro')
+
+    const atrasada = new Date()
+    atrasada.setDate(atrasada.getDate() - 5)
+    const cincoAtras = paraInputDateTime(atrasada).slice(0, 10)
+    expect(statusProximaDose(cincoAtras).texto).toBe('Atrasada há 5d')
   })
 
   it('gera data futura no formato ISO de input', () => {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -206,7 +207,12 @@ export function Animais() {
                   {dados.content.map((animal) => (
                     <tr key={animal.id} className="hover:bg-slate-50/60">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-slate-800">{animal.nome}</p>
+                        <Link
+                          to={`/animais/${animal.id}/prontuario`}
+                          className="font-medium text-slate-800 hover:text-brand-700 hover:underline"
+                        >
+                          {animal.nome}
+                        </Link>
                         <p className="text-xs text-slate-400">
                           {animal.sexo || 'Sexo não informado'} · {idade(animal.dataNascimento)}
                         </p>

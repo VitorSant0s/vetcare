@@ -78,3 +78,16 @@ export function somarDiasIso(iso: string, dias: number): string {
   data.setDate(data.getDate() + dias)
   return paraInputDateTime(data).slice(0, 10)
 }
+
+export type TomDose = 'verde' | 'ambar' | 'vermelho' | 'neutro'
+
+export function statusProximaDose(iso?: string | null): { texto: string; tom: TomDose } {
+  if (!iso) return { texto: 'Sem previsão', tom: 'neutro' }
+  const hoje = new Date(`${hojeIso()}T00:00:00`)
+  const dose = new Date(`${iso}T00:00:00`)
+  const dias = Math.round((dose.getTime() - hoje.getTime()) / 86400000)
+  if (dias < 0) return { texto: `Atrasada há ${Math.abs(dias)}d`, tom: 'vermelho' }
+  if (dias === 0) return { texto: 'Hoje', tom: 'ambar' }
+  if (dias <= 30) return { texto: `Em ${dias} dias`, tom: 'ambar' }
+  return { texto: formatarData(iso), tom: 'verde' }
+}

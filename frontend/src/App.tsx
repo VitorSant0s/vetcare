@@ -9,6 +9,7 @@ import { Tutores } from './pages/Tutores'
 import { Animais } from './pages/Animais'
 import { Usuarios } from './pages/Usuarios'
 import { Veterinarios } from './pages/Veterinarios'
+import { ProntuarioAnimal } from './pages/Prontuario'
 import { NaoEncontrado } from './pages/NaoEncontrado'
 import { PortalAdmin } from './pages/portal/PortalAdmin'
 import { PortalRecepcao } from './pages/portal/PortalRecepcao'
@@ -52,6 +53,7 @@ export default function App() {
                 <Route path="/agenda" element={<Agenda />} />
                 <Route path="/tutores" element={<Tutores />} />
                 <Route path="/animais" element={<Animais />} />
+                <Route path="/animais/:animalId/prontuario" element={<ProntuarioAnimal />} />
                 <Route path="/veterinarios" element={<Veterinarios />} />
                 <Route
                   path="/usuarios"

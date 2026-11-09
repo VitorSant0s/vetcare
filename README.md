@@ -2,7 +2,7 @@
 
 Sistema de gestão para clínicas veterinárias desenvolvido para a disciplina **Engenharia de Software 1** do Instituto de Computação da UFBA.
 
-Esta é a **Sprint 2** do Trabalho II: implementação de aproximadamente 50% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
+Esta é a **Sprint 3** do Trabalho II: implementação de aproximadamente 70% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
 
 ![Agenda do VetCare](docs/relatorio/img/02-agenda.png)
 
@@ -18,10 +18,14 @@ Esta é a **Sprint 2** do Trabalho II: implementação de aproximadamente 50% do
 | REQ07 | Agendar Consulta com validação de conflito | Alta | Implementado |
 | REQ08 | Cancelar Consulta liberando o horário | Alta | Implementado |
 | REQ09 | Consultar Agenda por dia, semana e profissional | Alta | Implementado |
+| REQ10 | Registrar Atendimento realizado pelo veterinário | Alta | Implementado |
+| REQ11 | Manter Prontuário com histórico clínico do animal | Alta | Implementado |
+| REQ12 | Registrar Vacinação com previsão da próxima dose | Média | Implementado |
+| REQ13 | Emitir Prescrição vinculada ao atendimento | Média | Implementado |
 
-**8 de 17 requisitos = 47,1%**, dentro da meta de aproximadamente 50%.
+**12 de 17 requisitos = 70,6%**, dentro da meta de aproximadamente 70%.
 
-Fora do escopo: REQ03 (recuperação de senha), REQ10–REQ13 (atendimento, prontuário, vacinação e prescrição), REQ14–REQ17 (financeiro, notificações e relatórios).
+Fora do escopo: REQ03 (recuperação de senha), REQ14 e REQ15 (financeiro), REQ16 (notificações) e REQ17 (relatórios gerenciais).
 
 ## Portais por perfil
 
@@ -64,6 +68,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-11 — API Gateway/BFF como camada de controllers no monólito](docs/adr/ADR-11-api-gateway-como-camada.md)
 - [ADR-12 — Segredo JWT sem padrão e seed opt-in](docs/adr/ADR-12-segredo-jwt-e-seed.md)
 - [ADR-13 — Atributos profissionais na entidade Usuário](docs/adr/ADR-13-atributos-profissionais-usuario.md)
+- [ADR-14 — Atendimento como elo entre consulta, prontuário e prescrição](docs/adr/ADR-14-atendimento-prontuario.md)
 
 ## Como rodar
 
@@ -147,10 +152,10 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (40 testes de integração)
+# Back-end (52 testes de integração)
 cd backend && ./mvnw test
 
-# Front-end (10 testes)
+# Front-end (11 testes)
 cd frontend && npm test
 
 # Build de produção do front-end
@@ -159,8 +164,9 @@ cd frontend && npm run build
 
 Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
 tutores, animais e veterinários, auditoria, agendamento, conflito de horário (inclusive segundos no
-mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda e
-proteção do último administrador. Usam H2 em memória no perfil `test`, sem exigir Docker.
+mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda,
+atendimento, prontuário, prescrições, vacinação e proteção do último administrador. Usam H2 em
+memória no perfil `test`, sem exigir Docker.
 
 ## Segurança e auditoria
 
@@ -195,6 +201,10 @@ proteção do último administrador. Usam H2 em memória no perfil `test`, sem e
 | GET | `/api/consultas` | autenticados | Agenda por período/profissional (REQ09) |
 | POST | `/api/consultas` | Admin/Recepção | REQ07 |
 | POST | `/api/consultas/{id}/cancelar` | Admin/Recepção | REQ08 |
+| POST | `/api/consultas/{id}/atendimento` | Admin/Veterinário | REQ10 e REQ13 |
+| GET | `/api/animais/{id}/prontuario` | autenticados | REQ11 |
+| GET/POST | `/api/animais/{id}/vacinacoes` | equipe | REQ12 |
+| DELETE | `/api/vacinacoes/{id}` | Admin/Veterinário | REQ12 |
 
 A documentação interativa completa está no Swagger UI.
 
@@ -214,6 +224,8 @@ vetcare/
 
 ## Documentos
 
+- [Relatório da Sprint 3 (PDF)](docs/relatorio/relatorio-sprint-3.pdf)
+- [Apresentação da Sprint 3 (PPTX)](docs/slides/VetCare-Sprint-3.pptx)
 - [Relatório da Sprint 2 (PDF)](docs/relatorio/relatorio-sprint-2.pdf)
 - [Apresentação da Sprint 2 (PPTX)](docs/slides/VetCare-Sprint-2.pptx)
 - [Relatório da Sprint 1 (PDF)](docs/relatorio/relatorio-sprint-1.pdf)

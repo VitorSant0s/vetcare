@@ -293,3 +293,154 @@ data class CancelamentoRequest(
     @field:jakarta.validation.constraints.Size(max = 300, message = "Motivo muito longo")
     val motivo: String? = null,
 )
+
+// ---------- Atendimento e prescrição (REQ10 e REQ13) ----------
+
+data class PrescricaoRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o medicamento")
+    @field:jakarta.validation.constraints.Size(max = 160, message = "Medicamento muito longo")
+    val medicamento: String = "",
+
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Dosagem muito longa")
+    val dosagem: String? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Frequência muito longa")
+    val frequencia: String? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Duração muito longa")
+    val duracao: String? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Orientações muito longas")
+    val orientacoes: String? = null,
+)
+
+data class PrescricaoResposta(
+    val id: Long,
+    val medicamento: String,
+    val dosagem: String?,
+    val frequencia: String?,
+    val duracao: String?,
+    val orientacoes: String?,
+) {
+    companion object {
+        fun de(prescricao: br.ufba.vetcare.domain.Prescricao) = PrescricaoResposta(
+            id = prescricao.id ?: 0,
+            medicamento = prescricao.medicamento,
+            dosagem = prescricao.dosagem,
+            frequencia = prescricao.frequencia,
+            duracao = prescricao.duracao,
+            orientacoes = prescricao.orientacoes,
+        )
+    }
+}
+
+data class AtendimentoRequest(
+    @field:jakarta.validation.constraints.Size(max = 2000, message = "Anamnese muito longa")
+    val anamnese: String? = null,
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o diagnóstico")
+    @field:jakarta.validation.constraints.Size(max = 2000, message = "Diagnóstico muito longo")
+    val diagnostico: String = "",
+
+    @field:jakarta.validation.constraints.Size(max = 2000, message = "Procedimentos muito longos")
+    val procedimentos: String? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 2000, message = "Observações muito longas")
+    val observacoes: String? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 20, message = "Máximo de 20 prescrições por atendimento")
+    val prescricoes: List<PrescricaoRequest> = emptyList(),
+)
+
+data class AtendimentoResposta(
+    val id: Long,
+    val consultaId: Long,
+    val animalId: Long,
+    val animalNome: String,
+    val veterinarioId: Long,
+    val veterinarioNome: String,
+    val dataHora: LocalDateTime,
+    val anamnese: String?,
+    val diagnostico: String,
+    val procedimentos: String?,
+    val observacoes: String?,
+    val prescricoes: List<PrescricaoResposta>,
+    val criadoEm: Instant,
+) {
+    companion object {
+        fun de(atendimento: br.ufba.vetcare.domain.Atendimento) = AtendimentoResposta(
+            id = atendimento.id ?: 0,
+            consultaId = atendimento.consulta.id ?: 0,
+            animalId = atendimento.animal.id ?: 0,
+            animalNome = atendimento.animal.nome,
+            veterinarioId = atendimento.veterinario.id ?: 0,
+            veterinarioNome = atendimento.veterinario.nome,
+            dataHora = atendimento.dataHora,
+            anamnese = atendimento.anamnese,
+            diagnostico = atendimento.diagnostico,
+            procedimentos = atendimento.procedimentos,
+            observacoes = atendimento.observacoes,
+            prescricoes = atendimento.prescricoes.map(PrescricaoResposta::de),
+            criadoEm = atendimento.criadoEm,
+        )
+    }
+}
+
+// ---------- Vacinação (REQ12) ----------
+
+data class VacinacaoRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o tipo de vacina")
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Tipo de vacina muito longo")
+    val tipoVacina: String = "",
+
+    @field:jakarta.validation.constraints.Size(max = 60, message = "Lote muito longo")
+    val lote: String? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Informe a data de aplicação")
+    val dataAplicacao: LocalDate? = null,
+
+    val proximaDose: LocalDate? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Observações muito longas")
+    val observacoes: String? = null,
+)
+
+data class VacinacaoResposta(
+    val id: Long,
+    val animalId: Long,
+    val animalNome: String,
+    val veterinarioId: Long?,
+    val veterinarioNome: String?,
+    val tipoVacina: String,
+    val lote: String?,
+    val dataAplicacao: LocalDate,
+    val proximaDose: LocalDate?,
+    val observacoes: String?,
+    val criadoEm: Instant,
+) {
+    companion object {
+        fun de(vacinacao: br.ufba.vetcare.domain.Vacinacao) = VacinacaoResposta(
+            id = vacinacao.id ?: 0,
+            animalId = vacinacao.animal.id ?: 0,
+            animalNome = vacinacao.animal.nome,
+            veterinarioId = vacinacao.veterinario?.id,
+            veterinarioNome = vacinacao.veterinario?.nome,
+            tipoVacina = vacinacao.tipoVacina,
+            lote = vacinacao.lote,
+            dataAplicacao = vacinacao.dataAplicacao,
+            proximaDose = vacinacao.proximaDose,
+            observacoes = vacinacao.observacoes,
+            criadoEm = vacinacao.criadoEm,
+        )
+    }
+}
+
+// ---------- Prontuário (REQ11) ----------
+
+data class ProntuarioResposta(
+    val animal: AnimalResposta,
+    val tutor: TutorResposta,
+    val atendimentos: List<AtendimentoResposta>,
+    val vacinacoes: List<VacinacaoResposta>,
+    val consultas: List<ConsultaResposta>,
+)

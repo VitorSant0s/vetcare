@@ -1,4 +1,4 @@
-"""Gera a apresentação da Sprint 2 do VetCare.
+"""Gera a apresentação da Sprint 3 do VetCare.
 
 Uso:
     uv run --with python-pptx python docs/slides/gerar_slides.py
@@ -13,7 +13,7 @@ from pptx.util import Inches, Pt, Emu
 
 RAIZ = Path(__file__).resolve().parents[2]
 IMG = RAIZ / "docs" / "relatorio" / "img"
-SAIDA = RAIZ / "docs" / "slides" / "VetCare-Sprint-2.pptx"
+SAIDA = RAIZ / "docs" / "slides" / "VetCare-Sprint-3.pptx"
 
 VERDE = RGBColor(0x12, 0x6A, 0x53)
 VERDE_CLARO = RGBColor(0xEE, 0xFB, 0xF5)
@@ -143,7 +143,7 @@ def imagem(slide, nome, x, y, largura, legenda=None):
 
 
 def rodape(slide, numero):
-    caixa(slide, 0.75, 7.02, 8, 0.3, "VetCare · Sprint 2 · Engenharia de Software 1 · UFBA 2026", 9, CINZA)
+    caixa(slide, 0.75, 7.02, 8, 0.3, "VetCare · Sprint 3 · Engenharia de Software 1 · UFBA 2026", 9, CINZA)
     caixa(slide, 11.9, 7.02, 0.7, 0.3, str(numero), 9, CINZA, alinhamento=PP_ALIGN.RIGHT)
 
 
@@ -154,8 +154,8 @@ faixa.fill.solid()
 faixa.fill.fore_color.rgb = VERDE_MEDIO
 caixa(s, 1.0, 1.0, 11, 0.4, "UNIVERSIDADE FEDERAL DA BAHIA · INSTITUTO DE COMPUTAÇÃO", 14, RGBColor(0xAE, 0xEA, 0xD0), True)
 caixa(s, 1.0, 2.15, 11.3, 1.8, "VetCare", 62, BRANCO, True)
-caixa(s, 1.0, 3.45, 10.8, 1.2, "Sprint 2 — portais por perfil,\nveterinários e agenda completa", 30, RGBColor(0xD5, 0xF5, 0xE5))
-caixa(s, 1.0, 5.2, 10.8, 0.5, "Trabalho II · Implementação de ~50% dos requisitos funcionais", 16, RGBColor(0xAE, 0xEA, 0xD0))
+caixa(s, 1.0, 3.45, 10.8, 1.2, "Sprint 3 — atendimento, prontuário,\nvacinação e prescrição", 30, RGBColor(0xD5, 0xF5, 0xE5))
+caixa(s, 1.0, 5.2, 10.8, 0.5, "Trabalho II · Implementação de ~70% dos requisitos funcionais", 16, RGBColor(0xAE, 0xEA, 0xD0))
 caixa(s, 1.0, 6.4, 6, 0.4, "Vitor de Jesus Santos", 15, BRANCO, True)
 caixa(s, 1.0, 6.8, 8, 0.4, "Prof.ª Dra. Larissa Barbosa Leôncio Pinheiro · Novembro de 2026", 12, RGBColor(0xAE, 0xEA, 0xD0))
 
@@ -163,38 +163,35 @@ caixa(s, 1.0, 6.8, 8, 0.4, "Prof.ª Dra. Larissa Barbosa Leôncio Pinheiro · No
 s = slide_novo()
 titulo(s, "Objetivo e entregáveis", "O que esta sprint se propõe a entregar")
 bullets(s, [
-    "Implementar aproximadamente 50% dos requisitos funcionais do VetCare",
+    "Implementar aproximadamente 70% dos requisitos funcionais do VetCare",
     "Manter a arquitetura definida na Etapa 1, registrando desvios em ADRs",
     "Entregar o sistema em funcionamento, não apenas protótipos",
     "Repositório público no GitHub com README e instruções de execução",
     "Documento PDF e apresentação com escopo, decisões e evidências",
 ], 0.85, 2.0, 6.4, 4.4, 17)
 
-cartao(s, 7.6, 2.05, 2.35, 1.35, "Requisitos", "8 de 17")
-cartao(s, 10.15, 2.05, 2.35, 1.35, "Cobertura", "47,1%")
-cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "40")
-cartao(s, 10.15, 3.65, 2.35, 1.35, "Testes front", "10")
-caixa(s, 7.6, 5.4, 4.9, 1.0, "Login único com portais distintos para admin, recepção e veterinário.", 14, CINZA)
+cartao(s, 7.6, 2.05, 2.35, 1.35, "Requisitos", "12 de 17")
+cartao(s, 10.15, 2.05, 2.35, 1.35, "Cobertura", "70,6%")
+cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "52")
+cartao(s, 10.15, 3.65, 2.35, 1.35, "Testes front", "11")
+caixa(s, 7.6, 5.4, 4.9, 1.0, "Login único, portais por perfil e histórico clínico auditado.", 14, CINZA)
 rodape(s, 2)
 
 # ---------------------------------------------------------------- slide 3
 s = slide_novo()
-titulo(s, "Recorte acumulado", "Oito requisitos de prioridade Alta fecham o módulo de agenda")
+titulo(s, "Recorte acumulado", "Doze requisitos de alta prioridade cobrem a operação clínica de ponta a ponta")
 tabela(s,
-       ["Req.", "Descrição", "Prioridade", "Situação"],
+       ["Bloco", "Requisitos", "Qtd.", "Situação"],
        [
-           ["REQ01", "Manter Usuário — CRUD e perfis", "Alta", "Implementado"],
-           ["REQ02", "Autenticar Usuário — login e JWT", "Alta", "Implementado"],
-           ["REQ04", "Manter Tutor — CRUD", "Alta", "Implementado"],
-           ["REQ05", "Manter Animal — vínculo com tutor", "Alta", "Implementado"],
-           ["REQ06", "Manter Veterinário — CRMV e especialidade", "Alta", "Implementado"],
-           ["REQ07", "Agendar Consulta — com validação de conflito", "Alta", "Implementado"],
-           ["REQ08", "Cancelar Consulta — libera o horário", "Alta", "Implementado"],
-           ["REQ09", "Consultar Agenda — dia, semana e profissional", "Alta", "Implementado"],
+           ["Acesso e cadastros", "REQ01, REQ02, REQ04, REQ05, REQ06", "5", "Implementado"],
+           ["Agenda", "REQ07, REQ08, REQ09", "3", "Implementado"],
+           ["Clínico", "REQ10, REQ11, REQ12, REQ13", "4", "Implementado"],
        ],
-       y=1.9, h=4.5, larguras=[1.4, 6.3, 1.8, 2.2], tamanho=11)
-caixa(s, 0.85, 6.55, 11.6, 0.5,
-      "Fora do escopo: REQ03, REQ10–REQ17. Login único com portais por perfil.", 12, CINZA)
+       y=2.0, h=2.4, larguras=[3.2, 5.8, 1.2, 1.9], tamanho=14)
+caixa(s, 0.85, 4.8, 11.6, 0.9,
+      "Cobertura: 12 de 17 requisitos = 70,6%. Fora do escopo: REQ03, REQ14–REQ17.", 15, VERDE, True)
+caixa(s, 0.85, 5.7, 11.6, 0.8,
+      "Fluxo completo: login → cadastros → agenda → atendimento → prontuário → prescrição e vacina.", 13, CINZA)
 rodape(s, 3)
 
 # ---------------------------------------------------------------- slide 4
@@ -203,7 +200,7 @@ titulo(s, "Arquitetura preservada da Etapa 1", "Cliente-servidor com API REST em
 camadas = [
     ("Apresentação", "SPA React 19 + Tailwind — portais admin, recepção e veterinário", VERDE_CLARO, VERDE),
     ("API", "Controllers REST, DTOs, validação, CORS, Swagger, erros", BRANCO, ESCURO),
-    ("Aplicação", "Casos de uso: auth, usuários, tutores, animais, veterinários, agenda, auditoria", BRANCO, ESCURO),
+    ("Aplicação", "Casos de uso: auth, cadastros, agenda, atendimento, prontuário, vacinação, auditoria", BRANCO, ESCURO),
     ("Domínio", "Entidades, perfis, status e interfaces de repositório", BRANCO, ESCURO),
     ("Infraestrutura", "JWT/Bcrypt, JPA, Flyway, PostgreSQL, Redis, Actuator", VERDE_CLARO, VERDE),
 ]
@@ -241,6 +238,8 @@ tabela(s,
            ["tutores", "Responsáveis pelos animais"],
            ["animais", "Pacientes vinculados ao tutor"],
            ["consultas", "Agenda, horário ativo e cancelamento"],
+           ["atendimentos", "Anamnese, diagnóstico e prescrições"],
+           ["vacinacoes", "Aplicação e próxima dose"],
            ["auditoria", "Trilha imutável de eventos"],
        ],
        x=6.8, y=2.45, w=5.7, h=2.9, larguras=[1.8, 3.9], tamanho=12)
@@ -262,6 +261,7 @@ bullets(s, [
     "Senhas com BCrypt; token JWT com perfil e validade de 120 minutos",
     "Segredo JWT sem valor padrão e seed opt-in (ADR-12)",
     "Portais protegidos no front e permissões revalidadas na API",
+    "Atendimento e prontuário restritos ao veterinário responsável (ou admin)",
     "401 sem token e 403 sem permissão, com JSON padronizado",
     "Auditoria de login, falhas de login e todas as mutações (usuário, IP, data/hora)",
     "Teste automatizado comprova que recepcionista não acessa /api/usuarios",
@@ -295,9 +295,9 @@ rodape(s, 8)
 
 # ---------------------------------------------------------------- slide 9
 s = slide_novo()
-titulo(s, "Portais e novas operações", "A mesma autenticação, visões diferentes por perfil")
-imagem(s, "11-portal-veterinario.png", 0.7, 1.85, 5.9, "Portal do veterinário: apenas a própria agenda")
-imagem(s, "12-veterinarios.png", 6.85, 1.85, 5.9, "Gestão de veterinários com CRMV (REQ06)")
+titulo(s, "Atendimento e prontuário", "O registro clínico vira histórico auditado do animal")
+imagem(s, "16-atendimento-modal.png", 0.7, 1.85, 5.9, "Registro de atendimento com prescrições (REQ10/13)")
+imagem(s, "17-prontuario-luna.png", 6.85, 1.85, 5.9, "Prontuário consolidado com histórico e prescrições (REQ11)")
 rodape(s, 9)
 
 # ---------------------------------------------------------------- slide 10
@@ -306,8 +306,8 @@ titulo(s, "Testes e evidências", "Verificação automatizada e ensaio de ponta 
 tabela(s,
        ["Suíte", "Testes", "Cobertura principal"],
        [
-           ["Back-end (JUnit + MockMvc)", "40", "Auth, RBAC, CRUDs, auditoria, cache, conflito e cancelamento"],
-           ["Front-end (Vitest + RTL)", "10", "Formatadores, login, datas e contas de demonstração"],
+           ["Back-end (JUnit + MockMvc)", "52", "Auth, RBAC, cadastros, agenda, atendimento, prontuário e vacinação"],
+           ["Front-end (Vitest + RTL)", "11", "Formatadores, login, datas, doses e contas de demonstração"],
        ],
        y=1.95, h=1.6, larguras=[3.8, 1.3, 6.6], tamanho=12)
 caixa(s, 0.85, 3.85, 5.7, 0.4, "Ensaio real contra a stack", 15, VERDE, True)
@@ -315,6 +315,7 @@ bullets(s, [
     "POST tutor → 201 · POST animal → 201",
     "POST consulta → 201 · repetição → 409",
     "POST /cancelar → 200 · reagendar → 201",
+    "POST atendimento → 201 · prontuário → 200",
     "GET agenda → consulta criada presente",
     "GET /usuarios: recepção 403, admin 200",
     "Health-check: db UP e redis UP",
@@ -334,14 +335,15 @@ bullets(s, [
     "ADR-11: API Gateway/BFF na camada api",
     "ADR-12: segredo JWT e seed opt-in",
     "ADR-13: CRMV e especialidade em Usuario",
+    "ADR-14: atendimento, prontuário e prescrição",
     "ADR-01 a ADR-09 mantidas sem alteração",
 ], 0.95, 2.4, 5.6, 2.0, 14, 6)
 
 caixa(s, 6.9, 1.95, 5.6, 0.4, "Próximas sprints", 16, VERDE, True)
 bullets(s, [
-    "REQ10/11: atendimento e prontuário",
-    "REQ12/13: vacinação e prescrições",
-    "REQ14–17: financeiro, notificações e relatórios",
+    "REQ14/15: pagamentos e dashboard financeiro",
+    "REQ16/17: notificações e relatórios",
+    "REQ03: recuperação de senha",
 ], 7.0, 2.4, 5.6, 3.2, 13, 5)
 caixa(s, 0.9, 5.65, 11.5, 0.7, "A base operacional está pronta para evoluir com baixo acoplamento.", 17, VERDE, True)
 rodape(s, 11)
@@ -349,7 +351,7 @@ rodape(s, 11)
 # ---------------------------------------------------------------- slide 12
 s = slide_novo(VERDE)
 caixa(s, 1.0, 2.3, 11, 1.0, "Obrigado!", 54, BRANCO, True)
-caixa(s, 1.0, 3.55, 11, 0.5, "VetCare — Sprint 2", 24, RGBColor(0xD5, 0xF5, 0xE5))
+caixa(s, 1.0, 3.55, 11, 0.5, "VetCare — Sprint 3", 24, RGBColor(0xD5, 0xF5, 0xE5))
 caixa(s, 1.0, 4.5, 11, 0.4, "Vitor de Jesus Santos · Engenharia de Software 1 · UFBA 2026", 15, RGBColor(0xAE, 0xEA, 0xD0))
 caixa(s, 1.0, 5.4, 11, 0.5, "github.com/<usuario>/vetcare", 14, RGBColor(0xAE, 0xEA, 0xD0))
 

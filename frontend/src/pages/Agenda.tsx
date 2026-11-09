@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,7 +9,9 @@ import {
   CalendarPlus,
   ChevronLeft,
   ChevronRight,
+  ClipboardPlus,
   Clock,
+  FileText,
   PawPrint,
   Stethoscope,
   UserRound,
@@ -38,6 +40,7 @@ import {
   Selecao,
   Vazio,
 } from '../components/ui'
+import { AtendimentoModal } from '../components/AtendimentoModal'
 
 const schema = z.object({
   tutorId: z.string().min(1, 'Selecione o tutor'),
@@ -59,6 +62,7 @@ function amanhaAs9(): string {
 export function Agenda() {
   const { usuario } = useAuth()
   const { mostrar } = useToast()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const podeAgendar = usuario?.perfil !== 'VETERINARIO'
 
@@ -78,6 +82,7 @@ export function Agenda() {
   const [cancelando, setCancelando] = useState<Consulta | null>(null)
   const [motivoCancelamento, setMotivoCancelamento] = useState('')
   const [processandoCancelamento, setProcessandoCancelamento] = useState(false)
+  const [atendendo, setAtendendo] = useState<Consulta | null>(null)
 
   const {
     register,
@@ -214,6 +219,16 @@ export function Agenda() {
     } finally {
       setSalvando(false)
     }
+  }
+
+  function podeAtender(consulta: Consulta): boolean {
+    const perfilPermitido =
+      usuario?.perfil === 'VETERINARIO' || usuario?.perfil === 'ADMINISTRADOR'
+    return (
+      perfilPermitido &&
+      consulta.status === 'AGENDADA' &&
+      new Date(consulta.dataHora) <= new Date(Date.now() + 30 * 60000)
+    )
   }
 
   async function confirmarCancelamento() {
@@ -425,20 +440,37 @@ export function Agenda() {
                             {consulta.observacoes}
                           </p>
                         )}
-                        {podeAgendar &&
-                          consulta.status === 'AGENDADA' &&
-                          new Date(consulta.dataHora) > agora && (
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          <Link
+                            to={`/animais/${consulta.animalId}/prontuario`}
+                            className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                          >
+                            <FileText className="h-3.5 w-3.5" /> Prontuário
+                          </Link>
+                          {podeAtender(consulta) && (
                             <button
                               type="button"
-                              onClick={() => {
-                                setCancelando(consulta)
-                                setMotivoCancelamento('')
-                              }}
-                              className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                              onClick={() => setAtendendo(consulta)}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-sky-700 hover:underline"
                             >
-                              <Ban className="h-3.5 w-3.5" /> Cancelar
+                              <ClipboardPlus className="h-3.5 w-3.5" /> Atender
                             </button>
                           )}
+                          {podeAgendar &&
+                            consulta.status === 'AGENDADA' &&
+                            new Date(consulta.dataHora) > agora && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCancelando(consulta)
+                                  setMotivoCancelamento('')
+                                }}
+                                className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                              >
+                                <Ban className="h-3.5 w-3.5" /> Cancelar
+                              </button>
+                            )}
+                        </div>
                       </div>
                     </div>
                   </Cartao>
@@ -566,6 +598,16 @@ export function Agenda() {
           </div>
         </div>
       </Modal>
+
+      <AtendimentoModal
+        consulta={atendendo}
+        onFechar={() => setAtendendo(null)}
+        onSucesso={(animalId) => {
+          setAtendendo(null)
+          mostrar('Atendimento registrado e consulta concluída.')
+          navigate(`/animais/${animalId}/prontuario`)
+        }}
+      />
     </>
   )
 }

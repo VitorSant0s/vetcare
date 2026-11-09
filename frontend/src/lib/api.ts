@@ -7,6 +7,9 @@ import type {
   Tutor,
   Usuario,
   Veterinario,
+  Atendimento,
+  Prontuario,
+  Vacinacao,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -138,4 +141,45 @@ export const veterinariosApi = {
   atualizar: (id: number, payload: VeterinarioPayload) =>
     api.put<Veterinario>(`/veterinarios/${id}`, payload),
   excluir: (id: number) => api.delete(`/veterinarios/${id}`),
+}
+
+
+export interface PrescricaoPayload {
+  medicamento: string
+  dosagem?: string | null
+  frequencia?: string | null
+  duracao?: string | null
+  orientacoes?: string | null
+}
+
+export interface AtendimentoPayload {
+  anamnese?: string | null
+  diagnostico: string
+  procedimentos?: string | null
+  observacoes?: string | null
+  prescricoes: PrescricaoPayload[]
+}
+
+export const atendimentosApi = {
+  registrar: (consultaId: number, payload: AtendimentoPayload) =>
+    api.post<Atendimento>(`/consultas/${consultaId}/atendimento`, payload),
+}
+
+export const prontuarioApi = {
+  buscar: (animalId: number) => api.get<Prontuario>(`/animais/${animalId}/prontuario`),
+}
+
+export interface VacinacaoPayload {
+  tipoVacina: string
+  lote?: string | null
+  dataAplicacao: string
+  proximaDose?: string | null
+  observacoes?: string | null
+}
+
+export const vacinacoesApi = {
+  listar: (animalId: number) => api.get<Vacinacao[]>(`/animais/${animalId}/vacinacoes`),
+  criar: (animalId: number, payload: VacinacaoPayload) =>
+    api.post<Vacinacao>(`/animais/${animalId}/vacinacoes`, payload),
+  excluir: (id: number) => api.delete(`/vacinacoes/${id}`),
 }

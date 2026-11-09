@@ -1,7 +1,9 @@
 package br.ufba.vetcare.support
 
 import br.ufba.vetcare.domain.Animal
+import br.ufba.vetcare.domain.Consulta
 import br.ufba.vetcare.domain.Perfil
+import br.ufba.vetcare.domain.StatusConsulta
 import br.ufba.vetcare.domain.Tutor
 import br.ufba.vetcare.domain.Usuario
 import br.ufba.vetcare.domain.repository.AnimalRepository
@@ -85,6 +87,23 @@ abstract class IntegrationTestBase {
             sexo = "Macho",
             dataNascimento = LocalDate.of(2021, 1, 1),
             tutor = tutor,
+        ),
+    )
+
+    protected fun criarConsulta(
+        animal: Animal,
+        tutor: Tutor,
+        veterinario: Usuario,
+        dataHora: java.time.LocalDateTime = java.time.LocalDateTime.now().minusHours(1),
+        status: StatusConsulta = StatusConsulta.AGENDADA,
+    ): Consulta = consultas.save(
+        Consulta(
+            animal = animal,
+            tutor = tutor,
+            veterinario = veterinario,
+            dataHora = dataHora,
+            horarioAtivo = if (status == StatusConsulta.CANCELADA) null else dataHora,
+            status = status,
         ),
     )
 
