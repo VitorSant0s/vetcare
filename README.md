@@ -171,6 +171,20 @@ vetcare/
 - [ADRs](docs/adr)
 - [Capturas de tela](docs/relatorio/img)
 
+## Publicar no GitHub
+
+O repositório local já está inicializado e commitado na branch `main`. Para publicar:
+
+1. Crie um repositório **público vazio** chamado `vetcare` no GitHub (sem README nem `.gitignore`).
+2. No diretório do projeto, conecte o remoto e envie:
+
+```bash
+git remote add origin https://github.com/SEU-USUARIO/vetcare.git
+git push -u origin main
+```
+
+O workflow em `.github/workflows/ci.yml` executa os testes do back-end e do front-end a cada push.
+
 ## Equipe
 
 - Vitor de Jesus Santos — UFBA
