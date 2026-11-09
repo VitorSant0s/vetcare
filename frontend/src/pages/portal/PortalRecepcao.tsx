@@ -4,9 +4,11 @@ import {
   CalendarDays,
   CalendarPlus,
   PawPrint,
+  BellRing,
   Plus,
   UserRound,
   Users,
+  Wallet,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { animaisApi, consultasApi, tutoresApi } from '../../lib/api'
@@ -141,6 +143,18 @@ export function PortalRecepcao() {
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               <PawPrint className="h-4 w-4 text-slate-400" /> Cadastrar animal
+            </Link>
+            <Link
+              to="/financeiro"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              <Wallet className="h-4 w-4 text-slate-400" /> Financeiro
+            </Link>
+            <Link
+              to="/notificacoes"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              <BellRing className="h-4 w-4 text-slate-400" /> Notificações
             </Link>
           </div>
         </Cartao>

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import {
+  BarChart3,
+  BellRing,
   CalendarDays,
   LayoutDashboard,
   LogOut,
@@ -9,26 +11,32 @@ import {
   ShieldCheck,
   Stethoscope,
   Users,
+  Wallet,
   X,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import type { Perfil } from '../types'
 import { clsx } from 'clsx'
 import { useAuth } from '../context/AuthContext'
 import { Badge } from './ui'
 
-const navegacao = [
-  { para: '/portal', rotulo: 'Início', icone: LayoutDashboard, somenteAdmin: false },
-  { para: '/agenda', rotulo: 'Agenda', icone: CalendarDays, somenteAdmin: false },
-  { para: '/tutores', rotulo: 'Tutores', icone: Users, somenteAdmin: false },
-  { para: '/animais', rotulo: 'Animais', icone: PawPrint, somenteAdmin: false },
-  { para: '/veterinarios', rotulo: 'Veterinários', icone: Stethoscope, somenteAdmin: false },
-  { para: '/usuarios', rotulo: 'Usuários', icone: ShieldCheck, somenteAdmin: true },
+const navegacao: { para: string; rotulo: string; icone: LucideIcon; papeis?: Perfil[] }[] = [
+  { para: '/portal', rotulo: 'Início', icone: LayoutDashboard },
+  { para: '/agenda', rotulo: 'Agenda', icone: CalendarDays },
+  { para: '/tutores', rotulo: 'Tutores', icone: Users },
+  { para: '/animais', rotulo: 'Animais', icone: PawPrint },
+  { para: '/veterinarios', rotulo: 'Veterinários', icone: Stethoscope },
+  { para: '/financeiro', rotulo: 'Financeiro', icone: Wallet, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
+  { para: '/relatorios', rotulo: 'Relatórios', icone: BarChart3, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
+  { para: '/notificacoes', rotulo: 'Notificações', icone: BellRing, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
+  { para: '/usuarios', rotulo: 'Usuários', icone: ShieldCheck, papeis: ['ADMINISTRADOR'] },
 ]
 
 export function Layout() {
   const { usuario, sair } = useAuth()
   const [menuAberto, setMenuAberto] = useState(false)
 
-  const itens = navegacao.filter((item) => !item.somenteAdmin || usuario?.perfil === 'ADMINISTRADOR')
+  const itens = navegacao.filter((item) => !item.papeis || (usuario && item.papeis.includes(usuario.perfil)))
 
   const conteudoSidebar = (
     <>

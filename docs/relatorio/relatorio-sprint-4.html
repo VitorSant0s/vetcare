@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>VetCare — Relatório da Sprint 4</title>
+<style>
+  @page { size: A4; margin: 17mm 16mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #1e293b; font-size: 10.4pt; line-height: 1.55; margin: 0;
+  }
+  h1, h2, h3 { color: #0f3d31; line-height: 1.25; }
+  h1 { font-size: 22pt; margin: 0 0 8pt; }
+  h2 { font-size: 14pt; margin: 22pt 0 8pt; border-bottom: 2px solid #22a57c; padding-bottom: 4pt; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 5pt; }
+  p { margin: 0 0 8pt; text-align: justify; }
+  ul, ol { margin: 0 0 8pt 16pt; padding: 0; }
+  li { margin-bottom: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt; font-size: 9pt; }
+  th { background: #eefbf5; color: #126a53; text-align: left; padding: 6pt; border: 1px solid #cdeee0; }
+  td { padding: 5.5pt 6pt; border: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  code { font-family: "Cascadia Code", Consolas, monospace; font-size: 8.8pt; background: #f1f5f9; padding: 1pt 4pt; border-radius: 3pt; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 10pt 12pt; border-radius: 6pt; font-size: 8.6pt; line-height: 1.45; overflow: hidden; }
+  pre code { background: none; color: inherit; padding: 0; }
+  .capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+  .capa .faixa { border-left: 6px solid #22a57c; padding-left: 14pt; }
+  .capa .inst { font-size: 12pt; font-weight: 600; color: #126a53; letter-spacing: .4pt; }
+  .capa h1 { font-size: 34pt; margin-top: 70pt; }
+  .capa .sub { font-size: 14pt; color: #475569; margin-top: 6pt; }
+  .capa .meta { font-size: 10pt; color: #64748b; }
+  .capa .meta strong { color: #1e293b; }
+  .sumario { page-break-after: always; }
+  .sumario li { margin-bottom: 5pt; color: #334155; }
+  .imagem { margin: 10pt 0 14pt; page-break-inside: avoid; }
+  .imagem img { width: 100%; border: 1px solid #dbe3ec; border-radius: 5pt; }
+  .imagem .legenda { font-size: 8.6pt; color: #64748b; margin-top: 4pt; text-align: center; }
+  .caixa { background: #f0fdf9; border: 1px solid #b9ecd8; border-left: 4px solid #22a57c; padding: 9pt 11pt; border-radius: 4pt; margin: 10pt 0; font-size: 9.6pt; }
+  .alerta { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; padding: 9pt 11pt; border-radius: 4pt; margin: 10pt 0; font-size: 9.6pt; }
+  .duas { display: flex; gap: 10pt; }
+  .duas .imagem { flex: 1; }
+  .evidencia { font-size: 8.8pt; background: #f8fafc; border: 1px solid #e2e8f0; padding: 7pt 9pt; border-radius: 4pt; margin: 6pt 0 10pt; white-space: pre-wrap; font-family: Consolas, monospace; }
+  .quebra { page-break-before: always; }
+  .rodape { margin-top: 24pt; border-top: 1px solid #e2e8f0; padding-top: 8pt; font-size: 8.5pt; color: #94a3b8; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ================= CAPA ================= -->
+<section class="capa">
+  <div>
+    <p class="inst">UNIVERSIDADE FEDERAL DA BAHIA · INSTITUTO DE COMPUTAÇÃO</p>
+    <div class="faixa" style="margin-top:26pt">
+      <p style="margin:0;color:#64748b;font-size:11pt">Engenharia de Software 1</p>
+      <h1>Trabalho II —<br/>Implementação do Sistema VetCare</h1>
+      <p class="sub">Relatório da Sprint 4: financeiro, notificações e relatórios gerenciais</p>
+    </div>
+  </div>
+  <div class="meta">
+    <p><strong>Autor:</strong> Vitor de Jesus Santos</p>
+    <p><strong>Professora:</strong> Dra. Larissa Barbosa Leôncio Pinheiro</p>
+    <p><strong>Entrega:</strong> Trabalho II · Sprint 4 (≈90% dos requisitos funcionais)</p>
+    <p><strong>Data:</strong> Salvador, novembro de 2026</p>
+  </div>
+</section>
+
+<!-- ================= SUMÁRIO ================= -->
+<section class="sumario">
+  <h2 style="margin-top:0">Sumário</h2>
+  <ol>
+    <li>Introdução</li>
+    <li>Escopo da sprint e requisitos implementados</li>
+    <li>Aderência à arquitetura da Etapa 1</li>
+    <li>Modelo de dados</li>
+    <li>Implementação e decisões técnicas</li>
+    <li>Interface do sistema</li>
+    <li>Testes e evidências de funcionamento</li>
+    <li>Como executar o sistema</li>
+    <li>Considerações finais e próximos passos</li>
+    <li>Referências</li>
+  </ol>
+</section>
+
+<!-- ================= 1 ================= -->
+<h2>1. Introdução</h2>
+<p>
+  O VetCare é um sistema de gestão para clínicas veterinárias cujo Documento de Requisitos
+  define 17 requisitos funcionais e atributos de qualidade de segurança, disponibilidade,
+  desempenho, usabilidade e manutenibilidade. A Etapa 1 do trabalho estabeleceu a arquitetura
+  inicial: cliente-servidor com API REST organizada em camadas, autenticação por token JWT,
+  controle de acesso por perfil, banco relacional PostgreSQL, cache Redis, auditoria dedicada e
+  health-checks.
+</p>
+<p>
+  Este relatório documenta a Sprint 4 do Trabalho II, cujo objetivo é implementar aproximadamente
+  90% dos requisitos funcionais sobre a arquitetura definida. A entrega inclui o sistema em
+  funcionamento, testes automatizados, repositório público e os documentos de acompanhamento.
+  O recorte escolhido prioriza a base operacional da clínica — contas, tutores, animais e
+  agendamento — por ser pré-requisito para os demais módulos e por permitir demonstrar o fluxo
+  completo de ponta a ponta.
+</p>
+
+<h2>2. Escopo acumulado e requisitos implementados</h2>
+<p>
+  Foram selecionados dezesseis dos dezessete requisitos funcionais, o que corresponde a
+  <strong>94,1%</strong> do total. Todos os requisitos escolhidos possuem prioridade Alta no
+  Documento de Requisitos.
+</p>
+
+<table>
+  <thead>
+    <tr><th style="width:9%">Req.</th><th>Descrição</th><th style="width:11%">Prioridade</th><th style="width:13%">Situação</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>REQ01</td><td>Manter Usuário — inclusão, alteração, exclusão e consulta de usuários</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ02</td><td>Autenticar Usuário — login com credenciais e emissão de token</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ04</td><td>Manter Tutor — cadastro, alteração, consulta e exclusão</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ05</td><td>Manter Animal — vínculo obrigatório com tutor e dados clínicos básicos</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ06</td><td>Manter Veterinário — CRMV, especialidade e status do profissional</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ07</td><td>Agendar Consulta — animal, tutor, veterinário, data e horário</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ08</td><td>Cancelar Consulta — libera o horário e registra o motivo</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ09</td><td>Consultar Agenda — visão por dia, semana e profissional</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ10</td><td>Registrar Atendimento — anamnese, diagnóstico, procedimentos</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ11</td><td>Manter Prontuário — histórico clínico consolidado do animal</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ12</td><td>Registrar Vacinação — aplicação e previsão da próxima dose</td><td>Média</td><td>Implementado</td></tr>
+    <tr><td>REQ13</td><td>Emitir Prescrição — medicamentos vinculados ao atendimento</td><td>Média</td><td>Implementado</td></tr>
+    <tr><td>REQ14</td><td>Registrar Pagamento — consultas e procedimentos</td><td>Alta</td><td>Implementado</td></tr>
+    <tr><td>REQ15</td><td>Dashboard Financeiro — valores e atendimentos por período</td><td>Média</td><td>Implementado</td></tr>
+    <tr><td>REQ16</td><td>Notificar Tutor — consultas e próximas doses de vacina</td><td>Média</td><td>Implementado</td></tr>
+    <tr><td>REQ17</td><td>Gerar Relatórios Gerenciais — atendimentos, animais, consultas e finanças</td><td>Média</td><td>Implementado</td></tr>
+  </tbody>
+</table>
+
+<h3>2.1 Justificativa do recorte</h3>
+<p>
+  A Sprint 4 fecha o ciclo administrativo da clínica. O REQ14 registra os pagamentos ligados ao
+  tutor e, opcionalmente, à consulta; o REQ15 consolida valores recebidos e atendimentos por período;
+  o REQ16 gera e envia avisos de consulta e vacina; e o REQ17 produz o relatório gerencial com
+  consultas, atendimentos, animais, vacinas e finanças. Com dezesseis dos dezessete requisitos, o
+  sistema cobre da autenticação ao resultado financeiro, restando apenas a recuperação de senha.
+</p>
+
+<h3>2.2 Requisitos fora do escopo</h3>
+<p>
+  Permanece para o fechamento: REQ03 (recuperação de senha). O restante dos requisitos funcionais
+  está implementado.
+</p>
+<div class="caixa">
+  <strong>Prontuário como visão agregada.</strong> O prontuário não é uma tabela própria: ele
+  consolida atendimentos, prescrições, vacinações e consultas do animal. O atendimento é o elo
+  entre a consulta e o histórico clínico, conforme a ADR-14. Todo acesso ao prontuário é auditado.
+</div>
+
+<h2>3. Aderência à arquitetura da Etapa 1</h2>
+<p>
+  A implementação preserva o estilo arquitetural definido: cliente SPA consumindo API REST por
+  HTTP/JSON e servidor organizado em camadas com dependência unidirecional. A tabela abaixo
+  relaciona os componentes da Etapa 1 com a implementação desta sprint.
+</p>
+
+<table>
+  <thead>
+    <tr><th style="width:24%">Componente (Etapa 1)</th><th>Implementação na Sprint 4</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Cliente Web (SPA)</td><td>Aplicação React 19 + TypeScript + Tailwind, com rotas protegidas, menu por perfil e portais distintos.</td></tr>
+    <tr><td>Autenticação e Autorização</td><td>Spring Security, JWT HMAC-SHA256, BCrypt e RBAC por perfil.</td></tr>
+    <tr><td>Tutores, Animais</td><td>Módulos de cadastro com paginação, busca, validação e auditoria.</td></tr>
+    <tr><td>Veterinários</td><td>CRUD restrito ao Administrador, com CRMV único, especialidade e vínculo ao usuário (ADR-13).</td></tr>
+    <tr><td>Atendimento / Prontuário</td><td>Atendimento 1:1 com a consulta; prontuário consolida histórico, prescrições, vacinas e consultas (ADR-14).</td></tr>
+    <tr><td>Vacinação / Prescrição</td><td>Vacinas com próxima dose por animal; prescrições filhas do atendimento.</td></tr>
+    <tr><td>Financeiro</td><td>Pagamentos por tutor/consulta, formas de pagamento e dashboard por período.</td></tr>
+    <tr><td>Notificações</td><td>Avisos de consulta e vacina em caixa de saída, com canal de e-mail simulado (ADR-15).</td></tr>
+    <tr><td>Relatórios</td><td>Resumo gerencial consolidado e exportação CSV.</td></tr>
+    <tr><td>Agendamento / Agenda</td><td>Agendamento com validação de vínculo e conflito; cancelamento com liberação do horário; visão por dia, semana e profissional.</td></tr>
+    <tr><td>Auditoria / Log</td><td>Tabela <code>auditoria</code> alimentada pelo <code>AuditoriaService</code> em todas as mutações e logins.</td></tr>
+    <tr><td>Persistência / Banco</td><td>PostgreSQL 16 com migrações Flyway e índices para agenda e busca.</td></tr>
+    <tr><td>Cache (Redis)</td><td>Cache de leitura da agenda com TTL de 60 s e invalidação ao agendar ou cancelar.</td></tr>
+    <tr><td>API Gateway / BFF</td><td>Camada <code>api</code> do monólito: controllers, DTOs, validação, CORS, erros e segurança (ADR-11).</td></tr>
+    <tr><td>Notificações / Relatórios / Financeiro</td><td>Fora do escopo desta sprint.</td></tr>
+  </tbody>
+</table>
+
+<h3>3.1 Decisões arquiteturais novas</h3>
+<p>
+  A Etapa 1 previu um componente de API Gateway/BFF separado e uma entidade de veterinário. Como a
+  solução é um monólito modular, as decisões foram registradas:
+</p>
+<ul>
+  <li><strong>ADR-10:</strong> veterinário representado por usuário com perfil <code>VETERINARIO</code>.</li>
+  <li><strong>ADR-11:</strong> papel de API Gateway/BFF exercido pela camada de controllers do monólito.</li>
+  <li><strong>ADR-12:</strong> segredo JWT sem valor padrão (gerado aleatoriamente quando ausente) e
+  seed de demonstração opt-in, com bancos publicados apenas em localhost.</li>
+  <li><strong>ADR-13:</strong> CRMV e especialidade acrescentados à entidade <code>Usuario</code>,
+  refinando a ADR-10 para atender ao REQ06 sem duplicar identidade.</li>
+  <li><strong>ADR-14:</strong> atendimento 1:1 com a consulta, prescrições como composição e
+  prontuário como visão agregada por animal.</li>
+  <li><strong>ADR-15:</strong> notificações em caixa de saída com porta de canal e adaptador de
+  e-mail simulado, preparado para troca por provedor externo.</li>
+</ul>
+<p>
+  As demais decisões da Etapa 1 (ADR-01 a ADR-09) foram mantidas sem alteração.
+</p>
+
+<h2>4. Modelo de dados</h2>
+<p>
+  O esquema é criado por migração Flyway (<code>V1__schema_inicial.sql</code>) e validado pelo
+  Hibernate na inicialização. As chaves estrangeiras garantem integridade referencial e os índices
+  atendem às consultas críticas de agenda e busca.
+</p>
+
+<table>
+  <thead>
+    <tr><th style="width:15%">Tabela</th><th>Principais colunas</th><th style="width:24%">Regras e índices</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>usuarios</code></td>
+      <td>id, nome, email, senha, perfil, crmv, especialidade, ativo, criado_em, atualizado_em</td>
+      <td>E-mail único; CRMV único quando informado; perfil restrito por CHECK.</td>
+    </tr>
+    <tr>
+      <td><code>tutores</code></td>
+      <td>id, nome, cpf, email, telefone, endereco</td>
+      <td>CPF único; índice por nome.</td>
+    </tr>
+    <tr>
+      <td><code>animais</code></td>
+      <td>id, nome, especie, raca, sexo, data_nascimento, tutor_id, ativo</td>
+      <td>FK para tutor; índices por tutor e nome.</td>
+    </tr>
+    <tr>
+      <td><code>consultas</code></td>
+      <td>id, animal_id, tutor_id, veterinario_id, data_hora, horario_ativo, status,
+      motivo_cancelamento, cancelada_em, observacoes</td>
+      <td>Três FKs; índice por data; unicidade de (veterinário, horario_ativo), que fica nulo ao cancelar.</td>
+    </tr>
+    <tr>
+      <td><code>atendimentos</code></td>
+      <td>id, consulta_id (único), animal_id, veterinario_id, data_hora, anamnese,
+      diagnostico, procedimentos, observacoes</td>
+      <td>Uma consulta gera no máximo um atendimento; índice por animal/data.</td>
+    </tr>
+    <tr>
+      <td><code>prescricoes</code></td>
+      <td>id, atendimento_id, medicamento, dosagem, frequencia, duracao, orientacoes</td>
+      <td>FK com exclusão em cascata; pertence a um atendimento.</td>
+    </tr>
+    <tr>
+      <td><code>vacinacoes</code></td>
+      <td>id, animal_id, veterinario_id, tipo_vacina, lote, data_aplicacao, proxima_dose, observacoes</td>
+      <td>FK para animal; índices por animal/data e por próxima dose.</td>
+    </tr>
+    <tr>
+      <td><code>pagamentos</code></td>
+      <td>id, tutor_id, consulta_id, valor, forma_pagamento, status, data_pagamento, observacoes</td>
+      <td>FK para tutor e consulta; índices por data e tutor; CHECK de forma/status.</td>
+    </tr>
+    <tr>
+      <td><code>notificacoes</code></td>
+      <td>id, tutor_id, consulta_id, vacinacao_id, tipo, canal, destinatario, mensagem, status, erro,
+      criado_em, enviado_em</td>
+      <td>Caixa de saída; índices por status e tutor; deduplicação por consulta/vacina.</td>
+    </tr>
+    <tr>
+      <td><code>auditoria</code></td>
+      <td>id, usuario_email, acao, entidade, entidade_id, detalhes, ip, criado_em</td>
+      <td>Índice por data; registro somente de inserção.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  A exclusão de usuários, animais e veterinários é lógica (<code>ativo = false</code>), preservando
+  o histórico de consultas e a rastreabilidade exigida pelo atributo de integridade e
+  auditabilidade. Tutores só podem ser excluídos quando não possuem animais nem consultas
+  registradas. O cancelamento de uma consulta mantém o registro histórico e zera
+  <code>horario_ativo</code>, liberando o slot para um novo agendamento.
+</p>
+
+<h2>5. Implementação e decisões técnicas</h2>
+<p>
+  O back-end foi implementado em <strong>Kotlin 2.3 sobre Spring Boot 4.1</strong>, com JDK 21+
+  e Maven Wrapper, mantendo a separação de camadas da arquitetura:
+</p>
+<ul>
+  <li><code>api</code> — controllers REST, DTOs validados, tratamento uniforme de erros e Swagger.</li>
+  <li><code>application</code> — casos de uso (autenticação, usuários, tutores, animais, veterinários, consultas) e auditoria.</li>
+  <li><code>domain</code> — entidades JPA, enums de perfil/status e interfaces de repositório.</li>
+  <li><code>infrastructure</code> — filtro JWT, serviço de token, integração com Spring Security.</li>
+</ul>
+<p>
+  No front-end, React 19 + TypeScript + Vite + Tailwind compõem a SPA. O cliente Axios centraliza o
+  token e trata expiração de sessão; React Hook Form e Zod validam formulários; React Router protege
+  rotas e encaminha cada perfil para o seu portal. O menu, o dashboard e as ações disponíveis mudam
+  conforme o perfil autenticado, e a API revalida todas as permissões.
+</p>
+
+<h3>5.1 Segurança e controle de acesso</h3>
+<table>
+  <thead>
+    <tr><th style="width:16%">Perfil</th><th style="width:20%">Portal</th><th>Permissões na sprint</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Administrador</td><td><code>/portal/admin</code></td><td>Tudo: cadastros, agenda, clínica, financeiro, notificações, relatórios e usuários.</td></tr>
+    <tr><td>Recepcionista</td><td><code>/portal/recepcao</code></td><td>Agenda, cadastros, vacinação, prontuário, pagamentos, notificações e relatórios.</td></tr>
+    <tr><td>Veterinário</td><td><code>/portal/veterinario</code></td><td>Própria agenda, atendimento e prescrições, vacinação e prontuário. Sem acesso financeiro.</td></tr>
+  </tbody>
+</table>
+<p>
+  Senhas são armazenadas com BCrypt. O token JWT carrega identificador, nome, e-mail e perfil, com
+  validade configurável (120 minutos por padrão). O segredo não possui valor padrão no repositório:
+  sem <code>JWT_SECRET</code>, é gerado um segredo aleatório por execução. Requisições sem token recebem 401 e requisições
+  sem permissão recebem 403, ambas com corpo JSON padronizado. Login bem-sucedido, login inválido e
+  todas as mutações geram registro de auditoria com usuário, IP e data/hora.
+</p>
+
+<h3>5.2 Regras de negócio do agendamento e cancelamento (REQ07 e REQ08)</h3>
+<ul>
+  <li>Animal e tutor devem existir e estar ativos.</li>
+  <li>O animal precisa pertencer ao tutor informado.</li>
+  <li>O profissional precisa ter perfil <code>VETERINARIO</code> e estar ativo.</li>
+  <li>A data/hora deve ser futura.</li>
+  <li>O horário é normalizado para o minuto e o banco possui índice único por veterinário/horário.</li>
+  <li>O veterinário não pode ter outra consulta no mesmo horário (exceto canceladas).</li>
+  <li>Somente consultas futuras e com status <code>AGENDADA</code> podem ser canceladas.</li>
+  <li>O cancelamento exige perfil Administrador ou Recepcionista, registra motivo e auditoria e
+  libera <code>horario_ativo</code>, permitindo reagendar o mesmo horário.</li>
+  <li>Agendamentos e cancelamentos invalidam o cache de agenda; consultas repetidas usam o cache
+  Redis por 60 segundos.</li>
+</ul>
+
+<h3>5.3 Regras clínicas (REQ10 a REQ13)</h3>
+<ul>
+  <li>Só uma consulta <code>AGENDADA</code> pode gerar atendimento, e cada consulta aceita no máximo um atendimento.</li>
+  <li>O registro só é permitido a partir do horário da consulta (tolerância de 30 minutos); o veterinário
+  responsável ou um administrador pode registrar.</li>
+  <li>Ao salvar o atendimento, a consulta passa para <code>REALIZADA</code> e o registro compõe o prontuário.</li>
+  <li>Prescrições são opcionais, limitadas a 20 por atendimento e ficam disponíveis no prontuário.</li>
+  <li>Vacinação: data de aplicação não pode ser futura e a próxima dose deve ser posterior à aplicação.</li>
+  <li>O prontuário consolida atendimentos, prescrições, vacinas e consultas e registra auditoria de acesso.</li>
+</ul>
+
+<h3>5.4 Regras financeiras e de notificação (REQ14 a REQ17)</h3>
+<ul>
+  <li>Pagamento exige tutor, valor maior que zero e data não futura; a consulta, quando informada,
+  precisa pertencer ao mesmo tutor.</li>
+  <li>O dashboard considera apenas pagamentos com status <code>PAGO</code> e calcula total, ticket
+  médio, quantidade e distribuição por forma.</li>
+  <li>Avisos são gerados para consultas nas próximas 24h e vacinas com próxima dose nos próximos 7 dias,
+  sem duplicar por consulta/vacina.</li>
+  <li>O envio usa a porta <code>CanalNotificacao</code>; nesta sprint o adaptador de e-mail é simulado
+  e registrado no log (ADR-15). Há agendamento diário às 08:00.</li>
+  <li>Relatórios consolidam consultas por status, atendimentos, animais cadastrados/novos, vacinas
+  aplicadas e finanças do período.</li>
+</ul>
+
+<h3>5.5 Endpoints principais</h3>
+<table>
+  <thead>
+    <tr><th style="width:23%">Método e rota</th><th style="width:20%">Perfis</th><th>Descrição</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>POST /api/auth/login</code></td><td>Público</td><td>Autentica e devolve o token JWT (REQ02).</td></tr>
+    <tr><td><code>GET /api/auth/me</code></td><td>Autenticados</td><td>Dados da sessão atual.</td></tr>
+    <tr><td><code>GET/POST/PUT/DELETE /api/usuarios</code></td><td>Administrador</td><td>Manutenção de usuários (REQ01).</td></tr>
+    <tr><td><code>GET/POST/PUT/DELETE /api/tutores</code></td><td>Admin/Recepção</td><td>Manutenção de tutores (REQ04).</td></tr>
+    <tr><td><code>GET/POST/PUT/DELETE /api/animais</code></td><td>Admin/Recepção</td><td>Manutenção de animais (REQ05).</td></tr>
+    <tr><td><code>GET /api/animais/por-tutor/{id}</code></td><td>Autenticados</td><td>Apoio ao agendamento.</td></tr>
+    <tr><td><code>GET /api/veterinarios</code></td><td>Autenticados</td><td>Lista profissionais; Admin pode incluir inativos.</td></tr>
+    <tr><td><code>POST/PUT/DELETE /api/veterinarios</code></td><td>Administrador</td><td>Manutenção de veterinários com CRMV (REQ06).</td></tr>
+    <tr><td><code>GET /api/consultas</code></td><td>Autenticados</td><td>Agenda por período e profissional (REQ09); veterinário vê apenas a própria.</td></tr>
+    <tr><td><code>POST /api/consultas</code></td><td>Admin/Recepção</td><td>Agendamento com validação de conflito (REQ07).</td></tr>
+    <tr><td><code>POST /api/consultas/{id}/cancelar</code></td><td>Admin/Recepção</td><td>Cancelamento com motivo e liberação do horário (REQ08).</td></tr>
+    <tr><td><code>POST /api/consultas/{id}/atendimento</code></td><td>Admin/Veterinário</td><td>Atendimento com prescrições (REQ10 e REQ13).</td></tr>
+    <tr><td><code>GET /api/animais/{id}/prontuario</code></td><td>Autenticados</td><td>Histórico clínico consolidado (REQ11).</td></tr>
+    <tr><td><code>GET/POST /api/animais/{id}/vacinacoes</code></td><td>Equipe</td><td>Listagem e registro de vacinas (REQ12).</td></tr>
+    <tr><td><code>DELETE /api/vacinacoes/{id}</code></td><td>Admin/Veterinário</td><td>Exclusão de registro de vacina.</td></tr>
+    <tr><td><code>GET/POST /api/pagamentos</code></td><td>Admin/Recepção</td><td>Listagem e registro de pagamentos (REQ14).</td></tr>
+    <tr><td><code>GET /api/financeiro/dashboard</code></td><td>Admin/Recepção</td><td>Indicadores financeiros do período (REQ15).</td></tr>
+    <tr><td><code>GET /api/notificacoes</code></td><td>Admin/Recepção</td><td>Caixa de saída de avisos (REQ16).</td></tr>
+    <tr><td><code>POST /api/notificacoes/processar</code></td><td>Admin/Recepção</td><td>Gera e envia avisos pendentes.</td></tr>
+    <tr><td><code>GET /api/relatorios/resumo</code></td><td>Admin/Recepção</td><td>Relatório gerencial consolidado (REQ17).</td></tr>
+  </tbody>
+</table>
+<p>
+  A documentação interativa (OpenAPI/Swagger) fica disponível em
+  <code>/swagger-ui.html</code> e o health-check em <code>/actuator/health</code>, que reporta
+  banco e Redis.
+</p>
+
+<div class="quebra"></div>
+<h2>6. Interface do sistema</h2>
+<p>
+  As telas a seguir foram capturadas da aplicação em execução, com dados de demonstração criados
+  pelo seed. A interface é responsiva e adapta a navegação a telas menores.
+</p>
+
+<div class="imagem">
+  <img src="img/01-login.png" alt="Tela de login" />
+  <div class="legenda">Figura 1 — Login com identificação dos perfis e contas de demonstração (REQ02).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/02-agenda.png" alt="Agenda" />
+  <div class="legenda">Figura 2 — Agenda do período com indicadores e consultas agrupadas por dia (REQ07).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/03-tutores.png" alt="Tutores" />
+  <div class="legenda">Figura 3 — Listagem e manutenção de tutores com busca e paginação (REQ04).</div>
+</div>
+
+<div class="quebra"></div>
+<div class="imagem">
+  <img src="img/04-animais.png" alt="Animais" />
+  <div class="legenda">Figura 4 — Animais vinculados ao tutor, com espécie, raça e idade calculada (REQ05).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/05-usuarios.png" alt="Usuários" />
+  <div class="legenda">Figura 5 — Gestão de usuários e perfis, restrita ao Administrador (REQ01).</div>
+</div>
+
+<div class="duas">
+  <div class="imagem">
+    <img src="img/06-modal-consulta.png" alt="Modal de nova consulta" />
+    <div class="legenda">Figura 6 — Agendamento: tutor, animal, veterinário e horário.</div>
+  </div>
+  <div class="imagem">
+    <img src="img/08-agenda-mobile.png" alt="Agenda em celular" />
+    <div class="legenda">Figura 7 — Agenda em tela móvel.</div>
+  </div>
+</div>
+
+<div class="quebra"></div>
+<h3>6.1 Portais por perfil</h3>
+<p>
+  O mesmo formulário de login atende aos três perfis. Após a autenticação, o sistema lê o perfil do
+  token e encaminha para o portal correspondente, com dashboard, menu e ações específicos.
+</p>
+
+<div class="imagem">
+  <img src="img/09-portal-admin.png" alt="Portal do administrador" />
+  <div class="legenda">Figura 8 — Portal administrativo: indicadores, agenda do dia e atalhos de gestão.</div>
+</div>
+
+<div class="imagem">
+  <img src="img/10-portal-recepcao.png" alt="Portal da recepção" />
+  <div class="legenda">Figura 9 — Portal da recepção: agenda do dia, próximos 7 dias e cadastros.</div>
+</div>
+
+<div class="imagem">
+  <img src="img/11-portal-veterinario.png" alt="Portal do veterinário" />
+  <div class="legenda">Figura 10 — Portal do veterinário: apenas a própria agenda, com CRMV e especialidade.</div>
+</div>
+
+<div class="quebra"></div>
+<h3>6.2 Novas operações da Sprint 2</h3>
+
+<div class="imagem">
+  <img src="img/12-veterinarios.png" alt="Gestão de veterinários" />
+  <div class="legenda">Figura 11 — Manutenção de veterinários com CRMV e especialidade (REQ06).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/13-agenda-dia.png" alt="Agenda diária" />
+  <div class="legenda">Figura 12 — Visão diária da agenda, com navegação e filtro por profissional (REQ09).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/14-cancelamento.png" alt="Cancelamento de consulta" />
+  <div class="legenda">Figura 13 — Cancelamento com motivo, liberação do horário e registro em auditoria (REQ08).</div>
+</div>
+
+<div class="quebra"></div>
+<h3>6.3 Atendimento e prontuário</h3>
+<p>
+  O veterinário registra o atendimento a partir da agenda. O sistema grava anamnese, diagnóstico,
+  procedimentos, observações e prescrições, marca a consulta como realizada e disponibiliza o
+  histórico no prontuário do animal.
+</p>
+
+<div class="imagem">
+  <img src="img/15-agenda-atender.png" alt="Agenda com ação Atender" />
+  <div class="legenda">Figura 14 — Agenda com a ação “Atender” para consultas aptas ao registro (REQ10).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/16-atendimento-modal.png" alt="Modal de atendimento" />
+  <div class="legenda">Figura 15 — Registro de atendimento com anamnese, diagnóstico e prescrições (REQ10 e REQ13).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/17-prontuario-luna.png" alt="Prontuário com atendimento" />
+  <div class="legenda">Figura 16 — Prontuário consolidado com atendimento, diagnóstico e prescrições (REQ11).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/18-prontuario-vacinas.png" alt="Prontuário com vacinas" />
+  <div class="legenda">Figura 17 — Histórico vacinal com previsão da próxima dose (REQ12).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/19-vacina-modal.png" alt="Modal de vacinação" />
+  <div class="legenda">Figura 18 — Registro de vacina com lote, aplicação e próxima dose (REQ12).</div>
+</div>
+
+<div class="quebra"></div>
+<h3>6.4 Financeiro, notificações e relatórios</h3>
+<p>
+  A gestão financeira registra pagamentos e apresenta os indicadores do período. A caixa de saída
+  de notificações mostra os avisos gerados e enviados pelo canal simulado. Os relatórios consolidam
+  os números da clínica e podem ser exportados em CSV.
+</p>
+
+<div class="imagem">
+  <img src="img/20-financeiro.png" alt="Dashboard financeiro" />
+  <div class="legenda">Figura 19 — Dashboard financeiro com total recebido, ticket médio e formas de pagamento (REQ14/15).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/21-financeiro-modal.png" alt="Registro de pagamento" />
+  <div class="legenda">Figura 20 — Registro de pagamento vinculado ao tutor e à consulta (REQ14).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/22-relatorios.png" alt="Relatórios gerenciais" />
+  <div class="legenda">Figura 21 — Relatório consolidado com consultas, atendimentos, animais, vacinas e finanças (REQ17).</div>
+</div>
+
+<div class="imagem">
+  <img src="img/23-notificacoes.png" alt="Notificações" />
+  <div class="legenda">Figura 22 — Caixa de saída com avisos de consulta e vacina enviados ao tutor (REQ16).</div>
+</div>
+
+<h2>7. Testes e evidências de funcionamento</h2>
+<p>
+  A sprint conta com <strong>60 testes de integração no back-end</strong>, executados com MockMvc
+  sobre H2 em memória, e <strong>11 testes no front-end</strong> com Vitest e Testing Library. Os
+  testes cobrem autenticação, RBAC, CRUD de usuários/tutores/animais/veterinários, vínculo
+  animal/tutor, conflito e cancelamento de horário, cache, auditoria e formatação de dados.
+</p>
+
+<div class="evidencia">$ cd backend && ./mvnw test
+Tests run: 6, Failures: 0, Errors: 0 — AuthIntegrationTest
+Tests run: 12, Failures: 0, Errors: 0 — ConsultaIntegrationTest
+Tests run: 9, Failures: 0, Errors: 0 — TutorAnimalIntegrationTest
+Tests run: 7, Failures: 0, Errors: 0 — UsuarioIntegrationTest
+Tests run: 6, Failures: 0, Errors: 0 — VeterinarioIntegrationTest
+Tests run: 6, Failures: 0, Errors: 0 — AtendimentoIntegrationTest
+Tests run: 6, Failures: 0, Errors: 0 — VacinacaoIntegrationTest
+Tests run: 4, Failures: 0, Errors: 0 — PagamentoIntegrationTest
+Tests run: 2, Failures: 0, Errors: 0 — RelatorioIntegrationTest
+Tests run: 2, Failures: 0, Errors: 0 — NotificacaoIntegrationTest
+
+$ cd frontend && npm test
+Test Files  2 passed (2)
+     Tests  11 passed (11)</div>
+
+<p>
+  Além dos testes automatizados, o fluxo completo foi exercitado contra a stack real
+  (PostgreSQL + Redis + API + SPA). O roteiro criou tutor e animal, agendou uma consulta, tentou
+  repetir o mesmo horário e conferiu a trilha de auditoria no banco:
+</p>
+
+<div class="evidencia">POST /api/veterinarios     → 201 (Dr. Rafael Lima, CRMV-BA 55555)
+GET  /api/veterinarios     → 200 [Rafael, Camila]
+POST /api/veterinarios (recepção) → 403
+POST /api/tutores          → 201 (Carlos Pereira, CPF válido)
+POST /api/animais          → 201 (Mel, tutor Carlos Pereira)
+POST /api/consultas        → 201 (10/11/2026 15:00, Dra. Camila Andrade)
+POST /api/consultas (mesmo horário) → 409 "O veterinário já possui uma consulta neste horário."
+POST /api/consultas (mesmo minuto, segundos diferentes) → 409
+GET  /api/consultas        → 200 [Thor, Mel]  (cache invalidado após o agendamento)
+GET  /api/consultas        → Redis DBSIZE = 1 (cache de leitura ativo)
+GET  /api/usuarios (recepcionista) → 403
+GET  /api/usuarios (administrador) → 200
+GET  /api/usuarios (token forjado com segredo antigo) → 401
+PUT  /api/usuarios/1 (auto-desativação) → 400
+POST /api/consultas/1/cancelar → 200 (status CANCELADA, motivo registrado)
+POST /api/consultas (mesmo horário cancelado) → 201 (slot liberado)
+POST /api/consultas/5/atendimento → 201 (diagnóstico + 2 prescrições)
+GET  /api/animais/2/prontuario → 200 (atendimento e prescrições consolidados)
+POST /api/animais/1/vacinacoes → 201 (próxima dose em 20 dias)
+POST /api/pagamentos → 201 (3 pagamentos, total R$ 525,50)
+GET  /api/financeiro/dashboard → 200 (total, ticket médio e formas)
+POST /api/notificacoes/processar → 200 (3 geradas, 3 enviadas)
+GET  /api/relatorios/resumo → 200 (consultas, atendimentos, animais e finanças)
+GET  /api/consultas?inicio=...&fim=... → 200 (visão dia/semana)
+GET  /api/rota-inexistente → 404
+GET  /actuator/health      → UP
+
+auditoria (últimos registros):
+admin@vetcare.com | PAGAMENTO_REGISTRADO   | Pagamento   | 3
+admin@vetcare.com | NOTIFICACOES_ENVIADAS  | Notificacao | 3
+admin@vetcare.com | ATENDIMENTO_REGISTRADO | Atendimento | 1
+admin@vetcare.com | PRONTUARIO_ACESSADO    | Animal      | 2
+admin@vetcare.com | CONSULTA_AGENDADA      | Consulta    | 2
+admin@vetcare.com | TUTOR_CRIADO           | Tutor       | 4</div>
+
+<div class="caixa">
+  <strong>Critérios de aceite verificados:</strong> a stack sobe seguindo o README; o login
+  encaminha cada perfil ao portal correto; o RBAC bloqueia acessos indevidos; os CRUDs de usuários,
+  tutores, animais e veterinários funcionam; o agendamento grava, valida conflito e aparece na
+  agenda; o cancelamento libera o horário; as visões de dia e semana filtram por profissional; os
+  testes passam; e o health-check reporta banco e cache disponíveis.
+</div>
+
+<h2>8. Como executar o sistema</h2>
+<p>
+  O repositório público contém o <code>README.md</code> com o passo a passo. Resumidamente:
+</p>
+<pre><code># 1. Configuração (habilita o seed de demonstração)
+cp .env.example .env
+
+# 2. Banco e cache
+docker compose up -d
+
+# 3. API (http://localhost:8080)
+cd backend &amp;&amp; ./mvnw spring-boot:run
+
+# 4. SPA (http://localhost:5173)
+cd frontend &amp;&amp; npm install &amp;&amp; npm run dev</code></pre>
+<p>
+  Credenciais do seed: <code>admin@vetcare.com / Admin@123</code>,
+  <code>recepcao@vetcare.com / Recepcao@123</code> e <code>vet@vetcare.com / Vet@123</code>.
+  O seed pode ser desativado com <code>APP_SEED=false</code>. Em produção, o segredo JWT deve ser definido explicitamente. O seed cria uma consulta passada para demonstrar o registro de atendimento.
+</p>
+
+<h2>9. Considerações finais e próximos passos</h2>
+<p>
+  A Sprint 4 entrega o VetCare de ponta a ponta: autenticação com portais por perfil, cadastros,
+  agenda, atendimento, prontuário, prescrições, vacinação, pagamentos, dashboard financeiro,
+  notificações e relatórios. O recorte acumulado de 94,1% cobre toda a operação da clínica, com
+  auditoria, cache e regras de negócio alinhadas à arquitetura da Etapa 1, restando apenas a
+  recuperação de senha.
+</p>
+<p>
+  Para o fechamento, resta a recuperação de senha (REQ03), que pode usar o mesmo canal de e-mail
+  simulado. Também são evoluções naturais a emissão de receita e relatórios em PDF, integração real
+  com provedor de e-mail/SMS, paginação do histórico do prontuário, conciliação de pagamentos,
+  rotação/revogação de tokens, acessibilidade dos portais e observabilidade com métricas além do
+  health-check.
+</p>
+
+<h2>10. Referências</h2>
+<p>
+  UNIVERSIDADE FEDERAL DA BAHIA. Instituto de Computação. <em>Documento de Requisitos: VetCare —
+  Sistema de Gestão para Clínica Veterinária</em>. Salvador, 2026.
+</p>
+<p>
+  UNIVERSIDADE FEDERAL DA BAHIA. Instituto de Computação. <em>Trabalho I — Arquitetura do Sistema
+  VetCare</em>. Disciplina Engenharia de Software 1. Salvador, 2026.
+</p>
+<p>
+  UNIVERSIDADE FEDERAL DA BAHIA. Instituto de Computação. <em>Trabalho II — Implementação do Sistema
+  VetCare</em>. Disciplina Engenharia de Software 1. Salvador, 2026.
+</p>
+
+<div class="rodape">VetCare · Sprint 4 · Engenharia de Software 1 · UFBA 2026</div>
+
+</body>
+</html>

@@ -444,3 +444,133 @@ data class ProntuarioResposta(
     val vacinacoes: List<VacinacaoResposta>,
     val consultas: List<ConsultaResposta>,
 )
+
+// ---------- Financeiro (REQ14 e REQ15) ----------
+
+data class PagamentoRequest(
+    @field:jakarta.validation.constraints.NotNull(message = "Selecione o tutor")
+    @field:jakarta.validation.constraints.Positive(message = "Tutor inválido")
+    val tutorId: Long? = null,
+
+    val consultaId: Long? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Informe o valor")
+    @field:jakarta.validation.constraints.DecimalMin(value = "0.01", message = "O valor deve ser maior que zero")
+    val valor: java.math.BigDecimal? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Selecione a forma de pagamento")
+    val formaPagamento: br.ufba.vetcare.domain.FormaPagamento? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Informe a data do pagamento")
+    val dataPagamento: LocalDate? = null,
+
+    val status: br.ufba.vetcare.domain.StatusPagamento? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Observações muito longas")
+    val observacoes: String? = null,
+)
+
+data class PagamentoResposta(
+    val id: Long,
+    val tutorId: Long,
+    val tutorNome: String,
+    val consultaId: Long?,
+    val consultaDescricao: String?,
+    val valor: java.math.BigDecimal,
+    val formaPagamento: String,
+    val formaPagamentoDescricao: String,
+    val status: String,
+    val dataPagamento: LocalDate,
+    val observacoes: String?,
+    val criadoEm: Instant,
+) {
+    companion object {
+        fun de(pagamento: br.ufba.vetcare.domain.Pagamento) = PagamentoResposta(
+            id = pagamento.id ?: 0,
+            tutorId = pagamento.tutor.id ?: 0,
+            tutorNome = pagamento.tutor.nome,
+            consultaId = pagamento.consulta?.id,
+            consultaDescricao = pagamento.consulta?.let {
+                "${it.animal.nome} · ${it.dataHora.toLocalDate()} ${it.dataHora.toLocalTime()}"
+            },
+            valor = pagamento.valor,
+            formaPagamento = pagamento.formaPagamento.name,
+            formaPagamentoDescricao = pagamento.formaPagamento.descricao,
+            status = pagamento.status.name,
+            dataPagamento = pagamento.dataPagamento,
+            observacoes = pagamento.observacoes,
+            criadoEm = pagamento.criadoEm,
+        )
+    }
+}
+
+data class FormaTotal(
+    val forma: String,
+    val descricao: String,
+    val total: java.math.BigDecimal,
+    val quantidade: Int,
+)
+
+data class DashboardFinanceiro(
+    val inicio: LocalDate,
+    val fim: LocalDate,
+    val totalRecebido: java.math.BigDecimal,
+    val quantidadePagamentos: Int,
+    val ticketMedio: java.math.BigDecimal,
+    val atendimentos: Long,
+    val porForma: List<FormaTotal>,
+)
+
+// ---------- Relatórios (REQ17) ----------
+
+data class RelatorioResumo(
+    val inicio: LocalDate,
+    val fim: LocalDate,
+    val consultasTotal: Int,
+    val consultasAgendadas: Int,
+    val consultasRealizadas: Int,
+    val consultasCanceladas: Int,
+    val atendimentos: Long,
+    val animaisCadastrados: Long,
+    val animaisNovos: Long,
+    val vacinasAplicadas: Long,
+    val totalRecebido: java.math.BigDecimal,
+    val porForma: List<FormaTotal>,
+)
+
+// ---------- Notificações (REQ16) ----------
+
+data class NotificacaoResposta(
+    val id: Long,
+    val tutorId: Long,
+    val tutorNome: String,
+    val tipo: String,
+    val canal: String,
+    val destinatario: String,
+    val mensagem: String,
+    val status: String,
+    val erro: String?,
+    val criadoEm: Instant,
+    val enviadoEm: Instant?,
+) {
+    companion object {
+        fun de(notificacao: br.ufba.vetcare.domain.Notificacao) = NotificacaoResposta(
+            id = notificacao.id ?: 0,
+            tutorId = notificacao.tutor.id ?: 0,
+            tutorNome = notificacao.tutor.nome,
+            tipo = notificacao.tipo.name,
+            canal = notificacao.canal,
+            destinatario = notificacao.destinatario,
+            mensagem = notificacao.mensagem,
+            status = notificacao.status.name,
+            erro = notificacao.erro,
+            criadoEm = notificacao.criadoEm,
+            enviadoEm = notificacao.enviadoEm,
+        )
+    }
+}
+
+data class ProcessamentoNotificacoesResposta(
+    val geradas: Int,
+    val enviadas: Int,
+)

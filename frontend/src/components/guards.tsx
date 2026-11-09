@@ -45,6 +45,21 @@ export function RedirecionarPortal() {
   return <Navigate to={destino} replace />
 }
 
+export function RotaPapeis({ papeis, children }: { papeis: Perfil[]; children: ReactNode }) {
+  const { usuario } = useAuth()
+  if (!usuario || !papeis.includes(usuario.perfil)) {
+    return (
+      <div className="mx-auto max-w-lg px-6 py-20 text-center">
+        <p className="text-lg font-semibold text-slate-800">Acesso restrito</p>
+        <p className="mt-2 text-sm text-slate-500">
+          Seu perfil não tem permissão para acessar esta área.
+        </p>
+      </div>
+    )
+  }
+  return <>{children}</>
+}
+
 export function portalDoPerfil(perfil: Perfil): string {
   return portalPorPerfil[perfil]
 }

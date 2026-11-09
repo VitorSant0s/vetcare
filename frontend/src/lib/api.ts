@@ -10,6 +10,12 @@ import type {
   Atendimento,
   Prontuario,
   Vacinacao,
+  Pagamento,
+  DashboardFinanceiro,
+  RelatorioResumo,
+  Notificacao,
+  FormaPagamento,
+  StatusPagamento,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -182,4 +188,33 @@ export const vacinacoesApi = {
   criar: (animalId: number, payload: VacinacaoPayload) =>
     api.post<Vacinacao>(`/animais/${animalId}/vacinacoes`, payload),
   excluir: (id: number) => api.delete(`/vacinacoes/${id}`),
+}
+
+
+export interface PagamentoPayload {
+  tutorId: number
+  consultaId?: number | null
+  valor: number
+  formaPagamento: FormaPagamento
+  dataPagamento: string
+  status?: StatusPagamento
+  observacoes?: string | null
+}
+
+export const pagamentosApi = {
+  listar: (inicio: string, fim: string) =>
+    api.get<Pagamento[]>('/pagamentos', { params: { inicio, fim } }),
+  criar: (payload: PagamentoPayload) => api.post<Pagamento>('/pagamentos', payload),
+  dashboard: (inicio: string, fim: string) =>
+    api.get<DashboardFinanceiro>('/financeiro/dashboard', { params: { inicio, fim } }),
+}
+
+export const relatoriosApi = {
+  resumo: (inicio: string, fim: string) =>
+    api.get<RelatorioResumo>('/relatorios/resumo', { params: { inicio, fim } }),
+}
+
+export const notificacoesApi = {
+  listar: () => api.get<Notificacao[]>('/notificacoes'),
+  processar: () => api.post<{ geradas: number; enviadas: number }>('/notificacoes/processar'),
 }

@@ -2,7 +2,7 @@
 
 Sistema de gestão para clínicas veterinárias desenvolvido para a disciplina **Engenharia de Software 1** do Instituto de Computação da UFBA.
 
-Esta é a **Sprint 3** do Trabalho II: implementação de aproximadamente 70% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
+Esta é a **Sprint 4** do Trabalho II: implementação de aproximadamente 90% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
 
 ![Agenda do VetCare](docs/relatorio/img/02-agenda.png)
 
@@ -22,10 +22,14 @@ Esta é a **Sprint 3** do Trabalho II: implementação de aproximadamente 70% do
 | REQ11 | Manter Prontuário com histórico clínico do animal | Alta | Implementado |
 | REQ12 | Registrar Vacinação com previsão da próxima dose | Média | Implementado |
 | REQ13 | Emitir Prescrição vinculada ao atendimento | Média | Implementado |
+| REQ14 | Registrar Pagamento de consultas e procedimentos | Alta | Implementado |
+| REQ15 | Dashboard Financeiro por período | Média | Implementado |
+| REQ16 | Notificar Tutor sobre consultas e vacinação | Média | Implementado |
+| REQ17 | Gerar Relatórios Gerenciais | Média | Implementado |
 
-**12 de 17 requisitos = 70,6%**, dentro da meta de aproximadamente 70%.
+**16 de 17 requisitos = 94,1%**, dentro da meta de aproximadamente 90%.
 
-Fora do escopo: REQ03 (recuperação de senha), REQ14 e REQ15 (financeiro), REQ16 (notificações) e REQ17 (relatórios gerenciais).
+Fora do escopo: apenas REQ03 (recuperação de senha).
 
 ## Portais por perfil
 
@@ -69,6 +73,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-12 — Segredo JWT sem padrão e seed opt-in](docs/adr/ADR-12-segredo-jwt-e-seed.md)
 - [ADR-13 — Atributos profissionais na entidade Usuário](docs/adr/ADR-13-atributos-profissionais-usuario.md)
 - [ADR-14 — Atendimento como elo entre consulta, prontuário e prescrição](docs/adr/ADR-14-atendimento-prontuario.md)
+- [ADR-15 — Notificações por caixa de saída com canal simulado](docs/adr/ADR-15-notificacoes-canal-simulado.md)
 
 ## Como rodar
 
@@ -152,7 +157,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (52 testes de integração)
+# Back-end (60 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (11 testes)
@@ -165,7 +170,8 @@ cd frontend && npm run build
 Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
 tutores, animais e veterinários, auditoria, agendamento, conflito de horário (inclusive segundos no
 mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda,
-atendimento, prontuário, prescrições, vacinação e proteção do último administrador. Usam H2 em
+atendimento, prontuário, prescrições, vacinação, pagamentos, notificações, relatórios e proteção
+do último administrador. Usam H2 em
 memória no perfil `test`, sem exigir Docker.
 
 ## Segurança e auditoria
@@ -205,6 +211,10 @@ memória no perfil `test`, sem exigir Docker.
 | GET | `/api/animais/{id}/prontuario` | autenticados | REQ11 |
 | GET/POST | `/api/animais/{id}/vacinacoes` | equipe | REQ12 |
 | DELETE | `/api/vacinacoes/{id}` | Admin/Veterinário | REQ12 |
+| GET/POST | `/api/pagamentos` | Admin/Recepção | REQ14 |
+| GET | `/api/financeiro/dashboard` | Admin/Recepção | REQ15 |
+| GET/POST | `/api/notificacoes` e `/processar` | Admin/Recepção | REQ16 |
+| GET | `/api/relatorios/resumo` | Admin/Recepção | REQ17 |
 
 A documentação interativa completa está no Swagger UI.
 
@@ -224,6 +234,8 @@ vetcare/
 
 ## Documentos
 
+- [Relatório da Sprint 4 (PDF)](docs/relatorio/relatorio-sprint-4.pdf)
+- [Apresentação da Sprint 4 (PPTX)](docs/slides/VetCare-Sprint-4.pptx)
 - [Relatório da Sprint 3 (PDF)](docs/relatorio/relatorio-sprint-3.pdf)
 - [Apresentação da Sprint 3 (PPTX)](docs/slides/VetCare-Sprint-3.pptx)
 - [Relatório da Sprint 2 (PDF)](docs/relatorio/relatorio-sprint-2.pdf)

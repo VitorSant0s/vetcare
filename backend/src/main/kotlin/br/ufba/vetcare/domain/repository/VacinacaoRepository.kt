@@ -14,6 +14,7 @@ interface VacinacaoRepository : JpaRepository<Vacinacao, Long> {
     override fun findById(id: Long): Optional<Vacinacao>
 
     fun countByAnimalId(animalId: Long): Long
+    fun countByDataAplicacaoBetween(inicio: LocalDate, fim: LocalDate): Long
 
     @EntityGraph(attributePaths = ["animal", "veterinario"])
     fun findByProximaDoseBetween(inicio: LocalDate, fim: LocalDate): List<Vacinacao>

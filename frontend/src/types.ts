@@ -122,3 +122,67 @@ export interface Prontuario {
   vacinacoes: Vacinacao[]
   consultas: Consulta[]
 }
+
+export type FormaPagamento = 'DINHEIRO' | 'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' | 'CONVENIO'
+export type StatusPagamento = 'PAGO' | 'PENDENTE' | 'CANCELADO'
+
+export interface Pagamento {
+  id: number
+  tutorId: number
+  tutorNome: string
+  consultaId?: number | null
+  consultaDescricao?: string | null
+  valor: number
+  formaPagamento: FormaPagamento
+  formaPagamentoDescricao: string
+  status: StatusPagamento
+  dataPagamento: string
+  observacoes?: string | null
+  criadoEm: string
+}
+
+export interface FormaTotal {
+  forma: FormaPagamento
+  descricao: string
+  total: number
+  quantidade: number
+}
+
+export interface DashboardFinanceiro {
+  inicio: string
+  fim: string
+  totalRecebido: number
+  quantidadePagamentos: number
+  ticketMedio: number
+  atendimentos: number
+  porForma: FormaTotal[]
+}
+
+export interface RelatorioResumo {
+  inicio: string
+  fim: string
+  consultasTotal: number
+  consultasAgendadas: number
+  consultasRealizadas: number
+  consultasCanceladas: number
+  atendimentos: number
+  animaisCadastrados: number
+  animaisNovos: number
+  vacinasAplicadas: number
+  totalRecebido: number
+  porForma: FormaTotal[]
+}
+
+export interface Notificacao {
+  id: number
+  tutorId: number
+  tutorNome: string
+  tipo: 'CONSULTA' | 'VACINA'
+  canal: string
+  destinatario: string
+  mensagem: string
+  status: 'PENDENTE' | 'ENVIADA' | 'FALHA'
+  erro?: string | null
+  criadoEm: string
+  enviadoEm?: string | null
+}

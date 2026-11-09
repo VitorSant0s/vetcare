@@ -91,3 +91,7 @@ export function statusProximaDose(iso?: string | null): { texto: string; tom: To
   if (dias <= 30) return { texto: `Em ${dias} dias`, tom: 'ambar' }
   return { texto: formatarData(iso), tom: 'verde' }
 }
+
+export function formatarMoeda(valor: number): string {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
+}

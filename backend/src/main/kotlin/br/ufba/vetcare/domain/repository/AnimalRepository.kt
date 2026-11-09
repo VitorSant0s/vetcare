@@ -27,4 +27,6 @@ interface AnimalRepository : JpaRepository<Animal, Long> {
     fun findAllByTutorIdAndAtivoTrue(tutorId: Long): List<Animal>
 
     fun countByTutorId(tutorId: Long): Long
+    fun countByAtivoTrue(): Long
+    fun countByCriadoEmBetween(inicio: java.time.Instant, fim: java.time.Instant): Long
 }

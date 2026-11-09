@@ -7,6 +7,7 @@ import java.util.Optional
 
 interface AtendimentoRepository : JpaRepository<Atendimento, Long> {
     fun existsByConsultaId(consultaId: Long): Boolean
+    fun countByDataHoraBetween(inicio: java.time.LocalDateTime, fim: java.time.LocalDateTime): Long
     fun findByConsultaId(consultaId: Long): Optional<Atendimento>
 
     @EntityGraph(attributePaths = ["animal", "veterinario", "prescricoes"])

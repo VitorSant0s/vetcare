@@ -116,6 +116,9 @@ export function PortalAdmin() {
             <Atalho para="/tutores" rotulo="Gerenciar tutores" />
             <Atalho para="/animais" rotulo="Gerenciar animais" />
             <Atalho para="/agenda?nova=1" rotulo="Agendar consulta" />
+            <Atalho para="/financeiro" rotulo="Financeiro" />
+            <Atalho para="/relatorios" rotulo="Relatórios" />
+            <Atalho para="/notificacoes" rotulo="Notificações" />
           </div>
         </Cartao>
       </div>

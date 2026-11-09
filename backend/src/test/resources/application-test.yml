@@ -19,6 +19,8 @@ app:
     expiration-minutes: 60
   seed:
     enabled: false
+  notificacoes:
+    agendamento: false
 
 logging:
   level:
