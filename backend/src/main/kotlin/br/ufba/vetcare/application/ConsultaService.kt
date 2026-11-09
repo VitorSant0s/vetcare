@@ -36,7 +36,9 @@ class ConsultaService(
         val animalId = request.animalId ?: throw RegraNegocioException("Selecione o animal.")
         val tutorId = request.tutorId ?: throw RegraNegocioException("Selecione o tutor.")
         val veterinarioId = request.veterinarioId ?: throw RegraNegocioException("Selecione o veterinário.")
-        val dataHora = request.dataHora ?: throw RegraNegocioException("Informe a data e o horário.")
+        val dataHora = (request.dataHora ?: throw RegraNegocioException("Informe a data e o horário."))
+            .withSecond(0)
+            .withNano(0)
 
         val animal = animalRepository.findById(animalId)
             .orElseThrow { RecursoNaoEncontradoException("Animal não encontrado.") }
@@ -63,15 +65,20 @@ class ConsultaService(
             throw ConflitoException("O veterinário já possui uma consulta neste horário.")
         }
 
-        val consulta = repository.save(
-            Consulta(
-                animal = animal,
-                tutor = tutor,
-                veterinario = veterinario,
-                dataHora = dataHora,
-                observacoes = request.observacoes?.trim()?.takeIf { it.isNotEmpty() },
-            ),
-        )
+        val consulta = try {
+            repository.save(
+                Consulta(
+                    animal = animal,
+                    tutor = tutor,
+                    veterinario = veterinario,
+                    dataHora = dataHora,
+                    observacoes = request.observacoes?.trim()?.takeIf { it.isNotEmpty() },
+                ),
+            )
+        } catch (_: org.springframework.dao.DataIntegrityViolationException) {
+            // Corrida entre duas requisições: a constraint única do banco decide.
+            throw ConflitoException("O veterinário já possui uma consulta neste horário.")
+        }
         auditoriaService.registrar(
             acao = "CONSULTA_AGENDADA",
             entidade = "Consulta",

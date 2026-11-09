@@ -15,6 +15,20 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
 
     private val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
+    private fun corpoConsulta(
+        animalId: Long,
+        tutorId: Long,
+        veterinarioId: Long,
+        data: LocalDateTime,
+    ) = """{"animalId":$animalId,"tutorId":$tutorId,"veterinarioId":$veterinarioId,"dataHora":"${data.format(formato)}"}"""
+
+    private fun agendar(token: String, corpo: String) = mockMvc.perform(
+        post("/api/consultas")
+            .header("Authorization", bearer(token))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(corpo),
+    )
+
     @Test
     fun `recepcionista agenda consulta e ela aparece na agenda`() {
         criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
@@ -24,16 +38,7 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
         val token = login("recepcao@teste.com")
         val data = LocalDateTime.now().plusDays(2).withHour(10).withMinute(0).withSecond(0).withNano(0)
 
-        mockMvc.perform(
-            post("/api/consultas")
-                .header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"animalId":${animal.id},"tutorId":${tutor.id},"veterinarioId":${vet.id},"dataHora":"${data.format(formato)}"}
-                    """.trimIndent(),
-                ),
-        )
+        agendar(token, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, data))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.status").value("AGENDADA"))
             .andExpect(jsonPath("$.veterinarioNome").value("Dra. Camila"))
@@ -57,42 +62,69 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
         val animal = criarAnimal(tutor)
         val token = login("recepcao@teste.com")
         val data = LocalDateTime.now().plusDays(3).withHour(14).withMinute(30).withSecond(0).withNano(0)
-        val corpo =
-            """{"animalId":${animal.id},"tutorId":${tutor.id},"veterinarioId":${vet.id},"dataHora":"${data.format(formato)}"}"""
+        val corpo = corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, data)
 
-        mockMvc.perform(
-            post("/api/consultas").header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON).content(corpo),
-        ).andExpect(status().isCreated)
+        agendar(token, corpo).andExpect(status().isCreated)
 
-        mockMvc.perform(
-            post("/api/consultas").header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON).content(corpo),
-        )
+        agendar(token, corpo)
             .andExpect(status().isConflict)
             .andExpect(jsonPath("$.mensagem").value("O veterinário já possui uma consulta neste horário."))
+    }
+
+    @Test
+    fun `horarios no mesmo minuto com segundos diferentes conflitam`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val token = login("recepcao@teste.com")
+        val base = LocalDateTime.now().plusDays(4).withHour(8).withMinute(0)
+
+        agendar(token, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, base.withSecond(15)))
+            .andExpect(status().isCreated)
+
+        agendar(token, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, base.withSecond(45)))
+            .andExpect(status().isConflict)
+    }
+
+    @Test
+    fun `veterinario enxerga apenas a propria agenda`() {
+        val vetA = criarUsuario("veta@teste.com", Perfil.VETERINARIO, nome = "Vet A")
+        val vetB = criarUsuario("vetb@teste.com", Perfil.VETERINARIO, nome = "Vet B")
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val tokenRecepcao = login("recepcao@teste.com")
+        val data = LocalDateTime.now().plusDays(2).withHour(9).withMinute(0).withSecond(0).withNano(0)
+
+        agendar(tokenRecepcao, corpoConsulta(animal.id!!, tutor.id!!, vetA.id!!, data))
+            .andExpect(status().isCreated)
+        agendar(tokenRecepcao, corpoConsulta(animal.id!!, tutor.id!!, vetB.id!!, data.plusHours(1)))
+            .andExpect(status().isCreated)
+
+        val tokenVetA = login("veta@teste.com")
+        mockMvc.perform(
+            get("/api/consultas")
+                .param("inicio", data.toLocalDate().toString())
+                .param("fim", data.toLocalDate().toString())
+                .header("Authorization", bearer(tokenVetA)),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].veterinarioNome").value("Vet A"))
     }
 
     @Test
     fun `animal de outro tutor retorna 400`() {
         criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
         val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
-        val tutorA = criarTutor("Tutor A", "11122233344")
-        val tutorB = criarTutor("Tutor B", "55566677788")
+        val tutorA = criarTutor("Tutor A", "11144477735")
+        val tutorB = criarTutor("Tutor B", "39053344705")
         val animalDeA = criarAnimal(tutorA)
         val token = login("recepcao@teste.com")
         val data = LocalDateTime.now().plusDays(2).withHour(11)
 
-        mockMvc.perform(
-            post("/api/consultas")
-                .header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"animalId":${animalDeA.id},"tutorId":${tutorB.id},"veterinarioId":${vet.id},"dataHora":"${data.format(formato)}"}
-                    """.trimIndent(),
-                ),
-        )
+        agendar(token, corpoConsulta(animalDeA.id!!, tutorB.id!!, vet.id!!, data))
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.mensagem").value("O animal selecionado não pertence ao tutor informado."))
     }
@@ -102,16 +134,8 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
         criarUsuario("vet@teste.com", Perfil.VETERINARIO)
         val token = login("vet@teste.com")
 
-        mockMvc.perform(
-            post("/api/consultas")
-                .header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"animalId":1,"tutorId":1,"veterinarioId":1,"dataHora":"${LocalDateTime.now().plusDays(1).format(formato)}"}
-                    """.trimIndent(),
-                ),
-        ).andExpect(status().isForbidden)
+        agendar(token, corpoConsulta(1, 1, 1, LocalDateTime.now().plusDays(1)))
+            .andExpect(status().isForbidden)
     }
 
     @Test
@@ -122,15 +146,36 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
         val animal = criarAnimal(tutor)
         val token = login("recepcao@teste.com")
 
+        agendar(token, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, LocalDateTime.of(2020, 1, 1, 10, 0)))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `agenda fica em cache e e invalidada ao agendar`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val token = login("recepcao@teste.com")
+        val data = LocalDateTime.now().plusDays(2).withHour(13).withMinute(0).withSecond(0).withNano(0)
+        val dia = data.toLocalDate().toString()
+
         mockMvc.perform(
-            post("/api/consultas")
-                .header("Authorization", bearer(token))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"animalId":${animal.id},"tutorId":${tutor.id},"veterinarioId":${vet.id},"dataHora":"2020-01-01T10:00:00"}
-                    """.trimIndent(),
-                ),
-        ).andExpect(status().isBadRequest)
+            get("/api/consultas").param("inicio", dia).param("fim", dia)
+                .header("Authorization", bearer(token)),
+        ).andExpect(status().isOk)
+
+        val cache = cacheManager.getCache("agenda")!!
+        org.junit.jupiter.api.Assertions.assertNotNull(cache)
+        org.junit.jupiter.api.Assertions.assertTrue(
+            (cache as org.springframework.cache.concurrent.ConcurrentMapCache).nativeCache.isNotEmpty(),
+        )
+
+        agendar(token, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, data))
+            .andExpect(status().isCreated)
+
+        org.junit.jupiter.api.Assertions.assertTrue(
+            (cache as org.springframework.cache.concurrent.ConcurrentMapCache).nativeCache.isEmpty(),
+        )
     }
 }

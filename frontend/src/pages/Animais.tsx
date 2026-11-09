@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
-import { formatarData, idade } from '../lib/format'
+import { formatarData, idade, paraInputDateTime } from '../lib/format'
 import { animaisApi, camposDeErro, mensagemDeErro, tutoresApi } from '../lib/api'
 import type { Animal, PageResponse, Tutor } from '../types'
 import {
@@ -299,7 +299,7 @@ export function Animais() {
               </Selecao>
             </Campo>
             <Campo label="Data de nascimento" erro={errors.dataNascimento?.message}>
-              <Entrada type="date" max={new Date().toISOString().slice(0, 10)} {...register('dataNascimento')} />
+              <Entrada type="date" max={paraInputDateTime(new Date()).slice(0, 10)} {...register('dataNascimento')} />
             </Campo>
           </div>
 

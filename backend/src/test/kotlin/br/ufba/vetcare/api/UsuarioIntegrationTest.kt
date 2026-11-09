@@ -82,5 +82,67 @@ class UsuarioIntegrationTest : IntegrationTestBase() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"email":"alvo@teste.com","senha":"Senha@123"}"""),
         ).andExpect(status().isUnauthorized)
+
+        val noBanco = usuarios.findById(alvo.id!!).orElseThrow()
+        org.junit.jupiter.api.Assertions.assertFalse(noBanco.ativo)
+        org.junit.jupiter.api.Assertions.assertTrue(
+            auditorias.findAll().any { it.acao == "USUARIO_EXCLUIDO" && it.entidadeId == alvo.id },
+        )
+    }
+
+    @Test
+    fun `administrador nao pode se desativar`() {
+        val admin = criarUsuario("admin@teste.com", Perfil.ADMINISTRADOR)
+        val token = login("admin@teste.com")
+
+        mockMvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .put("/api/usuarios/${admin.id}")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"nome":"Admin Teste","email":"admin@teste.com","perfil":"ADMINISTRADOR","ativo":false}
+                    """.trimIndent(),
+                ),
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `administrador nao pode se rebaixar`() {
+        val admin = criarUsuario("admin@teste.com", Perfil.ADMINISTRADOR)
+        val token = login("admin@teste.com")
+
+        mockMvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .put("/api/usuarios/${admin.id}")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"nome":"Admin Teste","email":"admin@teste.com","perfil":"RECEPCIONISTA","ativo":true}
+                    """.trimIndent(),
+                ),
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `administrador pode desativar outro administrador`() {
+        criarUsuario("admin@teste.com", Perfil.ADMINISTRADOR)
+        val outro = criarUsuario("outro.admin@teste.com", Perfil.ADMINISTRADOR)
+        val token = login("admin@teste.com")
+
+        mockMvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .put("/api/usuarios/${outro.id}")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"nome":"Outro Admin","email":"outro.admin@teste.com","perfil":"ADMINISTRADOR","ativo":false}
+                    """.trimIndent(),
+                ),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.ativo").value(false))
     }
 }

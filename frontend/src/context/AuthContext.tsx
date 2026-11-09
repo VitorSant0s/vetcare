@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import axios from 'axios'
 import { authApi } from '../lib/api'
 import type { Usuario } from '../types'
 
@@ -34,7 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authApi
       .me()
       .then(({ data }) => setUsuario(data))
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .catch((error) => {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          localStorage.removeItem(TOKEN_KEY)
+        }
+      })
       .finally(() => setCarregando(false))
   }, [])
 

@@ -63,15 +63,30 @@ class UsuarioService(
     }
 
     @Transactional
-    fun atualizar(id: Long, request: UsuarioRequest): UsuarioResposta {
+    fun atualizar(id: Long, request: UsuarioRequest, solicitanteId: Long): UsuarioResposta {
         val usuario = obter(id)
         val email = request.email.trim().lowercase()
         repository.findByEmailIgnoreCase(email).ifPresent {
             if (it.id != id) throw ConflitoException("Já existe um usuário com este e-mail.")
         }
+        val novoPerfil = request.perfil ?: usuario.perfil
+        val permaneceAdmin = usuario.perfil == br.ufba.vetcare.domain.Perfil.ADMINISTRADOR &&
+            novoPerfil == br.ufba.vetcare.domain.Perfil.ADMINISTRADOR &&
+            request.ativo
+
+        if (id == solicitanteId && (!request.ativo || novoPerfil != br.ufba.vetcare.domain.Perfil.ADMINISTRADOR)) {
+            throw RegraNegocioException("Você não pode desativar ou remover o seu próprio perfil de administrador.")
+        }
+        if (usuario.perfil == br.ufba.vetcare.domain.Perfil.ADMINISTRADOR && usuario.ativo && !permaneceAdmin) {
+            val outrosAdmins = repository.countByPerfilAndAtivoTrue(br.ufba.vetcare.domain.Perfil.ADMINISTRADOR) - 1
+            if (outrosAdmins <= 0) {
+                throw ConflitoException("O sistema precisa de pelo menos um administrador ativo.")
+            }
+        }
+
         usuario.nome = request.nome.trim()
         usuario.email = email
-        usuario.perfil = request.perfil ?: usuario.perfil
+        usuario.perfil = novoPerfil
         usuario.ativo = request.ativo
         request.senha?.takeIf { it.isNotBlank() }?.let { usuario.senha = passwordEncoder.encode(it)!! }
         usuario.atualizadoEm = Instant.now()
@@ -84,8 +99,17 @@ class UsuarioService(
      * Exclusão lógica: preserva o histórico de consultas e a trilha de auditoria.
      */
     @Transactional
-    fun excluir(id: Long) {
+    fun excluir(id: Long, solicitanteId: Long) {
+        if (id == solicitanteId) {
+            throw RegraNegocioException("Você não pode desativar a sua própria conta.")
+        }
         val usuario = obter(id)
+        if (usuario.perfil == br.ufba.vetcare.domain.Perfil.ADMINISTRADOR && usuario.ativo) {
+            val outrosAdmins = repository.countByPerfilAndAtivoTrue(br.ufba.vetcare.domain.Perfil.ADMINISTRADOR) - 1
+            if (outrosAdmins <= 0) {
+                throw ConflitoException("O sistema precisa de pelo menos um administrador ativo.")
+            }
+        }
         usuario.ativo = false
         usuario.atualizadoEm = Instant.now()
         repository.save(usuario)

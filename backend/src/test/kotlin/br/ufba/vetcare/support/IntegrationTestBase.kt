@@ -45,6 +45,12 @@ abstract class IntegrationTestBase {
     @Autowired
     protected lateinit var passwordEncoder: PasswordEncoder
 
+    @Autowired
+    protected lateinit var cacheManager: org.springframework.cache.CacheManager
+
+    @Autowired
+    protected lateinit var auditorias: br.ufba.vetcare.domain.repository.AuditoriaRepository
+
     protected fun criarUsuario(
         email: String,
         perfil: Perfil,
@@ -61,7 +67,7 @@ abstract class IntegrationTestBase {
         ),
     )
 
-    protected fun criarTutor(nome: String = "Tutor Teste", cpf: String = "11122233344"): Tutor = tutores.save(
+    protected fun criarTutor(nome: String = "Tutor Teste", cpf: String = "11144477735"): Tutor = tutores.save(
         Tutor(
             nome = nome,
             cpf = cpf,

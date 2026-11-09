@@ -23,18 +23,24 @@ class AuditoriaService(private val repository: AuditoriaRepository) {
     ) {
         repository.save(
             Auditoria(
-                usuarioEmail = usuarioEmail,
+                usuarioEmail = usuarioEmail?.take(160),
                 acao = acao,
                 entidade = entidade,
                 entidadeId = entidadeId,
                 detalhes = detalhes?.take(500),
-                ip = ipAtual(),
+                ip = ipAtual()?.take(45),
             ),
         )
     }
 
-    private fun emailAtual(): String? =
-        SecurityContextHolder.getContext().authentication?.takeIf { it.isAuthenticated }?.name
+    private fun emailAtual(): String? {
+        val autenticacao = SecurityContextHolder.getContext().authentication ?: return null
+        if (!autenticacao.isAuthenticated) return null
+        return when (val principal = autenticacao.principal) {
+            is br.ufba.vetcare.infrastructure.security.UsuarioAutenticado -> principal.email
+            else -> autenticacao.name
+        }
+    }
 
     private fun ipAtual(): String? {
         val request = (RequestContextHolder.getRequestAttributes() as? ServletRequestAttributes)?.request ?: return null

@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     container_name: vetcare-postgres
     environment:
-      POSTGRES_DB: vetcare
-      POSTGRES_USER: vetcare
-      POSTGRES_PASSWORD: vetcare
+      POSTGRES_DB: ${DB_NAME:-vetcare}
+      POSTGRES_USER: ${DB_USER:-vetcare}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-vetcare}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - vetcare_postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vetcare -d vetcare"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vetcare} -d ${DB_NAME:-vetcare}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -21,7 +21,7 @@ services:
     container_name: vetcare-redis
     command: redis-server --appendonly no
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

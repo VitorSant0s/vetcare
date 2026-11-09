@@ -43,8 +43,10 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 
 ### Desvios registrados
 
+- [ADR-01 a ADR-09 — decisões da Etapa 1](docs/adr/ADR-01-a-09-etapa-1.md)
 - [ADR-10 — Veterinário representado por usuário com perfil](docs/adr/ADR-10-veterinario-como-usuario.md)
-- [ADR-11 — API Gateway/BFF como camada de controllers no monólito](docs/adr/ADR-11-api-gateway-como-camada.md)
+- [ADR-11 — API Gateway/BFF como camada de controllers no monolito](docs/adr/ADR-11-api-gateway-como-camada.md)
+- [ADR-12 — Segredo JWT sem padrão e seed opt-in](docs/adr/ADR-12-segredo-jwt-e-seed.md)
 
 ## Como rodar
 
@@ -52,29 +54,40 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 
 - Docker e Docker Compose
 - JDK 21+ (testado com JDK 27)
-- Node.js 20+ (testado com Node 26)
+- Node.js 22.12+ (testado com Node 26)
 
-### 1. Subir banco e cache
+### 1. Configurar o ambiente
+
+```bash
+cp .env.example .env
+```
+
+O Spring Boot importa esse `.env` automaticamente. Ele habilita os dados de demonstração
+(`APP_SEED=true`) e permite ajustar senha do banco, segredo JWT e portas.
+
+### 2. Subir banco e cache
 
 ```bash
 docker compose up -d
 ```
 
-Isso inicia PostgreSQL em `localhost:5432` (banco/usuário/senha: `vetcare`) e Redis em `localhost:6379`.
+Isso inicia PostgreSQL em `127.0.0.1:5432` (banco/usuário/senha: `vetcare`) e Redis em
+`127.0.0.1:6379`. As portas ficam restritas à máquina local.
 
-### 2. Subir o back-end
+### 3. Subir o back-end
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080`. O Flyway cria o esquema e o seed de demonstração na primeira execução.
+A API sobe em `http://localhost:8080`. O Flyway cria o esquema e, com `APP_SEED=true`, o seed de
+demonstração na primeira execução.
 
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - Health-check: http://localhost:8080/actuator/health
 
-### 3. Subir o front-end
+### 4. Subir o front-end
 
 ```bash
 cd frontend
@@ -86,32 +99,38 @@ Acesse `http://localhost:5173`.
 
 ### Credenciais de demonstração
 
+As contas abaixo só são criadas quando `APP_SEED=true`:
+
 | Perfil | E-mail | Senha |
 |---|---|---|
 | Administrador | `admin@vetcare.com` | `Admin@123` |
 | Recepcionista | `recepcao@vetcare.com` | `Recepcao@123` |
 | Veterinário | `vet@vetcare.com` | `Vet@123` |
 
-O seed também cria tutores, animais e uma consulta de exemplo. Para desativá-lo, use `APP_SEED=false`.
+O seed também cria tutores, animais e uma consulta de exemplo. Em qualquer ambiente compartilhado,
+use `APP_SEED=false` e remova/altere essas contas.
 
 ### Variáveis de ambiente
 
-Copie `.env.example` para `.env` se quiser alterar os valores padrão. As principais:
+O `.env` da raiz é carregado automaticamente. As principais:
 
 | Variável | Padrão | Uso |
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/vetcare` | Conexão com o PostgreSQL |
 | `DB_USER` / `DB_PASSWORD` | `vetcare` / `vetcare` | Credenciais do banco |
 | `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Cache da agenda |
-| `JWT_SECRET` | segredo de desenvolvimento | Assinatura dos tokens |
+| `JWT_SECRET` | vazio | Assinatura dos tokens; vazio gera segredo aleatório por execução |
 | `JWT_EXPIRATION_MINUTES` | `120` | Validade do token |
-| `APP_SEED` | `true` | Dados de demonstração |
+| `APP_SEED` | `false` | Dados de demonstração |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Origens permitidas |
+
+Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gerenciada e mantenha
+`APP_SEED=false`.
 
 ## Testes
 
 ```bash
-# Back-end (17 testes de integração)
+# Back-end (30 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (9 testes)
@@ -121,18 +140,28 @@ cd frontend && npm test
 cd frontend && npm run build
 ```
 
-Os testes de back-end cobrem autenticação, RBAC, CRUD de usuários, tutores e animais, agendamento, conflito de horário e validação de vínculo animal/tutor. Usam H2 em memória no perfil `test`, sem exigir Docker.
+Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
+tutores e animais, auditoria, agendamento, conflito de horário (inclusive segundos no mesmo minuto),
+vínculo animal/tutor, cache da agenda e proteção do último administrador. Usam H2 em memória no
+perfil `test`, sem exigir Docker.
 
 ## Segurança e auditoria
 
 - Senhas armazenadas com BCrypt.
 - Tokens JWT assinados com HMAC-SHA256, contendo perfil do usuário.
+- `JWT_SECRET` não tem valor padrão: sem configuração, um segredo aleatório é gerado por execução.
+- Seed de demonstração é opt-in (`APP_SEED=false` por padrão) e não registra senhas em log.
 - Autorização por perfil na borda da API:
   - **Administrador:** usuários, tutores, animais e agenda.
   - **Recepcionista:** tutores, animais e agendamento.
   - **Veterinário:** leitura de tutores/animais e apenas a própria agenda.
-- Todas as mutações e tentativas de login são registradas na tabela `auditoria` com usuário, ação, entidade, IP e data/hora.
+- Todas as mutações e tentativas de login são registradas na tabela `auditoria` com o e-mail do
+  usuário autenticado, ação, entidade, IP e data/hora.
 - Exclusões de usuários e animais são lógicas, preservando histórico e rastreabilidade.
+- A agenda normaliza o horário para o minuto e possui índice único no banco por veterinário/horário,
+  evitando conflitos inclusive em requisições concorrentes.
+- Um administrador não pode desativar ou rebaixar a própria conta, e o sistema exige ao menos um
+  administrador ativo.
 
 ## Principais endpoints
 

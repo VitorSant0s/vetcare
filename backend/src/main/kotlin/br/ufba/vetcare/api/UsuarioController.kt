@@ -4,8 +4,10 @@ import br.ufba.vetcare.api.dto.PageResponse
 import br.ufba.vetcare.api.dto.UsuarioRequest
 import br.ufba.vetcare.api.dto.UsuarioResposta
 import br.ufba.vetcare.application.UsuarioService
+import br.ufba.vetcare.infrastructure.security.UsuarioAutenticado
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -36,10 +38,14 @@ class UsuarioController(private val service: UsuarioService) {
     fun criar(@Valid @RequestBody request: UsuarioRequest): UsuarioResposta = service.criar(request)
 
     @PutMapping("/{id}")
-    fun atualizar(@PathVariable id: Long, @Valid @RequestBody request: UsuarioRequest): UsuarioResposta =
-        service.atualizar(id, request)
+    fun atualizar(
+        @PathVariable id: Long,
+        @Valid @RequestBody request: UsuarioRequest,
+        @AuthenticationPrincipal solicitante: UsuarioAutenticado,
+    ): UsuarioResposta = service.atualizar(id, request, solicitante.id)
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun excluir(@PathVariable id: Long) = service.excluir(id)
+    fun excluir(@PathVariable id: Long, @AuthenticationPrincipal solicitante: UsuarioAutenticado) =
+        service.excluir(id, solicitante.id)
 }

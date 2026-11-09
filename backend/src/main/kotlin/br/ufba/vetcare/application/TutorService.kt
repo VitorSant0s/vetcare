@@ -6,8 +6,11 @@ import br.ufba.vetcare.api.dto.TutorResposta
 import br.ufba.vetcare.api.dto.toPageResponse
 import br.ufba.vetcare.application.exception.ConflitoException
 import br.ufba.vetcare.application.exception.RecursoNaoEncontradoException
+import br.ufba.vetcare.application.exception.RegraNegocioException
+import br.ufba.vetcare.domain.Cpf
 import br.ufba.vetcare.domain.Tutor
 import br.ufba.vetcare.domain.repository.AnimalRepository
+import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -19,6 +22,7 @@ import java.time.Instant
 class TutorService(
     private val repository: TutorRepository,
     private val animalRepository: AnimalRepository,
+    private val consultaRepository: ConsultaRepository,
     private val auditoriaService: AuditoriaService,
 ) {
 
@@ -43,7 +47,7 @@ class TutorService(
 
     @Transactional
     fun criar(request: TutorRequest): TutorResposta {
-        val cpf = normalizarCpf(request.cpf)
+        val cpf = validarCpf(request.cpf)
         if (repository.existsByCpf(cpf)) {
             throw ConflitoException("Já existe um tutor com este CPF.")
         }
@@ -63,7 +67,7 @@ class TutorService(
     @Transactional
     fun atualizar(id: Long, request: TutorRequest): TutorResposta {
         val tutor = obter(id)
-        val cpf = normalizarCpf(request.cpf)
+        val cpf = validarCpf(request.cpf)
         repository.findByCpf(cpf).ifPresent {
             if (it.id != id) throw ConflitoException("Já existe um tutor com este CPF.")
         }
@@ -85,6 +89,9 @@ class TutorService(
         if (animais > 0) {
             throw ConflitoException("Não é possível excluir um tutor que possui animais cadastrados.")
         }
+        if (consultaRepository.existsByTutorId(id)) {
+            throw ConflitoException("Não é possível excluir um tutor que possui consultas registradas.")
+        }
         repository.delete(tutor)
         auditoriaService.registrar("TUTOR_EXCLUIDO", "Tutor", id, tutor.nome)
     }
@@ -92,5 +99,10 @@ class TutorService(
     private fun obter(id: Long): Tutor =
         repository.findById(id).orElseThrow { RecursoNaoEncontradoException("Tutor não encontrado.") }
 
-    private fun normalizarCpf(cpf: String): String = cpf.filter { it.isDigit() }
+    private fun validarCpf(cpf: String): String {
+        if (!Cpf.valido(cpf)) {
+            throw RegraNegocioException("CPF inválido.")
+        }
+        return Cpf.normalizar(cpf)
+    }
 }

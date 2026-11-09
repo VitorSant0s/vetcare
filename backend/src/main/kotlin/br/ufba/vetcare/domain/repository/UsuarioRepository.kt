@@ -11,6 +11,7 @@ interface UsuarioRepository : JpaRepository<Usuario, Long> {
     fun findByEmailIgnoreCase(email: String): Optional<Usuario>
     fun existsByEmailIgnoreCase(email: String): Boolean
     fun findAllByPerfilAndAtivoTrue(perfil: Perfil): List<Usuario>
+    fun countByPerfilAndAtivoTrue(perfil: Perfil): Long
     fun findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(nome: String, email: String, pageable: Pageable): Page<Usuario>
     fun findByPerfilAndAtivoTrueAndNomeContainingIgnoreCase(perfil: Perfil, nome: String): List<Usuario>
 }

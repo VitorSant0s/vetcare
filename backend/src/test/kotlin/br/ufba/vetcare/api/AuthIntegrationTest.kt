@@ -57,4 +57,24 @@ class AuthIntegrationTest : IntegrationTestBase() {
             .andExpect(status().isUnauthorized)
             .andExpect(jsonPath("$", hasKey("mensagem")))
     }
+
+    @Test
+    fun `token adulterado retorna 401`() {
+        criarUsuario("admin@teste.com", Perfil.ADMINISTRADOR)
+        login("admin@teste.com")
+
+        mockMvc.perform(
+            get("/api/tutores").header("Authorization", "Bearer token-invalido"),
+        ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `rota inexistente retorna 404`() {
+        criarUsuario("admin@teste.com", Perfil.ADMINISTRADOR)
+        val token = login("admin@teste.com")
+
+        mockMvc.perform(
+            get("/api/rota-que-nao-existe").header("Authorization", bearer(token)),
+        ).andExpect(status().isNotFound)
+    }
 }

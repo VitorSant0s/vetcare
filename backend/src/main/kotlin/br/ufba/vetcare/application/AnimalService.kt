@@ -4,10 +4,13 @@ import br.ufba.vetcare.api.dto.AnimalRequest
 import br.ufba.vetcare.api.dto.AnimalResposta
 import br.ufba.vetcare.api.dto.PageResponse
 import br.ufba.vetcare.api.dto.toPageResponse
+import br.ufba.vetcare.application.exception.ConflitoException
 import br.ufba.vetcare.application.exception.RecursoNaoEncontradoException
 import br.ufba.vetcare.application.exception.RegraNegocioException
 import br.ufba.vetcare.domain.Animal
+import br.ufba.vetcare.domain.StatusConsulta
 import br.ufba.vetcare.domain.repository.AnimalRepository
+import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -20,6 +23,7 @@ import java.time.LocalDate
 class AnimalService(
     private val repository: AnimalRepository,
     private val tutorRepository: TutorRepository,
+    private val consultaRepository: ConsultaRepository,
     private val auditoriaService: AuditoriaService,
 ) {
 
@@ -57,6 +61,16 @@ class AnimalService(
     @Transactional
     fun atualizar(id: Long, request: AnimalRequest): AnimalResposta {
         val animal = obter(id)
+        val tutorAnterior = animal.tutor.id
+        val novoTutor = request.tutorId
+        if (tutorAnterior != novoTutor && consultaRepository.existsByAnimalIdAndDataHoraAfterAndStatus(
+                id,
+                java.time.LocalDateTime.now(),
+                StatusConsulta.AGENDADA,
+            )
+        ) {
+            throw ConflitoException("Não é possível transferir um animal que possui consultas futuras agendadas.")
+        }
         aplicar(animal, request)
         animal.atualizadoEm = Instant.now()
         val salvo = repository.save(animal)
@@ -67,6 +81,14 @@ class AnimalService(
     @Transactional
     fun excluir(id: Long) {
         val animal = obter(id)
+        if (consultaRepository.existsByAnimalIdAndDataHoraAfterAndStatus(
+                id,
+                java.time.LocalDateTime.now(),
+                StatusConsulta.AGENDADA,
+            )
+        ) {
+            throw ConflitoException("Não é possível excluir um animal que possui consultas futuras agendadas.")
+        }
         animal.ativo = false
         animal.atualizadoEm = Instant.now()
         repository.save(animal)

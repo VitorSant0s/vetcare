@@ -172,7 +172,7 @@ bullets(s, [
 
 cartao(s, 7.6, 2.05, 2.35, 1.35, "Requisitos", "5 de 17")
 cartao(s, 10.15, 2.05, 2.35, 1.35, "Cobertura", "29,4%")
-cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "17")
+cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "30")
 cartao(s, 10.15, 3.65, 2.35, 1.35, "Testes front", "9")
 caixa(s, 7.6, 5.4, 4.9, 1.0, "Sistema validado de ponta a ponta com PostgreSQL, Redis e SPA.", 14, CINZA)
 rodape(s, 2)
@@ -258,10 +258,11 @@ tabela(s,
        y=1.95, h=2.1, larguras=[2.5, 9.2], tamanho=13)
 bullets(s, [
     "Senhas com BCrypt; token JWT com perfil e validade de 120 minutos",
+    "Segredo JWT sem valor padrão e seed de demonstração opt-in (ADR-12)",
     "401 sem token e 403 sem permissão, com JSON padronizado",
     "Auditoria de login, falhas de login e todas as mutações (usuário, IP, data/hora)",
     "Teste automatizado comprova que recepcionista não acessa /api/usuarios",
-], 0.9, 4.35, 11.5, 2.3, 14, 7)
+], 0.9, 4.3, 11.5, 2.5, 13, 4)
 rodape(s, 6)
 
 # ---------------------------------------------------------------- slide 7
@@ -300,7 +301,7 @@ titulo(s, "Testes e evidências", "Verificação automatizada e ensaio de ponta 
 tabela(s,
        ["Suíte", "Testes", "Cobertura principal"],
        [
-           ["Back-end (JUnit + MockMvc)", "17", "Auth, RBAC, CRUDs, conflito de horário, vínculo animal/tutor"],
+           ["Back-end (JUnit + MockMvc)", "30", "Auth, RBAC, CRUDs, auditoria, cache, conflito de horário"],
            ["Front-end (Vitest + RTL)", "9", "Formatadores, tela de login, contas de demonstração"],
        ],
        y=1.95, h=1.6, larguras=[3.8, 1.3, 6.6], tamanho=12)
@@ -325,6 +326,7 @@ caixa(s, 0.85, 1.95, 5.6, 0.4, "Decisões registradas", 16, VERDE, True)
 bullets(s, [
     "ADR-10: veterinário como usuário com perfil",
     "ADR-11: API Gateway/BFF na camada api",
+    "ADR-12: segredo JWT e seed opt-in",
     "ADR-01 a ADR-09 mantidas sem alteração",
 ], 0.95, 2.4, 5.6, 2.0, 14, 6)
 

@@ -75,6 +75,7 @@ export function Agenda() {
     reset,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<Formulario>({
     resolver: zodResolver(schema),
@@ -121,10 +122,18 @@ export function Agenda() {
       setAnimais([])
       return
     }
+    let ativo = true
     animaisApi
       .porTutor(Number(tutorSelecionado))
-      .then(({ data }) => setAnimais(data))
-      .catch(() => setAnimais([]))
+      .then(({ data }) => {
+        if (ativo) setAnimais(data)
+      })
+      .catch(() => {
+        if (ativo) setAnimais([])
+      })
+    return () => {
+      ativo = false
+    }
   }, [tutorSelecionado])
 
   const grupos = useMemo(() => {
@@ -177,7 +186,11 @@ export function Agenda() {
       await carregar()
     } catch (error) {
       setErroApi(mensagemDeErro(error))
-      Object.keys(camposDeErro(error))
+      Object.entries(camposDeErro(error)).forEach(([campo, mensagem]) => {
+        if (campo in schema.shape) {
+          setError(campo as keyof Formulario, { message: mensagem })
+        }
+      })
     } finally {
       setSalvando(false)
     }

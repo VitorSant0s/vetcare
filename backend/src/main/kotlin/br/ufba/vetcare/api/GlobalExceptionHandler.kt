@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.HttpRequestMethodNotSupportedException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -57,6 +59,14 @@ class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException::class, MethodArgumentTypeMismatchException::class)
     fun requisicaoInvalida(ex: Exception) =
         resposta(HttpStatus.BAD_REQUEST, "Requisição inválida", "Formato de dados inválido.")
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun rotaNaoEncontrada(ex: NoResourceFoundException) =
+        resposta(HttpStatus.NOT_FOUND, "Recurso não encontrado", "A rota informada não existe.")
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun metodoNaoSuportado(ex: HttpRequestMethodNotSupportedException) =
+        resposta(HttpStatus.METHOD_NOT_ALLOWED, "Método não permitido", "Método HTTP não suportado para esta rota.")
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun integridade(ex: DataIntegrityViolationException): ResponseEntity<ErroResposta> {

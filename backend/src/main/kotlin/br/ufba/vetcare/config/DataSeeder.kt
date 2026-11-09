@@ -35,7 +35,7 @@ class DataSeeder(
     override fun run(vararg args: String) {
         if (usuarios.count() > 0) return
 
-        val admin = usuarios.save(
+        usuarios.save(
             Usuario(
                 nome = "Administrador VetCare",
                 email = "admin@vetcare.com",
@@ -63,7 +63,7 @@ class DataSeeder(
         val ana = tutores.save(
             Tutor(
                 nome = "Ana Paula Souza",
-                cpf = "12345678901",
+                cpf = "12345678909",
                 email = "ana.souza@email.com",
                 telefone = "(71) 98888-1111",
                 endereco = "Rua das Acácias, 120 - Salvador/BA",
@@ -121,8 +121,11 @@ class DataSeeder(
         )
 
         log.info(
-            "Seed criado. Logins: {} / Admin@123 | recepcao@vetcare.com / Recepcao@123 | vet@vetcare.com / Vet@123",
-            admin.email,
+            "Seed de demonstração criado com {} usuários, {} tutores e {} animais. " +
+                "As credenciais estão documentadas no README; desative APP_SEED em produção.",
+            usuarios.count(),
+            tutores.count(),
+            animais.count(),
         )
     }
 }

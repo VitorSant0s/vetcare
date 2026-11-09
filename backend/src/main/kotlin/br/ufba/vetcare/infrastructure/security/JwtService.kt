@@ -5,8 +5,10 @@ import br.ufba.vetcare.domain.Usuario
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
+import java.security.SecureRandom
 import java.time.Instant
 import java.util.Date
 import javax.crypto.SecretKey
@@ -14,7 +16,23 @@ import javax.crypto.SecretKey
 @Service
 class JwtService(private val properties: JwtProperties) {
 
-    private val key: SecretKey = Keys.hmacShaKeyFor(properties.secret.toByteArray(StandardCharsets.UTF_8))
+    private val log = LoggerFactory.getLogger(javaClass)
+
+    private val key: SecretKey = criarChave()
+
+    private fun criarChave(): SecretKey {
+        val configurado = properties.secret.trim()
+        if (configurado.length >= 32) {
+            return Keys.hmacShaKeyFor(configurado.toByteArray(StandardCharsets.UTF_8))
+        }
+        log.warn(
+            "JWT_SECRET não configurado (ou com menos de 32 caracteres). " +
+                "Gerando segredo aleatório para esta execução; tokens serão invalidados ao reiniciar. " +
+                "Defina JWT_SECRET no .env em qualquer ambiente compartilhado.",
+        )
+        val bytes = ByteArray(64).also { SecureRandom().nextBytes(it) }
+        return Keys.hmacShaKeyFor(bytes)
+    }
 
     fun gerarToken(usuario: Usuario): String {
         val agora = Instant.now()
