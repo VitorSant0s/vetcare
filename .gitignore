@@ -1,0 +1,22 @@
+# Dependências e builds
+node_modules/
+dist/
+target/
+*.class
+
+# Segredos e ambiente local
+.env
+.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs e artefatos
+*.log
+.DS_Store
+coverage/
+
+# Superpowers / scratch
+.superpowers/
