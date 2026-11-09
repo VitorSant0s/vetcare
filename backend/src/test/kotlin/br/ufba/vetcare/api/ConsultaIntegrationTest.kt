@@ -178,4 +178,91 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
             (cache as org.springframework.cache.concurrent.ConcurrentMapCache).nativeCache.isEmpty(),
         )
     }
+
+    @Test
+    fun `recepcionista cancela consulta futura e horario fica livre`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val token = login("recepcao@teste.com")
+        val data = LocalDateTime.now().plusDays(5).withHour(9).withMinute(0).withSecond(0).withNano(0)
+        val corpo = corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, data)
+
+        val criada = agendar(token, corpo)
+            .andExpect(status().isCreated)
+            .andReturn().response.contentAsString
+        val id = com.jayway.jsonpath.JsonPath.read<Int>(criada, "$.id")
+
+        mockMvc.perform(
+            post("/api/consultas/$id/cancelar")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"motivo":"Tutor pediu para remarcar"}"""),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.status").value("CANCELADA"))
+            .andExpect(jsonPath("$.motivoCancelamento").value("Tutor pediu para remarcar"))
+
+        // o mesmo horário pode ser reutilizado após o cancelamento
+        agendar(token, corpo).andExpect(status().isCreated)
+    }
+
+    @Test
+    fun `veterinario nao pode cancelar consulta`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val tokenRecepcao = login("recepcao@teste.com")
+        val data = LocalDateTime.now().plusDays(2).withHour(16).withMinute(0).withSecond(0).withNano(0)
+        val criada = agendar(tokenRecepcao, corpoConsulta(animal.id!!, tutor.id!!, vet.id!!, data))
+            .andExpect(status().isCreated).andReturn().response.contentAsString
+        val id = com.jayway.jsonpath.JsonPath.read<Int>(criada, "$.id")
+
+        mockMvc.perform(
+            post("/api/consultas/$id/cancelar")
+                .header("Authorization", bearer(login("vet@teste.com")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"motivo":"Indisponibilidade"}"""),
+        ).andExpect(status().isForbidden)
+    }
+
+    @Test
+    fun `consulta inexistente nao pode ser cancelada`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val token = login("recepcao@teste.com")
+
+        mockMvc.perform(
+            post("/api/consultas/9999/cancelar")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"),
+        ).andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `consulta passada nao pode ser cancelada`() {
+        criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
+        val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val tutor = criarTutor()
+        val animal = criarAnimal(tutor)
+        val consulta = consultas.save(
+            br.ufba.vetcare.domain.Consulta(
+                animal = animal,
+                tutor = tutor,
+                veterinario = vet,
+                dataHora = LocalDateTime.now().minusDays(3),
+                horarioAtivo = LocalDateTime.now().minusDays(3),
+            ),
+        )
+        val token = login("recepcao@teste.com")
+
+        mockMvc.perform(
+            post("/api/consultas/${consulta.id}/cancelar")
+                .header("Authorization", bearer(token))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"),
+        ).andExpect(status().isBadRequest)
+    }
 }

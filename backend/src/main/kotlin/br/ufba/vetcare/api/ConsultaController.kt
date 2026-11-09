@@ -1,5 +1,6 @@
 package br.ufba.vetcare.api
 
+import br.ufba.vetcare.api.dto.CancelamentoRequest
 import br.ufba.vetcare.api.dto.ConsultaRequest
 import br.ufba.vetcare.api.dto.ConsultaResposta
 import br.ufba.vetcare.application.ConsultaService
@@ -52,4 +53,10 @@ class ConsultaController(private val service: ConsultaService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun agendar(@Valid @RequestBody request: ConsultaRequest): ConsultaResposta = service.agendar(request)
+
+    @PostMapping("/{id}/cancelar")
+    fun cancelar(
+        @PathVariable id: Long,
+        @Valid @RequestBody(required = false) request: CancelamentoRequest?,
+    ): ConsultaResposta = service.cancelar(id, request?.motivo)
 }

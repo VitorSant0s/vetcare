@@ -57,6 +57,8 @@ class DataSeeder(
                 email = "vet@vetcare.com",
                 senha = passwordEncoder.encode("Vet@123")!!,
                 perfil = Perfil.VETERINARIO,
+                crmv = "CRMV-BA 12345",
+                especialidade = "Clínica de pequenos animais",
             ),
         )
 
@@ -116,6 +118,7 @@ class DataSeeder(
                 tutor = ana,
                 veterinario = veterinario,
                 dataHora = LocalDateTime.now().plusDays(1).withHour(9).withMinute(0).withSecond(0).withNano(0),
+                horarioAtivo = LocalDateTime.now().plusDays(1).withHour(9).withMinute(0).withSecond(0).withNano(0),
                 observacoes = "Retorno para avaliação vacinal.",
             ),
         )

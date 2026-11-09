@@ -72,6 +72,7 @@ class ConsultaService(
                     tutor = tutor,
                     veterinario = veterinario,
                     dataHora = dataHora,
+                    horarioAtivo = dataHora,
                     observacoes = request.observacoes?.trim()?.takeIf { it.isNotEmpty() },
                 ),
             )
@@ -112,5 +113,33 @@ class ConsultaService(
             repository.findById(id).orElse(null)
         } ?: throw RecursoNaoEncontradoException("Consulta não encontrada.")
         return ConsultaResposta.de(consulta)
+    }
+
+    /**
+     * REQ08 - Cancelar Consulta. Libera o horário do veterinário e preserva o motivo.
+     */
+    @Transactional
+    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    fun cancelar(id: Long, motivo: String?): ConsultaResposta {
+        val consulta = repository.findById(id)
+            .orElseThrow { RecursoNaoEncontradoException("Consulta não encontrada.") }
+        if (consulta.status != StatusConsulta.AGENDADA) {
+            throw RegraNegocioException("Somente consultas agendadas podem ser canceladas.")
+        }
+        if (!consulta.dataHora.isAfter(LocalDateTime.now())) {
+            throw RegraNegocioException("Não é possível cancelar uma consulta que já ocorreu.")
+        }
+        consulta.status = StatusConsulta.CANCELADA
+        consulta.horarioAtivo = null
+        consulta.motivoCancelamento = motivo?.trim()?.takeIf { it.isNotEmpty() }
+        consulta.canceladaEm = java.time.Instant.now()
+        val salva = repository.save(consulta)
+        auditoriaService.registrar(
+            acao = "CONSULTA_CANCELADA",
+            entidade = "Consulta",
+            entidadeId = id,
+            detalhes = consulta.motivoCancelamento,
+        )
+        return ConsultaResposta.de(salva)
     }
 }

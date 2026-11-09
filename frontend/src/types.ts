@@ -7,6 +7,8 @@ export interface Usuario {
   perfil: Perfil
   perfilDescricao: string
   ativo: boolean
+  crmv?: string | null
+  especialidade?: string | null
   criadoEm: string
 }
 
@@ -32,6 +34,18 @@ export interface Animal {
   ativo: boolean
 }
 
+export interface Veterinario {
+  id: number
+  nome: string
+  email: string
+  perfil: Perfil
+  perfilDescricao: string
+  crmv?: string | null
+  especialidade?: string | null
+  ativo: boolean
+  criadoEm: string
+}
+
 export interface Consulta {
   id: number
   animalId: number
@@ -43,6 +57,8 @@ export interface Consulta {
   dataHora: string
   status: 'AGENDADA' | 'CANCELADA' | 'REALIZADA'
   observacoes?: string | null
+  motivoCancelamento?: string | null
+  canceladaEm?: string | null
 }
 
 export interface PageResponse<T> {

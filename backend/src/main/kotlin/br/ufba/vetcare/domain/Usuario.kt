@@ -30,6 +30,12 @@ class Usuario(
     @Column(nullable = false, length = 20)
     var perfil: Perfil = Perfil.RECEPCIONISTA,
 
+    @Column(length = 30)
+    var crmv: String? = null,
+
+    @Column(length = 120)
+    var especialidade: String? = null,
+
     @Column(nullable = false)
     var ativo: Boolean = true,
 

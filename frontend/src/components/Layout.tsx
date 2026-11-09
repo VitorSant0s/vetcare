@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import {
   CalendarDays,
+  LayoutDashboard,
   LogOut,
   Menu,
   PawPrint,
@@ -15,9 +16,11 @@ import { useAuth } from '../context/AuthContext'
 import { Badge } from './ui'
 
 const navegacao = [
+  { para: '/portal', rotulo: 'Início', icone: LayoutDashboard, somenteAdmin: false },
   { para: '/agenda', rotulo: 'Agenda', icone: CalendarDays, somenteAdmin: false },
   { para: '/tutores', rotulo: 'Tutores', icone: Users, somenteAdmin: false },
   { para: '/animais', rotulo: 'Animais', icone: PawPrint, somenteAdmin: false },
+  { para: '/veterinarios', rotulo: 'Veterinários', icone: Stethoscope, somenteAdmin: false },
   { para: '/usuarios', rotulo: 'Usuários', icone: ShieldCheck, somenteAdmin: true },
 ]
 
@@ -29,7 +32,7 @@ export function Layout() {
 
   const conteudoSidebar = (
     <>
-      <div className="flex items-center gap-2.5 px-5 py-5">
+      <Link to="/portal" className="flex items-center gap-2.5 px-5 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
           <Stethoscope className="h-5 w-5" />
         </div>
@@ -37,8 +40,7 @@ export function Layout() {
           <p className="text-base font-semibold text-slate-900">VetCare</p>
           <p className="text-[11px] tracking-wide text-slate-400 uppercase">Clínica veterinária</p>
         </div>
-      </div>
-
+      </Link>
       <nav className="mt-2 flex-1 space-y-1 px-3">
         {itens.map(({ para, rotulo, icone: Icone }) => (
           <NavLink

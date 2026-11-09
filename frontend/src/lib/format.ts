@@ -72,3 +72,9 @@ export function idade(iso: string | null | undefined): string {
   }
   return `${anos} ${anos === 1 ? 'ano' : 'anos'}`
 }
+
+export function somarDiasIso(iso: string, dias: number): string {
+  const data = new Date(`${iso}T12:00:00`)
+  data.setDate(data.getDate() + dias)
+  return paraInputDateTime(data).slice(0, 10)
+}

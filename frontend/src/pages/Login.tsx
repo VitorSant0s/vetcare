@@ -37,7 +37,7 @@ export function Login() {
     setErro('')
     try {
       await entrar(dados.email, dados.senha)
-      navigate('/agenda', { replace: true })
+      navigate('/portal', { replace: true })
     } catch (error) {
       setErro(mensagemDeErro(error))
     }

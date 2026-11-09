@@ -36,6 +36,19 @@ class Consulta(
     @Column(name = "data_hora", nullable = false)
     var dataHora: LocalDateTime = LocalDateTime.now(),
 
+    /**
+     * Preenchido apenas enquanto a consulta ocupa o horário do veterinário.
+     * Ao cancelar, vira null, liberando o slot para um novo agendamento.
+     */
+    @Column(name = "horario_ativo")
+    var horarioAtivo: LocalDateTime? = dataHora,
+
+    @Column(name = "motivo_cancelamento", length = 300)
+    var motivoCancelamento: String? = null,
+
+    @Column(name = "cancelada_em")
+    var canceladaEm: Instant? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var status: StatusConsulta = StatusConsulta.AGENDADA,

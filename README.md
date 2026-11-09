@@ -2,11 +2,11 @@
 
 Sistema de gestão para clínicas veterinárias desenvolvido para a disciplina **Engenharia de Software 1** do Instituto de Computação da UFBA.
 
-Esta é a **Sprint 1** do Trabalho II: implementação de aproximadamente 30% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
+Esta é a **Sprint 2** do Trabalho II: implementação de aproximadamente 50% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
 
 ![Agenda do VetCare](docs/relatorio/img/02-agenda.png)
 
-## Escopo da sprint
+## Escopo acumulado
 
 | Requisito | Descrição | Prioridade | Situação |
 |---|---|---|---|
@@ -14,11 +14,27 @@ Esta é a **Sprint 1** do Trabalho II: implementação de aproximadamente 30% do
 | REQ02 | Autenticar Usuário com JWT e perfis de acesso | Alta | Implementado |
 | REQ04 | Manter Tutor | Alta | Implementado |
 | REQ05 | Manter Animal vinculado a um tutor | Alta | Implementado |
+| REQ06 | Manter Veterinário com CRMV e especialidade | Alta | Implementado |
 | REQ07 | Agendar Consulta com validação de conflito | Alta | Implementado |
+| REQ08 | Cancelar Consulta liberando o horário | Alta | Implementado |
+| REQ09 | Consultar Agenda por dia, semana e profissional | Alta | Implementado |
 
-**5 de 17 requisitos = 29,4%**, dentro da meta de aproximadamente 30%.
+**8 de 17 requisitos = 47,1%**, dentro da meta de aproximadamente 50%.
 
-Fora do escopo desta sprint: REQ03, REQ06, REQ08–REQ17. O REQ06 (Manter Veterinário) é parcialmente atendido: veterinários são usuários com perfil `VETERINARIO`, cadastrados pelo REQ01 e usados no agendamento. A decisão está registrada na [ADR-10](docs/adr/ADR-10-veterinario-como-usuario.md).
+Fora do escopo: REQ03 (recuperação de senha), REQ10–REQ13 (atendimento, prontuário, vacinação e prescrição), REQ14–REQ17 (financeiro, notificações e relatórios).
+
+## Portais por perfil
+
+O login é único. Depois de autenticar, o sistema identifica o perfil e encaminha para o portal correspondente:
+
+| Perfil | Portal | Visão |
+|---|---|---|
+| Administrador | `/portal/admin` | Indicadores da clínica, gestão de usuários, veterinários, tutores, animais e agenda |
+| Recepcionista | `/portal/recepcao` | Agenda do dia, próximos 7 dias, cadastros e agendamento |
+| Veterinário | `/portal/veterinario` | Apenas a própria agenda clínica, pacientes e horários |
+
+As rotas também são protegidas no front-end e as permissões são revalidadas na API.
+
 
 ## Stack
 
@@ -45,8 +61,9 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 
 - [ADR-01 a ADR-09 — decisões da Etapa 1](docs/adr/ADR-01-a-09-etapa-1.md)
 - [ADR-10 — Veterinário representado por usuário com perfil](docs/adr/ADR-10-veterinario-como-usuario.md)
-- [ADR-11 — API Gateway/BFF como camada de controllers no monolito](docs/adr/ADR-11-api-gateway-como-camada.md)
+- [ADR-11 — API Gateway/BFF como camada de controllers no monólito](docs/adr/ADR-11-api-gateway-como-camada.md)
 - [ADR-12 — Segredo JWT sem padrão e seed opt-in](docs/adr/ADR-12-segredo-jwt-e-seed.md)
+- [ADR-13 — Atributos profissionais na entidade Usuário](docs/adr/ADR-13-atributos-profissionais-usuario.md)
 
 ## Como rodar
 
@@ -130,10 +147,10 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (30 testes de integração)
+# Back-end (40 testes de integração)
 cd backend && ./mvnw test
 
-# Front-end (9 testes)
+# Front-end (10 testes)
 cd frontend && npm test
 
 # Build de produção do front-end
@@ -141,9 +158,9 @@ cd frontend && npm run build
 ```
 
 Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
-tutores e animais, auditoria, agendamento, conflito de horário (inclusive segundos no mesmo minuto),
-vínculo animal/tutor, cache da agenda e proteção do último administrador. Usam H2 em memória no
-perfil `test`, sem exigir Docker.
+tutores, animais e veterinários, auditoria, agendamento, conflito de horário (inclusive segundos no
+mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda e
+proteção do último administrador. Usam H2 em memória no perfil `test`, sem exigir Docker.
 
 ## Segurança e auditoria
 
@@ -162,6 +179,7 @@ perfil `test`, sem exigir Docker.
   evitando conflitos inclusive em requisições concorrentes.
 - Um administrador não pode desativar ou rebaixar a própria conta, e o sistema exige ao menos um
   administrador ativo.
+- CRMV é único quando informado e o cadastro de veterinário exige o registro profissional.
 
 ## Principais endpoints
 
@@ -172,10 +190,11 @@ perfil `test`, sem exigir Docker.
 | GET/POST/PUT/DELETE | `/api/usuarios` | Administrador | REQ01 |
 | GET/POST/PUT/DELETE | `/api/tutores` | Admin/Recepção (escrita) | REQ04 |
 | GET/POST/PUT/DELETE | `/api/animais` | Admin/Recepção (escrita) | REQ05 |
+| GET/POST/PUT/DELETE | `/api/veterinarios` | Admin (escrita) | REQ06 |
 | GET | `/api/animais/por-tutor/{id}` | autenticados | Apoio ao agendamento |
-| GET | `/api/veterinarios` | autenticados | Apoio ao agendamento |
-| GET | `/api/consultas` | autenticados | Agenda do período |
+| GET | `/api/consultas` | autenticados | Agenda por período/profissional (REQ09) |
 | POST | `/api/consultas` | Admin/Recepção | REQ07 |
+| POST | `/api/consultas/{id}/cancelar` | Admin/Recepção | REQ08 |
 
 A documentação interativa completa está no Swagger UI.
 
@@ -195,6 +214,8 @@ vetcare/
 
 ## Documentos
 
+- [Relatório da Sprint 2 (PDF)](docs/relatorio/relatorio-sprint-2.pdf)
+- [Apresentação da Sprint 2 (PPTX)](docs/slides/VetCare-Sprint-2.pptx)
 - [Relatório da Sprint 1 (PDF)](docs/relatorio/relatorio-sprint-1.pdf)
 - [Apresentação da Sprint 1 (PPTX)](docs/slides/VetCare-Sprint-1.pptx)
 - [ADRs](docs/adr)

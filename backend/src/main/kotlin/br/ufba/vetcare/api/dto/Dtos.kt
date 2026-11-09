@@ -72,6 +72,8 @@ data class UsuarioResposta(
     val perfil: Perfil,
     val perfilDescricao: String,
     val ativo: Boolean,
+    val crmv: String? = null,
+    val especialidade: String? = null,
     val criadoEm: Instant,
 ) {
     companion object {
@@ -81,6 +83,58 @@ data class UsuarioResposta(
             email = usuario.email,
             perfil = usuario.perfil,
             perfilDescricao = usuario.perfil.descricao,
+            ativo = usuario.ativo,
+            crmv = usuario.crmv,
+            especialidade = usuario.especialidade,
+            criadoEm = usuario.criadoEm,
+        )
+    }
+}
+
+// ---------- Veterinários (REQ06) ----------
+
+data class VeterinarioRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o nome")
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Nome muito longo")
+    val nome: String = "",
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o e-mail")
+    @field:jakarta.validation.constraints.Email(message = "E-mail inválido")
+    val email: String = "",
+
+    @field:jakarta.validation.constraints.Size(min = 6, max = 72, message = "A senha deve ter entre 6 e 72 caracteres")
+    val senha: String? = null,
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o CRMV")
+    @field:jakarta.validation.constraints.Size(max = 30, message = "CRMV muito longo")
+    val crmv: String = "",
+
+    @field:jakarta.validation.constraints.Size(max = 120, message = "Especialidade muito longa")
+    val especialidade: String? = null,
+
+    val ativo: Boolean = true,
+)
+
+data class VeterinarioResposta(
+    val id: Long,
+    val nome: String,
+    val email: String,
+    val perfil: Perfil,
+    val perfilDescricao: String,
+    val crmv: String?,
+    val especialidade: String?,
+    val ativo: Boolean,
+    val criadoEm: Instant,
+) {
+    companion object {
+        fun de(usuario: Usuario) = VeterinarioResposta(
+            id = usuario.id ?: 0,
+            nome = usuario.nome,
+            email = usuario.email,
+            perfil = usuario.perfil,
+            perfilDescricao = usuario.perfil.descricao,
+            crmv = usuario.crmv,
+            especialidade = usuario.especialidade,
             ativo = usuario.ativo,
             criadoEm = usuario.criadoEm,
         )
@@ -214,6 +268,8 @@ data class ConsultaResposta(
     val dataHora: LocalDateTime,
     val status: String,
     val observacoes: String?,
+    val motivoCancelamento: String? = null,
+    val canceladaEm: Instant? = null,
 ) : java.io.Serializable {
     companion object {
         fun de(consulta: Consulta) = ConsultaResposta(
@@ -227,6 +283,13 @@ data class ConsultaResposta(
             dataHora = consulta.dataHora,
             status = consulta.status.name,
             observacoes = consulta.observacoes,
+            motivoCancelamento = consulta.motivoCancelamento,
+            canceladaEm = consulta.canceladaEm,
         )
     }
 }
+
+data class CancelamentoRequest(
+    @field:jakarta.validation.constraints.Size(max = 300, message = "Motivo muito longo")
+    val motivo: String? = null,
+)

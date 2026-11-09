@@ -6,6 +6,7 @@ import {
   formatarTelefone,
   idade,
   paraInputDateTime,
+  somarDiasIso,
 } from '../lib/format'
 
 describe('formatadores', () => {
@@ -34,6 +35,11 @@ describe('formatadores', () => {
     doisAnosAtras.setFullYear(doisAnosAtras.getFullYear() - 2)
     doisAnosAtras.setDate(doisAnosAtras.getDate() - 1)
     expect(idade(paraInputDateTime(doisAnosAtras).slice(0, 10))).toBe('2 anos')
+  })
+
+  it('soma dias a uma data ISO', () => {
+    expect(somarDiasIso('2026-11-09', 7)).toBe('2026-11-16')
+    expect(somarDiasIso('2026-12-30', 3)).toBe('2027-01-02')
   })
 
   it('gera data futura no formato ISO de input', () => {

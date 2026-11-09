@@ -6,6 +6,7 @@ import type {
   PageResponse,
   Tutor,
   Usuario,
+  Veterinario,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -117,8 +118,24 @@ export const consultasApi = {
   listar: (inicio: string, fim: string, veterinarioId?: number) =>
     api.get<Consulta[]>('/consultas', { params: { inicio, fim, veterinarioId } }),
   criar: (payload: ConsultaPayload) => api.post<Consulta>('/consultas', payload),
+  cancelar: (id: number, motivo?: string) =>
+    api.post<Consulta>(`/consultas/${id}/cancelar`, { motivo }),
+}
+
+export interface VeterinarioPayload {
+  nome: string
+  email: string
+  senha?: string
+  crmv: string
+  especialidade?: string | null
+  ativo: boolean
 }
 
 export const veterinariosApi = {
-  listar: () => api.get<Usuario[]>('/veterinarios'),
+  listar: (incluirInativos = false) =>
+    api.get<Veterinario[]>('/veterinarios', { params: { incluirInativos } }),
+  criar: (payload: VeterinarioPayload) => api.post<Veterinario>('/veterinarios', payload),
+  atualizar: (id: number, payload: VeterinarioPayload) =>
+    api.put<Veterinario>(`/veterinarios/${id}`, payload),
+  excluir: (id: number) => api.delete(`/veterinarios/${id}`),
 }

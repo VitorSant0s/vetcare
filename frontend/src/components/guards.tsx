@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { Carregando } from './ui'
 import type { Perfil } from '../types'
 
-export function RotaProtegida() {
-  const { usuario, carregando } = useAuth()
+export function RotaProtegida() {  const { usuario, carregando } = useAuth()
   const location = useLocation()
 
   if (carregando) {
@@ -34,4 +33,24 @@ export function RotaPerfil({ perfil, children }: { perfil: Perfil; children: Rea
     )
   }
   return <>{children}</>
+}
+
+/**
+ * Mesmo login para todos; após autenticar, o usuário é levado ao portal do seu perfil.
+ */
+export function RedirecionarPortal() {
+  const { usuario } = useAuth()
+  if (!usuario) return <Navigate to="/login" replace />
+  const destino = portalDoPerfil(usuario.perfil)
+  return <Navigate to={destino} replace />
+}
+
+export function portalDoPerfil(perfil: Perfil): string {
+  return portalPorPerfil[perfil]
+}
+
+const portalPorPerfil: Record<Perfil, string> = {
+  ADMINISTRADOR: '/portal/admin',
+  RECEPCIONISTA: '/portal/recepcao',
+  VETERINARIO: '/portal/veterinario',
 }

@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
+  Ban,
   CalendarDays,
   CalendarPlus,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   PawPrint,
   Stethoscope,
@@ -20,7 +24,7 @@ import {
   tutoresApi,
   veterinariosApi,
 } from '../lib/api'
-import { daquiADiasIso, formatarHora, hojeIso, paraInputDateTime } from '../lib/format'
+import { formatarDataHora, formatarHora, hojeIso, paraInputDateTime, somarDiasIso } from '../lib/format'
 import type { Animal, Consulta, Tutor, Usuario } from '../types'
 import {
   Badge,
@@ -55,11 +59,14 @@ function amanhaAs9(): string {
 export function Agenda() {
   const { usuario } = useAuth()
   const { mostrar } = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
   const podeAgendar = usuario?.perfil !== 'VETERINARIO'
 
   const [consultas, setConsultas] = useState<Consulta[]>([])
-  const [inicio, setInicio] = useState(hojeIso())
-  const [fim, setFim] = useState(daquiADiasIso(7))
+  const [dataBase, setDataBase] = useState(hojeIso())
+  const [visao, setVisao] = useState<'DIA' | 'SEMANA'>('SEMANA')
+  const inicio = dataBase
+  const fim = visao === 'DIA' ? dataBase : somarDiasIso(dataBase, 6)
   const [veterinarioFiltro, setVeterinarioFiltro] = useState('')
   const [veterinarios, setVeterinarios] = useState<Usuario[]>([])
   const [tutores, setTutores] = useState<Tutor[]>([])
@@ -68,6 +75,9 @@ export function Agenda() {
   const [modalAberto, setModalAberto] = useState(false)
   const [salvando, setSalvando] = useState(false)
   const [erroApi, setErroApi] = useState('')
+  const [cancelando, setCancelando] = useState<Consulta | null>(null)
+  const [motivoCancelamento, setMotivoCancelamento] = useState('')
+  const [processandoCancelamento, setProcessandoCancelamento] = useState(false)
 
   const {
     register,
@@ -170,6 +180,16 @@ export function Agenda() {
     setModalAberto(true)
   }
 
+  useEffect(() => {
+    if (searchParams.get('nova') === '1' && podeAgendar) {
+      abrirModal()
+      const proximos = new URLSearchParams(searchParams)
+      proximos.delete('nova')
+      setSearchParams(proximos, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, podeAgendar])
+
   async function salvar(dados: Formulario) {
     setSalvando(true)
     setErroApi('')
@@ -193,6 +213,22 @@ export function Agenda() {
       })
     } finally {
       setSalvando(false)
+    }
+  }
+
+  async function confirmarCancelamento() {
+    if (!cancelando) return
+    setProcessandoCancelamento(true)
+    try {
+      await consultasApi.cancelar(cancelando.id, motivoCancelamento)
+      mostrar('Consulta cancelada e horário liberado.')
+      setCancelando(null)
+      setMotivoCancelamento('')
+      await carregar()
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+    } finally {
+      setProcessandoCancelamento(false)
     }
   }
 
@@ -247,38 +283,67 @@ export function Agenda() {
       </div>
 
       <Cartao className="mb-6 p-4">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Campo label="De">
-            <Entrada type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
-          </Campo>
-          <Campo label="Até">
-            <Entrada type="date" value={fim} min={inicio} onChange={(e) => setFim(e.target.value)} />
-          </Campo>
-          {usuario?.perfil !== 'VETERINARIO' && (
-            <Campo label="Veterinário">
-              <Selecao value={veterinarioFiltro} onChange={(e) => setVeterinarioFiltro(e.target.value)}>
-                <option value="">Todos</option>
-                {veterinarios.map((vet) => (
-                  <option key={vet.id} value={vet.id}>
-                    {vet.nome}
-                  </option>
-                ))}
-              </Selecao>
-            </Campo>
-          )}
-          <div className="flex items-end">
-            <Botao
-              variante="contorno"
-              className="w-full"
-              onClick={() => {
-                setInicio(hojeIso())
-                setFim(daquiADiasIso(7))
-                setVeterinarioFiltro('')
-              }}
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+          <div className="flex items-end gap-2">
+            <button
+              type="button"
+              onClick={() => setDataBase(somarDiasIso(dataBase, visao === 'DIA' ? -1 : -7))}
+              className="mb-0.5 rounded-lg border border-slate-300 p-2 text-slate-500 hover:bg-slate-50"
+              aria-label="Período anterior"
             >
-              Período padrão
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <Campo label="Data de referência">
+              <Entrada type="date" value={dataBase} onChange={(e) => setDataBase(e.target.value)} />
+            </Campo>
+            <button
+              type="button"
+              onClick={() => setDataBase(somarDiasIso(dataBase, visao === 'DIA' ? 1 : 7))}
+              className="mb-0.5 rounded-lg border border-slate-300 p-2 text-slate-500 hover:bg-slate-50"
+              aria-label="Próximo período"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <Botao variante="contorno" onClick={() => setDataBase(hojeIso())}>
+              Hoje
             </Botao>
           </div>
+
+          <div className="mb-0.5 flex rounded-lg border border-slate-300 bg-white p-0.5">
+            {(['DIA', 'SEMANA'] as const).map((modo) => (
+              <button
+                key={modo}
+                type="button"
+                onClick={() => setVisao(modo)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                  visao === modo ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {modo === 'DIA' ? 'Dia' : 'Semana'}
+              </button>
+            ))}
+          </div>
+
+          {usuario?.perfil !== 'VETERINARIO' && (
+            <div className="w-full sm:w-64">
+              <Campo label="Veterinário">
+                <Selecao value={veterinarioFiltro} onChange={(e) => setVeterinarioFiltro(e.target.value)}>
+                  <option value="">Todos</option>
+                  {veterinarios.map((vet) => (
+                    <option key={vet.id} value={vet.id}>
+                      {vet.nome}
+                    </option>
+                  ))}
+                </Selecao>
+              </Campo>
+            </div>
+          )}
+
+          <p className="text-xs text-slate-400 lg:ml-auto">
+            {visao === 'DIA'
+              ? `Consultas de ${dataBase.split('-').reverse().join('/')}`
+              : `Semana de ${dataBase.split('-').reverse().join('/')} a ${fim.split('-').reverse().join('/')}`}
+          </p>
         </div>
       </Cartao>
 
@@ -339,14 +404,41 @@ export function Agenda() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end">
-                        <Badge tom={consulta.status === 'AGENDADA' ? 'verde' : 'neutro'}>
+                        <Badge
+                          tom={
+                            consulta.status === 'AGENDADA'
+                              ? 'verde'
+                              : consulta.status === 'CANCELADA'
+                                ? 'vermelho'
+                                : 'azul'
+                          }
+                        >
                           {consulta.status}
                         </Badge>
+                        {consulta.motivoCancelamento && (
+                          <p className="max-w-52 text-right text-xs text-red-400 sm:text-right">
+                            Motivo: {consulta.motivoCancelamento}
+                          </p>
+                        )}
                         {consulta.observacoes && (
                           <p className="max-w-52 text-right text-xs text-slate-400 sm:text-right">
                             {consulta.observacoes}
                           </p>
                         )}
+                        {podeAgendar &&
+                          consulta.status === 'AGENDADA' &&
+                          new Date(consulta.dataHora) > agora && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCancelando(consulta)
+                                setMotivoCancelamento('')
+                              }}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                            >
+                              <Ban className="h-3.5 w-3.5" /> Cancelar
+                            </button>
+                          )}
                       </div>
                     </div>
                   </Cartao>
@@ -435,6 +527,44 @@ export function Agenda() {
             </Botao>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        aberto={!!cancelando}
+        onFechar={() => setCancelando(null)}
+        titulo="Cancelar consulta"
+        descricao={
+          cancelando
+            ? `${cancelando.animalNome} · ${formatarDataHora(cancelando.dataHora)} · ${cancelando.veterinarioNome}`
+            : undefined
+        }
+        largura="max-w-md"
+      >
+        <div className="space-y-4">
+          <Campo label="Motivo do cancelamento (opcional)">
+            <Entrada
+              value={motivoCancelamento}
+              onChange={(e) => setMotivoCancelamento(e.target.value)}
+              placeholder="Ex.: tutor pediu para remarcar"
+              maxLength={300}
+            />
+          </Campo>
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">
+            O horário ficará livre para um novo agendamento e a ação será registrada na auditoria.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Botao variante="contorno" onClick={() => setCancelando(null)}>
+              Voltar
+            </Botao>
+            <Botao
+              variante="perigo"
+              onClick={confirmarCancelamento}
+              carregando={processandoCancelamento}
+            >
+              Confirmar cancelamento
+            </Botao>
+          </div>
+        </div>
       </Modal>
     </>
   )
