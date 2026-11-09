@@ -4,6 +4,8 @@ Sistema de gestão para clínicas veterinárias desenvolvido para a disciplina *
 
 Esta é a **Sprint 1** do Trabalho II: implementação de aproximadamente 30% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
 
+![Agenda do VetCare](docs/relatorio/img/02-agenda.png)
+
 ## Escopo da sprint
 
 | Requisito | Descrição | Prioridade | Situação |
