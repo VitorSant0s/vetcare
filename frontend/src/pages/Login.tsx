@@ -148,6 +148,12 @@ export function Login() {
             </form>
           </div>
 
+          <p className="mt-5 text-center text-xs text-slate-500">
+            É cliente da clínica?{' '}
+            <a href="/cliente/login" className="font-medium text-brand-700 hover:underline">
+              Acessar o portal do cliente
+            </a>
+          </p>
         </div>
       </div>
     </div>
