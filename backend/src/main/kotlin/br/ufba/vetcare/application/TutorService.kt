@@ -15,6 +15,7 @@ import br.ufba.vetcare.domain.repository.TutorRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -69,6 +70,7 @@ class TutorService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun atualizar(id: Long, request: TutorRequest): TutorResposta {
         val tutor = obter(id)
         val cpf = validarCpf(request.cpf)
@@ -92,6 +94,7 @@ class TutorService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun excluir(id: Long) {
         val tutor = obter(id)
         val animais = animalRepository.countByTutorId(id)

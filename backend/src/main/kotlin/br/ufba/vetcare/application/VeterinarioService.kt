@@ -11,6 +11,7 @@ import br.ufba.vetcare.domain.Usuario
 import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.UsuarioRepository
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -68,6 +69,7 @@ class VeterinarioService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun atualizar(id: Long, request: VeterinarioRequest): VeterinarioResposta {
         val veterinario = obter(id)
         val email = request.email.trim().lowercase()
@@ -96,6 +98,7 @@ class VeterinarioService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun excluir(id: Long) {
         val veterinario = obter(id)
         if (possuiConsultasFuturas(id)) {

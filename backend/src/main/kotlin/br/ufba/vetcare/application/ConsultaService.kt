@@ -33,7 +33,7 @@ class ConsultaService(
      * REQ07 - Agendar Consulta. Valida vínculo animal/tutor e conflito de horário do veterinário.
      */
     @Transactional
-    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    @CacheEvict(cacheNames = ["agenda", "prontuario"], allEntries = true)
     fun agendar(request: ConsultaRequest): ConsultaResposta {
         val animalId = request.animalId ?: throw RegraNegocioException("Selecione o animal.")
         val tutorId = request.tutorId ?: throw RegraNegocioException("Selecione o tutor.")
@@ -127,7 +127,7 @@ class ConsultaService(
      * REQ08 - Cancelar Consulta. Libera o horário do veterinário e preserva o motivo.
      */
     @Transactional
-    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    @CacheEvict(cacheNames = ["agenda", "prontuario"], allEntries = true)
     fun cancelar(id: Long, motivo: String?, solicitante: br.ufba.vetcare.infrastructure.security.UsuarioAutenticado? = null): ConsultaResposta {
         val consulta = repository.findById(id)
             .orElseThrow { RecursoNaoEncontradoException("Consulta não encontrada.") }

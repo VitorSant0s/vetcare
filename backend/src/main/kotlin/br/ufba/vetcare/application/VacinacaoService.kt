@@ -11,6 +11,7 @@ import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.UsuarioRepository
 import br.ufba.vetcare.domain.repository.VacinacaoRepository
 import br.ufba.vetcare.infrastructure.security.UsuarioAutenticado
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -47,6 +48,7 @@ class VacinacaoService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun criar(animalId: Long, request: VacinacaoRequest, solicitante: UsuarioAutenticado): VacinacaoResposta {
         val animal = animalRepository.findById(animalId)
             .orElseThrow { RecursoNaoEncontradoException("Animal não encontrado.") }
@@ -99,6 +101,7 @@ class VacinacaoService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun excluir(id: Long) {
         val vacinacao = repository.findById(id)
             .orElseThrow { RecursoNaoEncontradoException("Vacinação não encontrada.") }

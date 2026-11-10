@@ -88,7 +88,7 @@ backend/src/main/kotlin/br/ufba/vetcare/
 └── infrastructure/   segurança (JWT), persistência e integrações
 ```
 
-Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04), auditoria dedicada (ADR-05), cache Redis para agenda (ADR-08) e health-check (ADR-09).
+Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04), auditoria dedicada (ADR-05), cache Redis para agenda e prontuário (ADR-08/ADR-19) e health-check (ADR-09).
 
 ### Desvios registrados
 
@@ -102,6 +102,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-16 — Portal do cliente com autenticação por CPF](docs/adr/ADR-16-portal-cliente.md)
 - [ADR-17 — Remoção de dados de demonstração e envio real por SMTP](docs/adr/ADR-17-remocao-de-mocks.md)
 - [ADR-18 — LGPD e endurecimento de segurança](docs/adr/ADR-18-lgpd-seguranca.md)
+- [ADR-19 — Cache de prontuário com auditoria preservada](docs/adr/ADR-19-cache-prontuario.md)
 
 ## Como rodar
 
@@ -169,7 +170,7 @@ O `.env` da raiz é carregado automaticamente. As principais:
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/vetcare` | Conexão com o PostgreSQL |
 | `DB_USER` / `DB_PASSWORD` | `vetcare` / `vetcare` | Credenciais do banco |
-| `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Cache da agenda |
+| `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Cache de agenda e prontuário |
 | `JWT_SECRET` | vazio | Assinatura dos tokens; vazio gera segredo aleatório por execução |
 | `JWT_EXPIRATION_MINUTES` | `120` | Validade do token |
 | `ADMIN_EMAIL` / `ADMIN_PASSWORD` | vazio | Administrador inicial criado no primeiro start |
@@ -190,7 +191,7 @@ gerenciada.
 ## Testes
 
 ```bash
-# Back-end (92 testes de integração)
+# Back-end (93 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (10 testes)
@@ -205,7 +206,7 @@ cd frontend && npm run build
 
 Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
 tutores, animais e veterinários, auditoria, agendamento, conflito de horário (inclusive segundos no
-mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda,
+mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda e do prontuário,
 atendimento, prontuário, prescrições, vacinação, pagamentos, notificações, relatórios, portal do
 cliente e proteção do último administrador. Usam H2 em
 memória no perfil `test`, sem exigir Docker.

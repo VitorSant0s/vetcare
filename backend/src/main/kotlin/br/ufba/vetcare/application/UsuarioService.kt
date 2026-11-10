@@ -12,6 +12,7 @@ import br.ufba.vetcare.domain.repository.UsuarioRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -63,6 +64,7 @@ class UsuarioService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun atualizar(id: Long, request: UsuarioRequest, solicitanteId: Long): UsuarioResposta {
         val usuario = obter(id)
         val email = request.email.trim().lowercase()
@@ -102,6 +104,7 @@ class UsuarioService(
      * Exclusão lógica: preserva o histórico de consultas e a trilha de auditoria.
      */
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun excluir(id: Long, solicitanteId: Long) {
         if (id == solicitanteId) {
             throw RegraNegocioException("Você não pode desativar a sua própria conta.")

@@ -231,7 +231,7 @@ bullets(s, [
     "Kotlin 2.3 + Spring Boot 4.1 + Maven Wrapper",
     "Spring Security, JWT, BCrypt e RBAC",
     "Spring Data JPA + Flyway + PostgreSQL 16",
-    "Redis 7 para cache de agenda",
+    "Redis 7 para cache de agenda e prontuário",
     "React 19 + Vite + TypeScript + Tailwind",
     "Playwright + axe-core para acessibilidade",
 ], 0.95, 2.1, 5.2, 3.7, 12.5, 5)

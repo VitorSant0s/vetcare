@@ -32,7 +32,7 @@ class AtendimentoService(
 ) {
 
     @Transactional
-    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    @CacheEvict(cacheNames = ["agenda", "prontuario"], allEntries = true)
     fun registrar(
         consultaId: Long,
         request: AtendimentoRequest,

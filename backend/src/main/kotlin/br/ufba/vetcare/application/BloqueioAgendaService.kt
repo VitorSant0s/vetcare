@@ -47,7 +47,7 @@ class BloqueioAgendaService(
     }
 
     @Transactional
-    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    @CacheEvict(cacheNames = ["agenda", "prontuario"], allEntries = true)
     fun bloquear(veterinarioId: Long, request: BloqueioAgendaRequest): BloqueioAgendaResposta {
         val data = request.data ?: throw RegraNegocioException("Informe a data do bloqueio.")
         if (data.isBefore(LocalDate.now())) {
@@ -106,7 +106,7 @@ class BloqueioAgendaService(
     }
 
     @Transactional
-    @CacheEvict(cacheNames = ["agenda"], allEntries = true)
+    @CacheEvict(cacheNames = ["agenda", "prontuario"], allEntries = true)
     fun desbloquear(veterinarioId: Long, data: LocalDate) {
         val bloqueio = repository.findByVeterinarioIdAndData(veterinarioId, data)
             .orElseThrow { RecursoNaoEncontradoException("Bloqueio não encontrado.") }

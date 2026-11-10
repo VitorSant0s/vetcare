@@ -183,7 +183,7 @@ data class TutorResposta(
     val consentimentoVersao: String? = null,
     val anonimizado: Boolean = false,
     val criadoEm: Instant,
-) {
+) : java.io.Serializable {
     companion object {
         fun de(tutor: Tutor) = TutorResposta(
             id = tutor.id ?: 0,
@@ -234,7 +234,7 @@ data class AnimalResposta(
     val tutorId: Long,
     val tutorNome: String,
     val ativo: Boolean,
-) {
+) : java.io.Serializable {
     companion object {
         fun de(animal: Animal) = AnimalResposta(
             id = animal.id ?: 0,
@@ -336,7 +336,7 @@ data class PrescricaoResposta(
     val frequencia: String?,
     val duracao: String?,
     val orientacoes: String?,
-) {
+) : java.io.Serializable {
     companion object {
         fun de(prescricao: br.ufba.vetcare.domain.Prescricao) = PrescricaoResposta(
             id = prescricao.id ?: 0,
@@ -381,7 +381,7 @@ data class AtendimentoResposta(
     val observacoes: String?,
     val prescricoes: List<PrescricaoResposta>,
     val criadoEm: Instant,
-) {
+) : java.io.Serializable {
     companion object {
         fun de(atendimento: br.ufba.vetcare.domain.Atendimento) = AtendimentoResposta(
             id = atendimento.id ?: 0,
@@ -432,7 +432,7 @@ data class VacinacaoResposta(
     val proximaDose: LocalDate?,
     val observacoes: String?,
     val criadoEm: Instant,
-) {
+) : java.io.Serializable {
     companion object {
         fun de(vacinacao: br.ufba.vetcare.domain.Vacinacao) = VacinacaoResposta(
             id = vacinacao.id ?: 0,
@@ -458,7 +458,7 @@ data class ProntuarioResposta(
     val atendimentos: List<AtendimentoResposta>,
     val vacinacoes: List<VacinacaoResposta>,
     val consultas: List<ConsultaResposta>,
-)
+) : java.io.Serializable
 
 // ---------- Financeiro (REQ14 e REQ15) ----------
 

@@ -14,6 +14,7 @@ import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -66,6 +67,7 @@ class AnimalService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun atualizar(id: Long, request: AnimalRequest): AnimalResposta {
         val animal = obter(id)
         val tutorAnterior = animal.tutor.id
@@ -86,6 +88,7 @@ class AnimalService(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["prontuario"], allEntries = true)
     fun excluir(id: Long) {
         val animal = obter(id)
         if (consultaRepository.existsByAnimalIdAndDataHoraAfterAndStatus(
