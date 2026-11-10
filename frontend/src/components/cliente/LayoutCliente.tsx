@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CalendarPlus, ClipboardList, LogOut, Menu, PawPrint, Stethoscope, X } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
@@ -26,7 +26,7 @@ export function LayoutCliente() {
         </div>
         <div>
           <p className="text-base font-semibold text-slate-900">VetCare</p>
-          <p className="text-[11px] tracking-wide text-slate-400 uppercase">Portal do cliente</p>
+          <p className="text-[11px] tracking-wide text-slate-500 uppercase">Portal do cliente</p>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ export function LayoutCliente() {
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-slate-800">{tutor?.nome}</p>
-            <p className="truncate text-xs text-slate-400">{tutor?.cpf ? formatarCpf(tutor.cpf) : ''}</p>
+            <p className="truncate text-xs text-slate-500">{tutor?.cpf ? formatarCpf(tutor.cpf) : ''}</p>
           </div>
         </div>
         <button
@@ -69,9 +69,24 @@ export function LayoutCliente() {
     </>
   )
 
+  useEffect(() => {
+    if (!menuAberto) return
+    function aoTeclar(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') setMenuAberto(false)
+    }
+    document.addEventListener('keydown', aoTeclar)
+    return () => document.removeEventListener('keydown', aoTeclar)
+  }, [menuAberto])
+
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+      <a
+        href="#conteudo"
+        className="sr-only z-[70] rounded-lg bg-brand-700 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Pular para o conteúdo
+      </a>
+      <aside id="menu-principal" className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         {conteudo}
       </aside>
 
@@ -81,7 +96,7 @@ export function LayoutCliente() {
           <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
             <button
               onClick={() => setMenuAberto(false)}
-              className="absolute top-4 right-4 rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+              className="absolute top-4 right-4 rounded-lg p-1 text-slate-500 hover:bg-slate-100"
               aria-label="Fechar menu"
             >
               <X className="h-5 w-5" />
@@ -97,6 +112,8 @@ export function LayoutCliente() {
             onClick={() => setMenuAberto(true)}
             className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
             aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls="menu-principal"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -106,11 +123,11 @@ export function LayoutCliente() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+        <main id="conteudo" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
           <Outlet />
         </main>
 
-        <footer className="px-6 py-4 text-center text-xs text-slate-400">
+        <footer className="px-6 py-4 text-center text-xs text-slate-500">
           VetCare · Portal do Cliente · UFBA 2026
         </footer>
       </div>

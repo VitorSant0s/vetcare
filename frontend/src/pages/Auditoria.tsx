@@ -123,7 +123,7 @@ export function AuditoriaPage() {
           <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
             <ShieldCheck className="h-4 w-4 text-brand-600" /> Registros
           </h2>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {dados?.totalElements ?? 0} eventos no filtro
           </span>
         </div>
@@ -166,7 +166,7 @@ export function AuditoriaPage() {
                       <td className="max-w-80 px-4 py-2 text-slate-500">
                         <span className="line-clamp-2">{evento.detalhes || '—'}</span>
                       </td>
-                      <td className="px-4 py-2 text-slate-400">{evento.ip || '—'}</td>
+                      <td className="px-4 py-2 text-slate-500">{evento.ip || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -183,7 +183,7 @@ export function AuditoriaPage() {
         )}
       </Cartao>
 
-      <div className="mt-4 flex items-center gap-2 text-xs text-slate-400">
+      <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
         <Activity className="h-3.5 w-3.5" /> A consulta da própria trilha também é registrada.
       </div>
     </>

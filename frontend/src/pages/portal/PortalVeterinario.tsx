@@ -63,7 +63,7 @@ export function PortalVeterinario() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-500 px-6 py-7 text-white">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-600 px-6 py-7 text-white">
         <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -155,7 +155,7 @@ export function PortalVeterinario() {
             </Link>
           </div>
           {hoje.length === 0 ? (
-            <p className="px-4 py-10 text-center text-sm text-slate-400">
+            <p className="px-4 py-10 text-center text-sm text-slate-500">
               Você não tem consultas agendadas para hoje.
             </p>
           ) : (
@@ -167,7 +167,7 @@ export function PortalVeterinario() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-slate-800">{consulta.animalNome}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-500">
                       <UserRound className="mr-1 inline h-3 w-3" /> {consulta.tutorNome}
                     </p>
                   </div>
@@ -191,7 +191,7 @@ export function PortalVeterinario() {
             </h2>
           </div>
           {vacinasAVencer.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-slate-400">Nenhuma dose nos próximos 30 dias.</p>
+            <p className="px-4 py-8 text-center text-sm text-slate-500">Nenhuma dose nos próximos 30 dias.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {vacinasAVencer.slice(0, 5).map((paciente) => {
@@ -200,7 +200,7 @@ export function PortalVeterinario() {
                   <li key={paciente.animal.id} className="flex items-center gap-2 px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-slate-800">{paciente.animal.nome}</p>
-                      <p className="text-xs text-slate-400">{paciente.tipoVacina || 'Vacina'}</p>
+                      <p className="text-xs text-slate-500">{paciente.tipoVacina || 'Vacina'}</p>
                     </div>
                     <Badge tom={status.tom}>{status.texto}</Badge>
                   </li>
@@ -217,7 +217,7 @@ export function PortalVeterinario() {
             <ClipboardList className="h-4 w-4 text-brand-600" /> Últimos atendimentos
           </h2>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500">
               {proximas.length} consultas nos próximos 7 dias
             </span>
             <Link to="/prontuarios" className="text-xs font-medium text-brand-700 hover:underline">
@@ -226,7 +226,7 @@ export function PortalVeterinario() {
           </div>
         </div>
         {atendimentos.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-slate-400">
+          <p className="px-4 py-8 text-center text-sm text-slate-500">
             Nenhum atendimento registrado. Registre pela agenda.
           </p>
         ) : (
@@ -241,7 +241,7 @@ export function PortalVeterinario() {
                   <p className="text-xs text-slate-500">{atendimento.diagnostico}</p>
                 </div>
                 {atendimento.prescricoes.length > 0 && (
-                  <span className="flex items-center gap-1 text-xs text-slate-400">
+                  <span className="flex items-center gap-1 text-xs text-slate-500">
                     <Pill className="h-3.5 w-3.5" /> {atendimento.prescricoes.length}
                   </span>
                 )}

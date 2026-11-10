@@ -1,3 +1,4 @@
+import { useEffect, useId, useRef } from 'react'
 import type {
   ButtonHTMLAttributes,
   InputHTMLAttributes,
@@ -62,16 +63,25 @@ export function Campo({ label, erro, obrigatorio, children, className }: CampoPr
     <label className={clsx('block', className)}>
       <span className="mb-1.5 block text-sm font-medium text-slate-700">
         {label}
-        {obrigatorio && <span className="text-red-500"> *</span>}
+        {obrigatorio && (
+          <>
+            <span className="text-red-500" aria-hidden="true"> *</span>
+            <span className="sr-only"> (obrigatório)</span>
+          </>
+        )}
       </span>
       {children}
-      {erro && <span className="mt-1 block text-xs text-red-600">{erro}</span>}
+      {erro && (
+        <span role="alert" className="mt-1 block text-xs text-red-600">
+          {erro}
+        </span>
+      )}
     </label>
   )
 }
 
 const estiloInput =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none disabled:bg-slate-100'
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm placeholder:text-slate-500 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none disabled:bg-slate-100'
 
 export function Entrada(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={clsx(estiloInput, props.className)} />
@@ -96,7 +106,7 @@ export function Busca({
 }) {
   return (
     <div className="relative w-full sm:max-w-xs">
-      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
       <input
         value={valor}
         onChange={(e) => onChange(e.target.value)}
@@ -173,7 +183,7 @@ export function Vazio({
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-16 text-center">
       <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
-        <Search className="h-5 w-5 text-slate-400" />
+        <Search className="h-5 w-5 text-slate-500" />
       </div>
       <p className="font-medium text-slate-700">{titulo}</p>
       <p className="max-w-sm text-sm text-slate-500">{descricao}</p>
@@ -184,8 +194,8 @@ export function Vazio({
 
 export function Carregando({ texto = 'Carregando...' }: { texto?: string }) {
   return (
-    <div className="flex items-center justify-center gap-2 py-12 text-sm text-slate-500">
-      <Loader2 className="h-4 w-4 animate-spin" />
+    <div role="status" aria-live="polite" className="flex items-center justify-center gap-2 py-12 text-sm text-slate-500">
+      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
       {texto}
     </div>
   )
@@ -206,10 +216,67 @@ export function Modal({
   children: ReactNode
   largura?: string
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const tituloId = useId()
+  const descricaoId = useId()
+  const fecharRef = useRef(onFechar)
+
+  useEffect(() => {
+    fecharRef.current = onFechar
+  }, [onFechar])
+
+  useEffect(() => {
+    if (!aberto) return
+    const anterior = document.activeElement as HTMLElement | null
+    const overflowAnterior = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const focaveis = () =>
+      Array.from(
+        ref.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((elemento) => elemento.offsetParent !== null)
+
+    window.setTimeout(() => focaveis()[0]?.focus(), 0)
+
+    function aoTeclar(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') {
+        evento.preventDefault()
+        fecharRef.current()
+        return
+      }
+      if (evento.key !== 'Tab') return
+      const elementos = focaveis()
+      if (elementos.length === 0) return
+      const primeiro = elementos[0]
+      const ultimo = elementos[elementos.length - 1]
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault()
+        ultimo.focus()
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault()
+        primeiro.focus()
+      }
+    }
+
+    document.addEventListener('keydown', aoTeclar)
+    return () => {
+      document.removeEventListener('keydown', aoTeclar)
+      document.body.style.overflow = overflowAnterior
+      anterior?.focus()
+    }
+  }, [aberto])
+
   if (!aberto) return null
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-0 backdrop-blur-sm sm:items-center sm:p-4">
       <div
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={tituloId}
+        aria-describedby={descricao ? descricaoId : undefined}
         className={clsx(
           'max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:rounded-2xl',
           largura,
@@ -217,12 +284,13 @@ export function Modal({
       >
         <div className="flex items-start justify-between border-b border-slate-100 px-6 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">{titulo}</h2>
-            {descricao && <p className="mt-0.5 text-sm text-slate-500">{descricao}</p>}
+            <h2 id={tituloId} className="text-lg font-semibold text-slate-900">{titulo}</h2>
+            {descricao && <p id={descricaoId} className="mt-0.5 text-sm text-slate-500">{descricao}</p>}
           </div>
           <button
+            type="button"
             onClick={onFechar}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
             aria-label="Fechar"
           >
             <X className="h-5 w-5" />

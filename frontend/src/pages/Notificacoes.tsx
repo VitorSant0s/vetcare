@@ -89,7 +89,7 @@ export function Notificacoes() {
       <Cartao>
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-800">Caixa de saída</h2>
-          <span className="text-xs text-slate-400">Canal: e-mail simulado (ADR-15)</span>
+          <span className="text-xs text-slate-500">Canal: e-mail simulado (ADR-15)</span>
         </div>
         {carregando ? (
           <Carregando />
@@ -111,10 +111,10 @@ export function Notificacoes() {
                     <Badge tom={notificacao.tipo === 'CONSULTA' ? 'azul' : 'verde'}>
                       {notificacao.tipo}
                     </Badge>
-                    <span className="text-xs text-slate-400">{notificacao.destinatario}</span>
+                    <span className="text-xs text-slate-500">{notificacao.destinatario}</span>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{notificacao.mensagem}</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-slate-500">
                     Criada em {formatarDataHora(notificacao.criadoEm)}
                     {notificacao.enviadoEm && ` · enviada em ${formatarDataHora(notificacao.enviadoEm)}`}
                   </p>

@@ -177,7 +177,7 @@ export function Usuarios() {
       <Cartao>
         <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
           <Busca valor={termo} onChange={(v) => { setTermo(v); setPagina(0) }} placeholder="Buscar por nome ou e-mail" />
-          <span className="text-xs text-slate-400">Manutenção de usuários e perfis (REQ01)</span>
+          <span className="text-xs text-slate-500">Manutenção de usuários e perfis (REQ01)</span>
         </div>
 
         {carregando ? (
@@ -202,7 +202,7 @@ export function Usuarios() {
                     <tr key={item.id} className="hover:bg-slate-50/60">
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800">{item.nome}</p>
-                        <p className="text-xs text-slate-400">{item.email}</p>
+                        <p className="text-xs text-slate-500">{item.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <Badge
@@ -227,7 +227,7 @@ export function Usuarios() {
                         <div className="flex justify-end gap-1">
                           <button
                             onClick={() => abrirEdicao(item)}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-700"
+                            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
                             aria-label={`Editar ${item.nome}`}
                           >
                             <Pencil className="h-4 w-4" />
@@ -235,7 +235,7 @@ export function Usuarios() {
                           <button
                             onClick={() => setExcluindo(item)}
                             disabled={item.id === usuario?.id}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
+                            className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
                             aria-label={`Desativar ${item.nome}`}
                           >
                             <Trash2 className="h-4 w-4" />

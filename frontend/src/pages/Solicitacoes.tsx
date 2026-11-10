@@ -152,7 +152,7 @@ export function Solicitacoes() {
                   <p className="text-xs text-slate-500">
                     Preferência: {formatarDataHora(solicitacao.dataPreferida)}
                   </p>
-                  {solicitacao.motivo && <p className="text-xs text-slate-400">{solicitacao.motivo}</p>}
+                  {solicitacao.motivo && <p className="text-xs text-slate-500">{solicitacao.motivo}</p>}
                 </div>
                 <div className="flex gap-2">
                   <Botao variante="contorno" className="px-3 py-1.5 text-xs" onClick={() => { setErroApi(''); setRecusando(solicitacao); setMotivoRecusa('') }}>
@@ -173,7 +173,7 @@ export function Solicitacoes() {
           <h2 className="text-sm font-semibold text-slate-800">Histórico</h2>
         </div>
         {historico.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-slate-400">Nenhuma solicitação analisada.</p>
+          <p className="px-4 py-8 text-center text-sm text-slate-500">Nenhuma solicitação analisada.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -190,7 +190,7 @@ export function Solicitacoes() {
                   <tr key={solicitacao.id}>
                     <td className="px-4 py-2">
                       <p className="font-medium text-slate-800">{solicitacao.animalNome}</p>
-                      <p className="text-xs text-slate-400">{solicitacao.tutorNome}</p>
+                      <p className="text-xs text-slate-500">{solicitacao.tutorNome}</p>
                     </td>
                     <td className="px-4 py-2 text-slate-500">{formatarDataHora(solicitacao.dataPreferida)}</td>
                     <td className="px-4 py-2">

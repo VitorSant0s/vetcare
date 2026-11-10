@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import {
   BarChart3,
@@ -53,7 +53,7 @@ export function Layout() {
         </div>
         <div>
           <p className="text-base font-semibold text-slate-900">VetCare</p>
-          <p className="text-[11px] tracking-wide text-slate-400 uppercase">Clínica veterinária</p>
+          <p className="text-[11px] tracking-wide text-slate-500 uppercase">Clínica veterinária</p>
         </div>
       </Link>
       <nav className="mt-2 flex-1 space-y-1 px-3">
@@ -84,7 +84,7 @@ export function Layout() {
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-slate-800">{usuario?.nome}</p>
-            <p className="truncate text-xs text-slate-400">{usuario?.email}</p>
+            <p className="truncate text-xs text-slate-500">{usuario?.email}</p>
             <div className="mt-1.5">
               <Badge tom={usuario?.perfil === 'ADMINISTRADOR' ? 'azul' : usuario?.perfil === 'VETERINARIO' ? 'verde' : 'ambar'}>
                 {usuario?.perfilDescricao}
@@ -103,9 +103,24 @@ export function Layout() {
     </>
   )
 
+  useEffect(() => {
+    if (!menuAberto) return
+    function aoTeclar(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') setMenuAberto(false)
+    }
+    document.addEventListener('keydown', aoTeclar)
+    return () => document.removeEventListener('keydown', aoTeclar)
+  }, [menuAberto])
+
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+      <a
+        href="#conteudo"
+        className="sr-only z-[70] rounded-lg bg-brand-700 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Pular para o conteúdo
+      </a>
+      <aside id="menu-principal" className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         {conteudoSidebar}
       </aside>
 
@@ -115,7 +130,7 @@ export function Layout() {
           <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
             <button
               onClick={() => setMenuAberto(false)}
-              className="absolute top-4 right-4 rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+              className="absolute top-4 right-4 rounded-lg p-1 text-slate-500 hover:bg-slate-100"
               aria-label="Fechar menu"
             >
               <X className="h-5 w-5" />
@@ -131,6 +146,8 @@ export function Layout() {
             onClick={() => setMenuAberto(true)}
             className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
             aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls="menu-principal"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -140,11 +157,11 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+        <main id="conteudo" className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
           <Outlet />
         </main>
 
-        <footer className="px-6 py-4 text-center text-xs text-slate-400">
+        <footer className="px-6 py-4 text-center text-xs text-slate-500">
           VetCare · Engenharia de Software 1 · UFBA 2026
         </footer>
       </div>

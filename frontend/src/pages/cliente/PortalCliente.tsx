@@ -280,7 +280,7 @@ export function PortalCliente() {
                   {pets.map((pet) => (
                     <div key={pet.id} className="rounded-xl border border-slate-200 p-3">
                       <p className="font-medium text-slate-800">{pet.nome}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-500">
                         {pet.especie} · {pet.raca || 'Raça não informada'} · {idade(pet.dataNascimento)}
                       </p>
                     </div>
@@ -341,7 +341,7 @@ export function PortalCliente() {
                     </div>
                     <button
                       onClick={() => abrirEdicaoPet(pet)}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-700"
+                      className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
                       aria-label={`Editar ${pet.nome}`}
                     >
                       <Pencil className="h-4 w-4" />
@@ -351,7 +351,7 @@ export function PortalCliente() {
                   <p className="text-sm text-slate-500">
                     {pet.especie} · {pet.raca || 'Raça não informada'}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">{idade(pet.dataNascimento)}</p>
+                  <p className="mt-1 text-xs text-slate-500">{idade(pet.dataNascimento)}</p>
                 </Cartao>
               ))}
             </div>

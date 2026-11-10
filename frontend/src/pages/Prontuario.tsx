@@ -316,7 +316,7 @@ export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: bo
                         <FileText className="h-4 w-4 text-brand-600" />
                         {formatarDataHora(atendimento.dataHora)}
                       </div>
-                      <span className="flex items-center gap-1 text-xs text-slate-400">
+                      <span className="flex items-center gap-1 text-xs text-slate-500">
                         <Stethoscope className="h-3.5 w-3.5" /> {atendimento.veterinarioNome}
                       </span>
                     </div>
@@ -401,7 +401,7 @@ export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: bo
                             <td className="px-3 py-2 text-right">
                               <button
                                 onClick={() => setExcluindo({ id: vacinacao.id, tipo: vacinacao.tipoVacina })}
-                                className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                                className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600"
                                 aria-label={`Excluir vacina ${vacinacao.tipoVacina}`}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -431,9 +431,9 @@ export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: bo
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="flex items-center gap-1.5 text-sm text-slate-700">
-                        <Stethoscope className="h-3.5 w-3.5 text-slate-400" /> {consulta.veterinarioNome}
+                        <Stethoscope className="h-3.5 w-3.5 text-slate-500" /> {consulta.veterinarioNome}
                       </p>
-                      <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                      <p className="flex items-center gap-1.5 text-xs text-slate-500">
                         <UserRound className="h-3 w-3" /> {consulta.tutorNome}
                       </p>
                     </div>
@@ -563,7 +563,7 @@ function Detalhe({
 }) {
   return (
     <div>
-      <dt className="text-xs font-medium tracking-wide text-slate-400 uppercase">{rotulo}</dt>
+      <dt className="text-xs font-medium tracking-wide text-slate-500 uppercase">{rotulo}</dt>
       <dd className={destaque ? 'mt-1 text-sm font-semibold text-slate-900' : 'mt-1 text-sm text-slate-600'}>
         {valor || '—'}
       </dd>

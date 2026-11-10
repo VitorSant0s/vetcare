@@ -179,7 +179,7 @@ export function Animais() {
       <Cartao>
         <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
           <Busca valor={termo} onChange={(v) => { setTermo(v); setPagina(0) }} placeholder="Buscar por animal ou tutor" />
-          <span className="text-xs text-slate-400">Cadastro e manutenção de animais (REQ05)</span>
+          <span className="text-xs text-slate-500">Cadastro e manutenção de animais (REQ05)</span>
         </div>
 
         {carregando ? (
@@ -213,13 +213,13 @@ export function Animais() {
                         >
                           {animal.nome}
                         </Link>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-slate-500">
                           {animal.sexo || 'Sexo não informado'} · {idade(animal.dataNascimento)}
                         </p>
                       </td>
                       <td className="px-4 py-3">
                         <Badge tom="verde">{animal.especie}</Badge>
-                        <p className="mt-1 text-xs text-slate-400">{animal.raca || 'Raça não informada'}</p>
+                        <p className="mt-1 text-xs text-slate-500">{animal.raca || 'Raça não informada'}</p>
                       </td>
                       <td className="px-4 py-3 text-slate-600">{animal.tutorNome}</td>
                       <td className="px-4 py-3 text-slate-500">{formatarData(animal.dataNascimento)}</td>
@@ -228,14 +228,14 @@ export function Animais() {
                           <div className="flex justify-end gap-1">
                             <button
                               onClick={() => abrirEdicao(animal)}
-                              className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-700"
+                              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
                               aria-label={`Editar ${animal.nome}`}
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => setExcluindo(animal)}
-                              className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                              className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600"
                               aria-label={`Excluir ${animal.nome}`}
                             >
                               <Trash2 className="h-4 w-4" />

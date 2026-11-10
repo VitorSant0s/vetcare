@@ -408,7 +408,7 @@ export function Agenda() {
             </div>
           )}
 
-          <p className="text-xs text-slate-400 lg:ml-auto">
+          <p className="text-xs text-slate-500 lg:ml-auto">
             {visao === 'DIA'
               ? `Consultas de ${dataBase.split('-').reverse().join('/')}`
               : `Semana de ${dataBase.split('-').reverse().join('/')} a ${fim.split('-').reverse().join('/')}`}
@@ -476,7 +476,7 @@ export function Agenda() {
                     month: 'long',
                   })}
                 </h2>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-500">
                   {itens.length} {itens.length === 1 ? 'consulta' : 'consultas'}
                 </span>
               </div>
@@ -490,19 +490,19 @@ export function Agenda() {
                       </div>
                       <div className="grid flex-1 gap-2 sm:grid-cols-3">
                         <div>
-                          <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                          <p className="flex items-center gap-1.5 text-xs text-slate-500">
                             <PawPrint className="h-3.5 w-3.5" /> Animal
                           </p>
                           <p className="text-sm font-medium text-slate-800">{consulta.animalNome}</p>
                         </div>
                         <div>
-                          <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                          <p className="flex items-center gap-1.5 text-xs text-slate-500">
                             <UserRound className="h-3.5 w-3.5" /> Tutor
                           </p>
                           <p className="text-sm text-slate-700">{consulta.tutorNome}</p>
                         </div>
                         <div>
-                          <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                          <p className="flex items-center gap-1.5 text-xs text-slate-500">
                             <Stethoscope className="h-3.5 w-3.5" /> Veterinário
                           </p>
                           <p className="text-sm text-slate-700">{consulta.veterinarioNome}</p>
@@ -526,7 +526,7 @@ export function Agenda() {
                           </p>
                         )}
                         {consulta.observacoes && (
-                          <p className="max-w-52 text-right text-xs text-slate-400 sm:text-right">
+                          <p className="max-w-52 text-right text-xs text-slate-500 sm:text-right">
                             {consulta.observacoes}
                           </p>
                         )}

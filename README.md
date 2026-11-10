@@ -288,6 +288,7 @@ vetcare/
 - [Apresentação da Sprint 1 (PPTX)](docs/slides/VetCare-Sprint-1.pptx)
 - [ADRs](docs/adr)
 - [Capturas de tela](docs/relatorio/img)
+- [Auditoria de design e acessibilidade](docs/design/auditoria-design-ia.md)
 
 ## Publicar no GitHub
 

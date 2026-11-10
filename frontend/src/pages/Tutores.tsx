@@ -179,7 +179,7 @@ export function Tutores() {
       <Cartao>
         <div className="flex flex-col gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
           <Busca valor={termo} onChange={(v) => { setTermo(v); setPagina(0) }} placeholder="Buscar por nome, CPF ou e-mail" />
-          <span className="text-xs text-slate-400">Cadastro e manutenção de tutores (REQ04)</span>
+          <span className="text-xs text-slate-500">Cadastro e manutenção de tutores (REQ04)</span>
         </div>
 
         {carregando ? (
@@ -213,7 +213,7 @@ export function Tutores() {
                       <td className="px-4 py-3 text-slate-600">{formatarCpf(tutor.cpf)}</td>
                       <td className="px-4 py-3">
                         <p className="text-slate-700">{formatarTelefone(tutor.telefone)}</p>
-                        <p className="text-xs text-slate-400">{tutor.email}</p>
+                        <p className="text-xs text-slate-500">{tutor.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <Badge tom={tutor.portalConfigurado ? 'verde' : 'ambar'}>
@@ -228,14 +228,14 @@ export function Tutores() {
                           <div className="flex justify-end gap-1">
                             <button
                               onClick={() => abrirEdicao(tutor)}
-                              className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-700"
+                              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
                               aria-label={`Editar ${tutor.nome}`}
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => setExcluindo(tutor)}
-                              className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                              className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600"
                               aria-label={`Excluir ${tutor.nome}`}
                             >
                               <Trash2 className="h-4 w-4" />

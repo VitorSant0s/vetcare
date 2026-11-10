@@ -111,7 +111,7 @@ export function Pacientes() {
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm sm:w-72">
                     <div>
-                      <p className="flex items-center gap-1 text-xs text-slate-400">
+                      <p className="flex items-center gap-1 text-xs text-slate-500">
                         <Stethoscope className="h-3.5 w-3.5" /> Última consulta
                       </p>
                       <p className="text-slate-700">
@@ -119,10 +119,10 @@ export function Pacientes() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-400">Próxima vacina</p>
+                      <p className="text-xs text-slate-500">Próxima vacina</p>
                       <p className="text-slate-700">
                         {dose.texto}
-                        {paciente.tipoVacina && <span className="block text-xs text-slate-400">{paciente.tipoVacina}</span>}
+                        {paciente.tipoVacina && <span className="block text-xs text-slate-500">{paciente.tipoVacina}</span>}
                       </p>
                     </div>
                   </div>

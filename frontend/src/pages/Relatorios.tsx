@@ -151,14 +151,14 @@ export function Relatorios() {
                 </h2>
               </div>
               {dados.porForma.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-slate-400">Sem pagamentos no período.</p>
+                <p className="px-4 py-8 text-center text-sm text-slate-500">Sem pagamentos no período.</p>
               ) : (
                 <div className="divide-y divide-slate-100">
                   {dados.porForma.map((forma) => (
                     <div key={forma.forma} className="flex items-center justify-between px-4 py-3 text-sm">
                       <span className="text-slate-600">
                         {forma.descricao}{' '}
-                        <span className="text-xs text-slate-400">({forma.quantidade})</span>
+                        <span className="text-xs text-slate-500">({forma.quantidade})</span>
                       </span>
                       <span className="font-medium text-slate-800">{formatarMoeda(forma.total)}</span>
                     </div>

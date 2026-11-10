@@ -61,13 +61,13 @@ export function Prontuarios() {
           <div className="flex-1">
             <p className="mb-1.5 text-sm font-medium text-slate-700">Buscar prontuário por código</p>
             <div className="relative">
-              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-500" />
               <input
                 value={codigo}
                 onChange={(e) => setCodigo(e.target.value.toUpperCase())}
                 placeholder="Ex.: ABC7DEFG"
                 maxLength={12}
-                className="w-full rounded-lg border border-slate-300 bg-white py-2 pr-3 pl-9 font-mono text-sm tracking-widest text-slate-800 uppercase shadow-sm placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none"
+                className="w-full rounded-lg border border-slate-300 bg-white py-2 pr-3 pl-9 font-mono text-sm tracking-widest text-slate-800 uppercase shadow-sm placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-500 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none"
               />
             </div>
           </div>
@@ -81,7 +81,7 @@ export function Prontuarios() {
             Buscar prontuário
           </button>
         </div>
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-slate-500">
           Códigos são gerados ao compartilhar um prontuário e valem por 7 dias.
         </p>
       </Cartao>
@@ -115,14 +115,14 @@ export function Prontuarios() {
                     <p className="font-medium text-slate-800">{atendimento.animalNome}</p>
                     <Badge tom="azul">{formatarDataHora(atendimento.dataHora)}</Badge>
                     {atendimento.prescricoes.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                      <span className="inline-flex items-center gap-1 text-xs text-slate-500">
                         <Pill className="h-3.5 w-3.5" /> {atendimento.prescricoes.length} prescrição(ões)
                       </span>
                     )}
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{atendimento.diagnostico}</p>
                   {atendimento.observacoes && (
-                    <p className="text-xs text-slate-400">{atendimento.observacoes}</p>
+                    <p className="text-xs text-slate-500">{atendimento.observacoes}</p>
                   )}
                 </div>
                 <Link

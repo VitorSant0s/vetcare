@@ -173,7 +173,7 @@ export function Veterinarios() {
           <span className="text-sm text-slate-500">
             {dados.filter((v) => v.ativo).length} profissionais ativos
           </span>
-          <span className="text-xs text-slate-400">Manutenção de veterinários (REQ06)</span>
+          <span className="text-xs text-slate-500">Manutenção de veterinários (REQ06)</span>
         </div>
 
         {carregando ? (
@@ -202,13 +202,13 @@ export function Veterinarios() {
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm sm:w-80">
                   <div>
-                    <p className="flex items-center gap-1 text-xs text-slate-400">
+                    <p className="flex items-center gap-1 text-xs text-slate-500">
                       <BadgeCheck className="h-3.5 w-3.5" /> CRMV
                     </p>
                     <p className="text-slate-700">{vet.crmv || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400">Especialidade</p>
+                    <p className="text-xs text-slate-500">Especialidade</p>
                     <p className="text-slate-700">{vet.especialidade || 'Clínica geral'}</p>
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export function Veterinarios() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => abrirEdicao(vet)}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-brand-700"
+                      className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
                       aria-label={`Editar ${vet.nome}`}
                     >
                       <Pencil className="h-4 w-4" />
@@ -224,7 +224,7 @@ export function Veterinarios() {
                     <button
                       onClick={() => setExcluindo(vet)}
                       disabled={!vet.ativo}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
+                      className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30"
                       aria-label={`Desativar ${vet.nome}`}
                     >
                       <Trash2 className="h-4 w-4" />

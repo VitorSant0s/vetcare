@@ -48,7 +48,7 @@ export function PortalRecepcao() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-brand-700 px-6 py-7 text-white">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-700 via-amber-700 to-brand-800 px-6 py-7 text-white">
         <div className="absolute -top-16 -right-10 h-48 w-48 rounded-full bg-white/15 blur-2xl" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -112,7 +112,7 @@ export function PortalRecepcao() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-slate-800">{consulta.animalNome}</p>
-                    <p className="truncate text-xs text-slate-400">
+                    <p className="truncate text-xs text-slate-500">
                       <UserRound className="mr-1 inline h-3 w-3" />
                       {consulta.tutorNome} · {consulta.veterinarioNome}
                     </p>
@@ -136,31 +136,31 @@ export function PortalRecepcao() {
               to="/tutores"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
-              <Users className="h-4 w-4 text-slate-400" /> Cadastrar tutor
+              <Users className="h-4 w-4 text-slate-500" /> Cadastrar tutor
             </Link>
             <Link
               to="/animais"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
-              <PawPrint className="h-4 w-4 text-slate-400" /> Cadastrar animal
+              <PawPrint className="h-4 w-4 text-slate-500" /> Cadastrar animal
             </Link>
             <Link
               to="/solicitacoes"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
-              <CalendarPlus className="h-4 w-4 text-slate-400" /> Solicitações
+              <CalendarPlus className="h-4 w-4 text-slate-500" /> Solicitações
             </Link>
             <Link
               to="/financeiro"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
-              <Wallet className="h-4 w-4 text-slate-400" /> Financeiro
+              <Wallet className="h-4 w-4 text-slate-500" /> Financeiro
             </Link>
             <Link
               to="/notificacoes"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >
-              <BellRing className="h-4 w-4 text-slate-400" /> Notificações
+              <BellRing className="h-4 w-4 text-slate-500" /> Notificações
             </Link>
           </div>
         </Cartao>

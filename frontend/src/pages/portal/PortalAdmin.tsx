@@ -88,7 +88,7 @@ export function PortalAdmin() {
             </Link>
           </div>
           {hoje.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-slate-400">Nenhuma consulta hoje.</p>
+            <p className="px-4 py-8 text-center text-sm text-slate-500">Nenhuma consulta hoje.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {hoje.slice(0, 6).map((consulta) => (
@@ -98,7 +98,7 @@ export function PortalAdmin() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-slate-800">{consulta.animalNome}</p>
-                    <p className="truncate text-xs text-slate-400">
+                    <p className="truncate text-xs text-slate-500">
                       {consulta.tutorNome} · {consulta.veterinarioNome}
                     </p>
                   </div>

@@ -65,11 +65,11 @@ function ToastItem({ toast, onFechar }: { toast: Toast; onFechar: () => void }) 
   return (
     <div
       className={`pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-lg ${estilos[toast.tipo]}`}
-      role="status"
+      role="status" aria-live="polite"
     >
       <Icone className="mt-0.5 h-4 w-4 shrink-0" />
       <p className="flex-1">{toast.mensagem}</p>
-      <button onClick={onFechar} className="text-slate-400 hover:text-slate-600" aria-label="Fechar aviso">
+      <button onClick={onFechar} className="text-slate-500 hover:text-slate-600" aria-label="Fechar aviso">
         ×
       </button>
     </div>

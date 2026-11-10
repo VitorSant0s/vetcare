@@ -221,7 +221,7 @@ export function Financeiro() {
                 <CreditCard className="h-4 w-4 text-brand-600" /> Por forma de pagamento
               </h2>
               {dashboard?.porForma.length === 0 ? (
-                <p className="mt-4 text-sm text-slate-400">Nenhum pagamento no período.</p>
+                <p className="mt-4 text-sm text-slate-500">Nenhum pagamento no período.</p>
               ) : (
                 <div className="mt-4 space-y-4">
                   {dashboard?.porForma.map((forma) => (
@@ -245,7 +245,7 @@ export function Financeiro() {
             <Cartao className="lg:col-span-2">
               <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                 <h2 className="text-sm font-semibold text-slate-800">Pagamentos do período</h2>
-                <span className="text-xs text-slate-400">{pagamentos.length} registros</span>
+                <span className="text-xs text-slate-500">{pagamentos.length} registros</span>
               </div>
               {pagamentos.length === 0 ? (
                 <Vazio titulo="Nenhum pagamento" descricao="Registre o primeiro pagamento do período." />
@@ -268,7 +268,7 @@ export function Financeiro() {
                           <td className="px-3 py-2">
                             <p className="font-medium text-slate-800">{pagamento.tutorNome}</p>
                             {pagamento.consultaDescricao && (
-                              <p className="text-xs text-slate-400">{pagamento.consultaDescricao}</p>
+                              <p className="text-xs text-slate-500">{pagamento.consultaDescricao}</p>
                             )}
                           </td>
                           <td className="px-3 py-2 text-slate-600">{pagamento.formaPagamentoDescricao}</td>

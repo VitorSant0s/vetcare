@@ -113,7 +113,7 @@ export function ClienteLogin() {
                   <button
                     type="button"
                     onClick={() => setMostrarSenha((v) => !v)}
-                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-600"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded p-1 text-slate-500 hover:text-slate-600"
                     aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
                   >
                     {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -132,7 +132,7 @@ export function ClienteLogin() {
               </Botao>
             </form>
 
-            <p className="mt-5 text-center text-xs text-slate-400">
+            <p className="mt-5 text-center text-xs text-slate-500">
               É da equipe da clínica?{' '}
               <a href="/login" className="font-medium text-brand-700 hover:underline">
                 Acessar o sistema interno

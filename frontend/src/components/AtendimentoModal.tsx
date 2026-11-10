@@ -133,7 +133,7 @@ export function AtendimentoModal({
             </Botao>
           </div>
           {fields.length === 0 ? (
-            <p className="py-2 text-xs text-slate-400">
+            <p className="py-2 text-xs text-slate-500">
               Nenhuma prescrição adicionada. O atendimento pode ser salvo sem prescrição.
             </p>
           ) : (
@@ -145,7 +145,7 @@ export function AtendimentoModal({
                     <button
                       type="button"
                       onClick={() => remove(indice)}
-                      className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                      className="rounded p-1 text-slate-500 hover:bg-red-50 hover:text-red-600"
                       aria-label="Remover prescrição"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
