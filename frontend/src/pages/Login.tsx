@@ -66,18 +66,6 @@ export function Login() {
             Tutores, animais e agenda em um só lugar, com acesso controlado por perfil e
             rastreabilidade das operações.
           </p>
-          <div className="mt-10 grid grid-cols-3 gap-3 text-sm">
-            {[
-              ['Perfis', 'RBAC'],
-              ['Agenda', 'Tempo real'],
-              ['Auditoria', 'Trilha'],
-            ].map(([titulo, valor]) => (
-              <div key={titulo} className="rounded-xl bg-white/10 p-3">
-                <p className="text-brand-200">{titulo}</p>
-                <p className="mt-1 font-medium">{valor}</p>
-              </div>
-            ))}
-          </div>
 
           <div className="relative mt-8 flex items-end gap-3">
             <CaoCartoon size={110} className="-rotate-3 drop-shadow-lg" />
