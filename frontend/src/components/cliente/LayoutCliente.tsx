@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { CalendarPlus, ClipboardList, LogOut, Menu, PawPrint, Stethoscope, X } from 'lucide-react'
+import { CalendarPlus, ClipboardList, LogOut, Menu, PawPrint, Settings, Stethoscope, X } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { formatarCpf } from '../../lib/format'
@@ -10,6 +10,7 @@ const itens = [
   { aba: 'pets', rotulo: 'Meus pets', icone: PawPrint, para: '/portal/cliente?aba=pets' },
   { aba: 'agendar', rotulo: 'Agendar', icone: CalendarPlus, para: '/portal/cliente?aba=agendar' },
   { aba: 'pedidos', rotulo: 'Meus pedidos', icone: ClipboardList, para: '/portal/cliente?aba=pedidos' },
+  { aba: 'conta', rotulo: 'Conta', icone: Settings, para: '/portal/cliente?aba=conta' },
 ]
 
 export function LayoutCliente() {

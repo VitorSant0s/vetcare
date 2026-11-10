@@ -12,13 +12,15 @@ import {
   PawPrint,
   Pencil,
   Plus,
+  Settings,
   ShieldCheck,
   Trash2,
+  UserRound,
 } from 'lucide-react'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { useToast } from '../../components/Toast'
 import { clienteApi, limparTokenCliente, mensagemDeErro } from '../../lib/api'
-import { formatarDataHora, idade, paraInputDateTime } from '../../lib/format'
+import { formatarCpf, formatarDataHora, idade, paraInputDateTime } from '../../lib/format'
 import type { Animal, SolicitacaoAgendamento } from '../../types'
 import {
   Badge,
@@ -277,17 +279,12 @@ export function PortalCliente() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs font-medium tracking-widest text-brand-600 uppercase">
-            Portal do cliente
-          </p>
-          <h1 className="text-2xl font-semibold text-slate-900">Olá, {tutor?.nome.split(' ')[0]}!</h1>
-          <p className="text-sm text-slate-500">Cuide dos seus pets e acompanhe seus pedidos.</p>
-        </div>
-        <Botao variante="contorno" onClick={() => setModalSenha(true)}>
-          <KeyRound className="h-4 w-4" /> Alterar senha
-        </Botao>
+      <div>
+        <p className="text-xs font-medium tracking-widest text-brand-600 uppercase">
+          Portal do cliente
+        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">Olá, {tutor?.nome.split(' ')[0]}!</h1>
+        <p className="text-sm text-slate-500">Cuide dos seus pets e acompanhe seus pedidos.</p>
       </div>
 
       {aba === 'inicio' && (
@@ -359,6 +356,9 @@ export function PortalCliente() {
                 <Botao variante="contorno" className="w-full" onClick={() => irPara('pedidos')}>
                   <ClipboardList className="h-4 w-4" /> Ver pedidos
                 </Botao>
+                <Botao variante="contorno" className="w-full" onClick={() => irPara('conta')}>
+                  <Settings className="h-4 w-4" /> Minha conta
+                </Botao>
               </div>
               {proxima && (
                 <div className="mt-4 rounded-lg bg-brand-50 p-3 text-sm text-brand-800">
@@ -371,34 +371,6 @@ export function PortalCliente() {
             </Cartao>
           </div>
 
-          <Cartao className="p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                  <ShieldCheck className="h-4 w-4 text-brand-600" /> Privacidade e LGPD
-                </h2>
-                <p className="mt-0.5 text-xs text-slate-500">
-                  Baixe uma cópia dos seus dados ou solicite a exclusão da conta.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <a
-                  href="/privacidade"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  Política de privacidade
-                </a>
-                <Botao variante="contorno" onClick={exportarMeusDados} carregando={exportando}>
-                  <Download className="h-3.5 w-3.5" /> Baixar meus dados
-                </Botao>
-                <Botao variante="perigo" onClick={() => setModalExclusao(true)}>
-                  <Trash2 className="h-3.5 w-3.5" /> Excluir conta
-                </Botao>
-              </div>
-            </div>
-          </Cartao>
         </>
       )}
 
@@ -642,6 +614,85 @@ export function PortalCliente() {
           </div>
         </div>
       </Modal>
+
+      {aba === 'conta' && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Cartao className="p-5">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <UserRound className="h-5 w-5 text-brand-600" /> Dados da conta
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">Informações do seu cadastro na clínica.</p>
+            <dl className="mt-4 grid gap-3 text-sm">
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Nome</dt>
+                <dd className="font-medium text-slate-800">{tutor?.nome}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">CPF</dt>
+                <dd className="text-slate-700">{tutor?.cpf ? formatarCpf(tutor.cpf) : '—'}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">E-mail</dt>
+                <dd className="text-slate-700">{tutor?.email || '—'}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Telefone</dt>
+                <dd className="text-slate-700">{tutor?.telefone || '—'}</dd>
+              </div>
+            </dl>
+            <p className="mt-4 text-xs text-slate-500">
+              Para corrigir seus dados cadastrais, fale com a recepção da clínica.
+            </p>
+          </Cartao>
+
+          <Cartao className="p-5">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <KeyRound className="h-5 w-5 text-brand-600" /> Segurança
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Troque sua senha periodicamente. O logout encerra as sessões ativas.
+            </p>
+            <Botao className="mt-4" onClick={() => setModalSenha(true)}>
+              <KeyRound className="h-4 w-4" /> Alterar senha
+            </Botao>
+            <p className="mt-3 text-xs text-slate-500">
+              Ao alterar a senha, os tokens anteriores são revogados e você entra novamente.
+            </p>
+          </Cartao>
+
+          <Cartao className="p-5 lg:col-span-2">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <ShieldCheck className="h-5 w-5 text-brand-600" /> Privacidade e LGPD
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Consulte a política, baixe uma cópia dos seus dados ou solicite a exclusão da conta.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a
+                href="/privacidade"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Política de privacidade
+              </a>
+              <Botao variante="contorno" onClick={exportarMeusDados} carregando={exportando}>
+                <Download className="h-3.5 w-3.5" /> Baixar meus dados
+              </Botao>
+              <Botao variante="perigo" onClick={() => setModalExclusao(true)}>
+                <Trash2 className="h-3.5 w-3.5" /> Excluir conta
+              </Botao>
+            </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Consentimento LGPD:{' '}
+              {tutor?.consentimentoEm
+                ? `registrado na versão ${tutor.consentimentoVersao ?? '1.0'}`
+                : 'pendente'}
+              .
+            </p>
+          </Cartao>
+        </div>
+      )}
 
       <Modal
         aberto={modalPet}
