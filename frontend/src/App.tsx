@@ -85,6 +85,14 @@ export default function App() {
                 <Route path="/animais" element={<Animais />} />
                 <Route path="/animais/:animalId/prontuario" element={<ProntuarioAnimal />} />
                 <Route
+                  path="/prontuarios/compartilhado/:codigo"
+                  element={
+                    <RotaPerfil perfil="VETERINARIO">
+                      <ProntuarioAnimal compartilhado />
+                    </RotaPerfil>
+                  }
+                />
+                <Route
                   path="/pacientes"
                   element={
                     <RotaPerfil perfil="VETERINARIO">

@@ -18,6 +18,7 @@ import type {
   StatusPagamento,
   SolicitacaoAgendamento,
   PacienteClinico,
+  CompartilhamentoProntuario,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -186,6 +187,11 @@ export const atendimentosApi = {
 
 export const prontuarioApi = {
   buscar: (animalId: number) => api.get<Prontuario>(`/animais/${animalId}/prontuario`),
+  compartilhar: (animalId: number) =>
+    api.post<CompartilhamentoProntuario>(`/animais/${animalId}/compartilhamento`),
+  revogar: (animalId: number) => api.delete(`/animais/${animalId}/compartilhamento`),
+  buscarPorCodigo: (codigo: string) =>
+    api.get<Prontuario>(`/prontuarios/compartilhados/${encodeURIComponent(codigo)}`),
 }
 
 export interface VacinacaoPayload {

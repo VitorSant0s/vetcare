@@ -213,3 +213,13 @@ export interface PacienteClinico {
   tipoVacina?: string | null
   vacinaAtrasada: boolean
 }
+
+export interface CompartilhamentoProntuario {
+  id: number
+  animalId: number
+  animalNome: string
+  codigo: string
+  expiraEm: string
+  criadoEm: string
+  criadoPorNome: string
+}

@@ -684,3 +684,15 @@ data class PacienteClinicoResposta(
     val tipoVacina: String?,
     val vacinaAtrasada: Boolean,
 )
+
+// ---------- Compartilhamento de prontuário ----------
+
+data class CompartilhamentoResposta(
+    val id: Long,
+    val animalId: Long,
+    val animalNome: String,
+    val codigo: String,
+    val expiraEm: Instant,
+    val criadoEm: Instant,
+    val criadoPorNome: String,
+)

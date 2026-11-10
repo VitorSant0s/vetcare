@@ -7,8 +7,12 @@ import {
   ArrowLeft,
   CalendarDays,
   ClipboardList,
+  Copy,
   FileText,
   Pill,
+  RefreshCw,
+  Share2,
+  ShieldCheck,
   Stethoscope,
   Syringe,
   Trash2,
@@ -18,7 +22,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
 import { mensagemDeErro, prontuarioApi, vacinacoesApi } from '../lib/api'
 import { formatarData, formatarDataHora, idade, hojeIso, statusProximaDose } from '../lib/format'
-import type { Prontuario } from '../types'
+import type { CompartilhamentoProntuario, Prontuario } from '../types'
 import {
   Badge,
   Botao,
@@ -49,13 +53,15 @@ const vazio: Formulario = {
   observacoes: '',
 }
 
-export function ProntuarioAnimal() {
-  const { animalId } = useParams()
+export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: boolean }) {
+  const { animalId, codigo } = useParams()
   const { usuario } = useAuth()
   const { mostrar } = useToast()
   const navigate = useNavigate()
   const id = Number(animalId)
-  const podeExcluirVacina = usuario?.perfil === 'ADMINISTRADOR' || usuario?.perfil === 'VETERINARIO'
+  const podeExcluirVacina =
+    !compartilhado && (usuario?.perfil === 'ADMINISTRADOR' || usuario?.perfil === 'VETERINARIO')
+  const podeCompartilhar = !compartilhado && usuario?.perfil === 'VETERINARIO'
 
   const [dados, setDados] = useState<Prontuario | null>(null)
   const [aba, setAba] = useState<'atendimentos' | 'vacinas' | 'consultas'>('atendimentos')
@@ -64,6 +70,9 @@ export function ProntuarioAnimal() {
   const [excluindo, setExcluindo] = useState<{ id: number; tipo: string } | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [erroApi, setErroApi] = useState('')
+  const [modalCompartilhar, setModalCompartilhar] = useState(false)
+  const [compartilhamento, setCompartilhamento] = useState<CompartilhamentoProntuario | null>(null)
+  const [gerandoCodigo, setGerandoCodigo] = useState(false)
 
   const {
     register,
@@ -73,21 +82,56 @@ export function ProntuarioAnimal() {
   } = useForm<Formulario>({ resolver: zodResolver(schema), defaultValues: vazio })
 
   const carregar = useCallback(async () => {
-    if (!Number.isFinite(id) || id <= 0) return
     setCarregando(true)
     try {
-      const { data } = await prontuarioApi.buscar(id)
+      const { data } = compartilhado
+        ? await prontuarioApi.buscarPorCodigo(codigo ?? '')
+        : await prontuarioApi.buscar(id)
       setDados(data)
     } catch (error) {
       mostrar(mensagemDeErro(error), 'erro')
     } finally {
       setCarregando(false)
     }
-  }, [id, mostrar])
+  }, [compartilhado, codigo, id, mostrar])
 
   useEffect(() => {
     carregar()
   }, [carregar])
+
+  async function gerarCompartilhamento() {
+    setGerandoCodigo(true)
+    try {
+      const { data } = await prontuarioApi.compartilhar(id)
+      setCompartilhamento(data)
+      setModalCompartilhar(true)
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+    } finally {
+      setGerandoCodigo(false)
+    }
+  }
+
+  async function copiarCodigo() {
+    if (!compartilhamento) return
+    try {
+      await navigator.clipboard.writeText(compartilhamento.codigo)
+      mostrar('Código copiado.')
+    } catch {
+      mostrar('Não foi possível copiar automaticamente.', 'erro')
+    }
+  }
+
+  async function revogarCompartilhamento() {
+    try {
+      await prontuarioApi.revogar(id)
+      setCompartilhamento(null)
+      setModalCompartilhar(false)
+      mostrar('Compartilhamento revogado.')
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+    }
+  }
 
   async function salvarVacina(dadosForm: Formulario) {
     setSalvando(true)
@@ -156,9 +200,9 @@ export function ProntuarioAnimal() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link
-            to="/animais"
+            to={compartilhado ? '/prontuarios' : usuario?.perfil === 'VETERINARIO' ? '/pacientes' : '/animais'}
             className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50"
-            aria-label="Voltar para animais"
+            aria-label="Voltar"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -173,10 +217,26 @@ export function ProntuarioAnimal() {
             </p>
           </div>
         </div>
-        <Botao onClick={() => { setErroApi(''); reset(vazio); setModalAberto(true) }}>
-          <Syringe className="h-4 w-4" /> Registrar vacina
-        </Botao>
+        <div className="flex flex-wrap gap-2">
+          {podeCompartilhar && (
+            <Botao variante="contorno" onClick={gerarCompartilhamento} carregando={gerandoCodigo}>
+              <Share2 className="h-4 w-4" /> Compartilhar prontuário
+            </Botao>
+          )}
+          {!compartilhado && (
+            <Botao onClick={() => { setErroApi(''); reset(vazio); setModalAberto(true) }}>
+              <Syringe className="h-4 w-4" /> Registrar vacina
+            </Botao>
+          )}
+        </div>
       </div>
+
+      {compartilhado && (
+        <div className="flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          <ShieldCheck className="h-4 w-4 shrink-0" />
+          Prontuário compartilhado pelo código <strong>{codigo}</strong>. Visualização somente leitura.
+        </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Cartao className="flex items-center gap-3 p-4">
@@ -310,7 +370,7 @@ export function ProntuarioAnimal() {
               <Vazio
                 titulo="Nenhuma vacina registrada"
                 descricao="Registre a primeira vacina para acompanhar a próxima dose."
-                acao={<Botao onClick={() => setModalAberto(true)}>Registrar vacina</Botao>}
+                acao={!compartilhado ? <Botao onClick={() => setModalAberto(true)}>Registrar vacina</Botao> : undefined}
               />
             ) : (
               <div className="overflow-x-auto">
@@ -444,6 +504,50 @@ export function ProntuarioAnimal() {
         onCancelar={() => setExcluindo(null)}
         carregando={salvando}
       />
+
+      <Modal
+        aberto={modalCompartilhar}
+        onFechar={() => setModalCompartilhar(false)}
+        titulo="Compartilhar prontuário"
+        descricao={`${dados.animal.nome} · ${dados.tutor.nome}`}
+        largura="max-w-md"
+      >
+        {compartilhamento ? (
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Envie este código para outro veterinário. Ele poderá consultar o prontuário em modo
+              somente leitura.
+            </p>
+            <div className="rounded-xl border border-dashed border-brand-300 bg-brand-50 px-4 py-6 text-center">
+              <p className="text-xs tracking-widest text-brand-600 uppercase">Código do prontuário</p>
+              <p className="mt-2 font-mono text-3xl font-bold tracking-[0.3em] text-brand-800">
+                {compartilhamento.codigo}
+              </p>
+              <p className="mt-2 text-xs text-slate-500">
+                Válido até {formatarDataHora(compartilhamento.expiraEm)}
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-between gap-2">
+              <Botao variante="contorno" onClick={copiarCodigo}>
+                <Copy className="h-4 w-4" /> Copiar código
+              </Botao>
+              <Botao variante="secundario" onClick={gerarCompartilhamento} carregando={gerandoCodigo}>
+                <RefreshCw className="h-4 w-4" /> Gerar novo código
+              </Botao>
+            </div>
+            <div className="flex justify-between border-t border-slate-100 pt-4">
+              <Botao variante="perigo" onClick={revogarCompartilhamento}>
+                Revogar acesso
+              </Botao>
+              <Botao variante="contorno" onClick={() => setModalCompartilhar(false)}>
+                Fechar
+              </Botao>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-slate-500">Gerando código...</p>
+        )}
+      </Modal>
     </div>
   )
 }

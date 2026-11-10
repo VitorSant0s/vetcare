@@ -39,6 +39,7 @@ O portal do veterinário foi ampliado para ser um espaço clínico:
 - **Meus pacientes:** apenas animais que já tiveram consulta com o veterinário logado, com última consulta, próxima vacina e acesso ao prontuário.
 - **Prontuários:** lista dos atendimentos registrados pelo veterinário, com diagnóstico, prescrições e link para o histórico completo.
 - O veterinário só acessa prontuário, vacinação e dados de animais que atendem; a API valida essa regra, não apenas a interface.
+- **Compartilhamento de prontuário:** o veterinário responsável gera um código de 8 caracteres, válido por 7 dias, e outro veterinário consulta o prontuário em modo somente leitura informando o código. O código pode ser regenerado ou revogado, e todo acesso é auditado.
 
 ### Extensão: Portal do Cliente
 
@@ -180,7 +181,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (74 testes de integração)
+# Back-end (79 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (11 testes)
@@ -244,6 +245,8 @@ memória no perfil `test`, sem exigir Docker.
 | GET/POST | `/api/solicitacoes` e `/aprovar`/`/recusar` | Admin/Recepção | Análise dos pedidos (extensão) |
 | GET | `/api/veterinarios/me/pacientes` | Veterinário | Meus pacientes (extensão clínica) |
 | GET | `/api/veterinarios/me/atendimentos` | Veterinário | Atendimentos registrados por mim |
+| POST/DELETE | `/api/animais/{id}/compartilhamento` | Veterinário | Gera/revoga código do prontuário |
+| GET | `/api/prontuarios/compartilhados/{codigo}` | Veterinário | Prontuário compartilhado (somente leitura) |
 
 A documentação interativa completa está no Swagger UI.
 
