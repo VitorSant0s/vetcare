@@ -20,6 +20,7 @@ import type {
   PacienteClinico,
   CompartilhamentoProntuario,
   Auditoria,
+  BloqueioAgenda,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -318,4 +319,12 @@ export const auditoriaApi = {
     page?: number
     size?: number
   }) => api.get<PageResponse<Auditoria>>('/auditoria', { params }),
+}
+
+export const bloqueiosApi = {
+  listar: (inicio: string, fim: string) =>
+    api.get<BloqueioAgenda[]>('/veterinarios/me/bloqueios', { params: { inicio, fim } }),
+  criar: (data: string, motivo: string) =>
+    api.post<BloqueioAgenda>('/veterinarios/me/bloqueios', { data, motivo }),
+  excluir: (data: string) => api.delete(`/veterinarios/me/bloqueios/${data}`),
 }

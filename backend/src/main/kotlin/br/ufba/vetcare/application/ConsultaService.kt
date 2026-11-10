@@ -9,6 +9,7 @@ import br.ufba.vetcare.domain.Consulta
 import br.ufba.vetcare.domain.Perfil
 import br.ufba.vetcare.domain.StatusConsulta
 import br.ufba.vetcare.domain.repository.AnimalRepository
+import br.ufba.vetcare.domain.repository.BloqueioAgendaRepository
 import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import br.ufba.vetcare.domain.repository.UsuarioRepository
@@ -24,6 +25,7 @@ class ConsultaService(
     private val animalRepository: AnimalRepository,
     private val tutorRepository: TutorRepository,
     private val usuarioRepository: UsuarioRepository,
+    private val bloqueioAgendaRepository: BloqueioAgendaRepository,
     private val auditoriaService: AuditoriaService,
 ) {
 
@@ -61,6 +63,10 @@ class ConsultaService(
         if (!dataHora.isAfter(LocalDateTime.now())) {
             throw RegraNegocioException("A consulta deve ser agendada para uma data e horário futuros.")
         }
+        bloqueioAgendaRepository.findByVeterinarioIdAndData(veterinarioId, dataHora.toLocalDate())
+            .ifPresent {
+                throw ConflitoException("O veterinário bloqueou este dia: ${it.motivo}")
+            }
         if (repository.existsByVeterinarioIdAndDataHoraAndStatusNot(veterinarioId, dataHora, StatusConsulta.CANCELADA)) {
             throw ConflitoException("O veterinário já possui uma consulta neste horário.")
         }
@@ -122,9 +128,14 @@ class ConsultaService(
      */
     @Transactional
     @CacheEvict(cacheNames = ["agenda"], allEntries = true)
-    fun cancelar(id: Long, motivo: String?): ConsultaResposta {
+    fun cancelar(id: Long, motivo: String?, solicitante: br.ufba.vetcare.infrastructure.security.UsuarioAutenticado? = null): ConsultaResposta {
         val consulta = repository.findById(id)
             .orElseThrow { RecursoNaoEncontradoException("Consulta não encontrada.") }
+        if (solicitante?.perfil == Perfil.VETERINARIO && consulta.veterinario.id != solicitante.id) {
+            throw org.springframework.security.access.AccessDeniedException(
+                "Você só pode cancelar as suas próprias consultas.",
+            )
+        }
         if (consulta.status != StatusConsulta.AGENDADA) {
             throw RegraNegocioException("Somente consultas agendadas podem ser canceladas.")
         }

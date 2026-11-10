@@ -722,3 +722,37 @@ data class AuditoriaResposta(
         )
     }
 }
+
+// ---------- Bloqueio de agenda ----------
+
+data class BloqueioAgendaRequest(
+    @field:jakarta.validation.constraints.NotNull(message = "Informe a data do bloqueio")
+    val data: LocalDate? = null,
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o motivo do bloqueio")
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Motivo muito longo")
+    val motivo: String = "",
+)
+
+data class BloqueioAgendaResposta(
+    val id: Long,
+    val veterinarioId: Long,
+    val veterinarioNome: String,
+    val data: LocalDate,
+    val motivo: String,
+    val criadoEm: Instant,
+    val consultasCanceladas: Int = 0,
+) {
+    companion object {
+        fun de(bloqueio: br.ufba.vetcare.domain.BloqueioAgenda, canceladas: Int = 0) =
+            BloqueioAgendaResposta(
+                id = bloqueio.id ?: 0,
+                veterinarioId = bloqueio.veterinario.id ?: 0,
+                veterinarioNome = bloqueio.veterinario.nome,
+                data = bloqueio.data,
+                motivo = bloqueio.motivo,
+                criadoEm = bloqueio.criadoEm,
+                consultasCanceladas = canceladas,
+            )
+    }
+}

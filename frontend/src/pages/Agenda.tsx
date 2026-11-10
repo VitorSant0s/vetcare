@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   Ban,
+  CalendarOff,
   CalendarDays,
   CalendarPlus,
   ChevronLeft,
@@ -20,14 +21,15 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
 import {
   animaisApi,
+  bloqueiosApi,
   camposDeErro,
   consultasApi,
   mensagemDeErro,
   tutoresApi,
   veterinariosApi,
 } from '../lib/api'
-import { formatarDataHora, formatarHora, hojeIso, paraInputDateTime, somarDiasIso } from '../lib/format'
-import type { Animal, Consulta, Tutor, Usuario } from '../types'
+import { formatarData, formatarDataHora, formatarHora, hojeIso, paraInputDateTime, somarDiasIso } from '../lib/format'
+import type { Animal, BloqueioAgenda, Consulta, Tutor, Usuario } from '../types'
 import {
   Badge,
   Botao,
@@ -83,6 +85,12 @@ export function Agenda() {
   const [motivoCancelamento, setMotivoCancelamento] = useState('')
   const [processandoCancelamento, setProcessandoCancelamento] = useState(false)
   const [atendendo, setAtendendo] = useState<Consulta | null>(null)
+  const [bloqueios, setBloqueios] = useState<BloqueioAgenda[]>([])
+  const [modalBloqueio, setModalBloqueio] = useState(false)
+  const [dataBloqueio, setDataBloqueio] = useState(somarDiasIso(hojeIso(), 1))
+  const [motivoBloqueio, setMotivoBloqueio] = useState('')
+  const [erroBloqueio, setErroBloqueio] = useState('')
+  const [salvandoBloqueio, setSalvandoBloqueio] = useState(false)
 
   const {
     register,
@@ -124,6 +132,20 @@ export function Agenda() {
   useEffect(() => {
     carregar()
   }, [carregar])
+
+  const carregarBloqueios = useCallback(async () => {
+    if (usuario?.perfil !== 'VETERINARIO') return
+    try {
+      const { data } = await bloqueiosApi.listar(inicio, fim)
+      setBloqueios(data)
+    } catch {
+      setBloqueios([])
+    }
+  }, [usuario?.perfil, inicio, fim])
+
+  useEffect(() => {
+    carregarBloqueios()
+  }, [carregarBloqueios])
 
   useEffect(() => {
     veterinariosApi
@@ -229,6 +251,38 @@ export function Agenda() {
       consulta.status === 'AGENDADA' &&
       new Date(consulta.dataHora) <= new Date(Date.now() + 30 * 60000)
     )
+  }
+
+  async function bloquearDia() {
+    setErroBloqueio('')
+    if (!motivoBloqueio.trim()) {
+      setErroBloqueio('Informe o motivo do bloqueio.')
+      return
+    }
+    setSalvandoBloqueio(true)
+    try {
+      const { data } = await bloqueiosApi.criar(dataBloqueio, motivoBloqueio.trim())
+      mostrar(
+        `Dia ${formatarData(dataBloqueio)} bloqueado. ${data.consultasCanceladas} consulta(s) cancelada(s).`,
+      )
+      setModalBloqueio(false)
+      setMotivoBloqueio('')
+      await Promise.all([carregar(), carregarBloqueios()])
+    } catch (error) {
+      setErroBloqueio(mensagemDeErro(error))
+    } finally {
+      setSalvandoBloqueio(false)
+    }
+  }
+
+  async function desbloquearDia(data: string) {
+    try {
+      await bloqueiosApi.excluir(data)
+      mostrar(`Dia ${formatarData(data)} desbloqueado.`)
+      await carregarBloqueios()
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+    }
   }
 
   async function confirmarCancelamento() {
@@ -362,6 +416,42 @@ export function Agenda() {
         </div>
       </Cartao>
 
+      {usuario?.perfil === 'VETERINARIO' && (
+        <Cartao className="mb-6 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                <CalendarOff className="h-4 w-4 text-amber-600" /> Bloqueios de agenda
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-500">
+                Ao bloquear um dia, as consultas agendadas nele são canceladas e os tutores são notificados.
+              </p>
+            </div>
+            <Botao variante="contorno" onClick={() => { setErroBloqueio(''); setModalBloqueio(true) }}>
+              <CalendarOff className="h-4 w-4" /> Bloquear dia
+            </Botao>
+          </div>
+          {bloqueios.length > 0 && (
+            <ul className="mt-3 divide-y divide-slate-100 rounded-lg border border-slate-200">
+              {bloqueios.map((bloqueio) => (
+                <li key={bloqueio.id} className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center">
+                  <span className="rounded-lg bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
+                    {formatarData(bloqueio.data)}
+                  </span>
+                  <p className="min-w-0 flex-1 text-sm text-slate-600">{bloqueio.motivo}</p>
+                  <button
+                    onClick={() => desbloquearDia(bloqueio.data)}
+                    className="text-xs font-medium text-brand-700 hover:underline"
+                  >
+                    Desbloquear
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Cartao>
+      )}
+
       {carregando ? (
         <Cartao>
           <Carregando />
@@ -456,7 +546,8 @@ export function Agenda() {
                               <ClipboardPlus className="h-3.5 w-3.5" /> Atender
                             </button>
                           )}
-                          {podeAgendar &&
+                          {(usuario?.perfil !== 'VETERINARIO' ||
+                            consulta.veterinarioId === usuario?.id) &&
                             consulta.status === 'AGENDADA' &&
                             new Date(consulta.dataHora) > agora && (
                               <button
@@ -594,6 +685,50 @@ export function Agenda() {
               carregando={processandoCancelamento}
             >
               Confirmar cancelamento
+            </Botao>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        aberto={modalBloqueio}
+        onFechar={() => setModalBloqueio(false)}
+        titulo="Bloquear dia de trabalho"
+        descricao="As consultas agendadas nesse dia serão canceladas com o motivo informado."
+        largura="max-w-md"
+      >
+        <div className="space-y-4">
+          <Campo label="Data" obrigatorio>
+            <Entrada
+              type="date"
+              min={hojeIso()}
+              value={dataBloqueio}
+              onChange={(e) => setDataBloqueio(e.target.value)}
+            />
+          </Campo>
+          <Campo label="Motivo" obrigatorio>
+            <Entrada
+              value={motivoBloqueio}
+              onChange={(e) => setMotivoBloqueio(e.target.value)}
+              placeholder="Ex.: congresso, atestado, férias"
+              maxLength={500}
+            />
+          </Campo>
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            As consultas do dia serão canceladas, liberadas da agenda e os tutores entrarão na fila de
+            notificações.
+          </div>
+          {erroBloqueio && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {erroBloqueio}
+            </div>
+          )}
+          <div className="flex justify-end gap-2">
+            <Botao variante="contorno" onClick={() => setModalBloqueio(false)}>
+              Cancelar
+            </Botao>
+            <Botao variante="perigo" onClick={bloquearDia} carregando={salvandoBloqueio}>
+              Bloquear dia
             </Botao>
           </div>
         </div>

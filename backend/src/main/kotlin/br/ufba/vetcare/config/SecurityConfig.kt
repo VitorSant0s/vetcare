@@ -81,6 +81,8 @@ class SecurityConfig(
                     .requestMatchers("/api/notificacoes/**")
                     .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                     .requestMatchers("/api/veterinarios/me/**").hasRole("VETERINARIO")
+                    .requestMatchers(HttpMethod.POST, "/api/consultas/*/cancelar")
+                    .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "VETERINARIO")
                     .requestMatchers("/api/prontuarios/compartilhados/**").hasRole("VETERINARIO")
                     .requestMatchers(HttpMethod.POST, "/api/animais/*/compartilhamento").hasRole("VETERINARIO")
                     .requestMatchers(HttpMethod.DELETE, "/api/animais/*/compartilhamento").hasRole("VETERINARIO")

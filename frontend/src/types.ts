@@ -234,3 +234,13 @@ export interface Auditoria {
   ip?: string | null
   criadoEm: string
 }
+
+export interface BloqueioAgenda {
+  id: number
+  veterinarioId: number
+  veterinarioNome: string
+  data: string
+  motivo: string
+  criadoEm: string
+  consultasCanceladas: number
+}

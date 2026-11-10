@@ -209,9 +209,10 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `veterinario nao pode cancelar consulta`() {
+    fun `veterinario cancela a propria consulta mas nao a de outro`() {
         criarUsuario("recepcao@teste.com", Perfil.RECEPCIONISTA)
         val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
+        val outro = criarUsuario("outro@teste.com", Perfil.VETERINARIO)
         val tutor = criarTutor()
         val animal = criarAnimal(tutor)
         val tokenRecepcao = login("recepcao@teste.com")
@@ -222,10 +223,20 @@ class ConsultaIntegrationTest : IntegrationTestBase() {
 
         mockMvc.perform(
             post("/api/consultas/$id/cancelar")
-                .header("Authorization", bearer(login("vet@teste.com")))
+                .header("Authorization", bearer(login("outro@teste.com")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"motivo":"Indisponibilidade"}"""),
         ).andExpect(status().isForbidden)
+
+        mockMvc.perform(
+            post("/api/consultas/$id/cancelar")
+                .header("Authorization", bearer(login("vet@teste.com")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"motivo":"Indisponibilidade"}"""),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.status").value("CANCELADA"))
+            .andExpect(jsonPath("$.motivoCancelamento").value("Indisponibilidade"))
     }
 
     @Test

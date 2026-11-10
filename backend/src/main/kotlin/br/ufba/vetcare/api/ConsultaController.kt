@@ -58,5 +58,6 @@ class ConsultaController(private val service: ConsultaService) {
     fun cancelar(
         @PathVariable id: Long,
         @Valid @RequestBody(required = false) request: CancelamentoRequest?,
-    ): ConsultaResposta = service.cancelar(id, request?.motivo)
+        @AuthenticationPrincipal usuario: UsuarioAutenticado,
+    ): ConsultaResposta = service.cancelar(id, request?.motivo, usuario)
 }
