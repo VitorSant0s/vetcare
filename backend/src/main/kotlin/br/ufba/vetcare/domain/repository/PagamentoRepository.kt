@@ -11,4 +11,7 @@ interface PagamentoRepository : JpaRepository<Pagamento, Long> {
 
     @EntityGraph(attributePaths = ["tutor", "consulta"])
     fun findAllByOrderByCriadoEmDesc(): List<Pagamento>
+
+    @EntityGraph(attributePaths = ["tutor", "consulta"])
+    fun findByTutorIdOrderByDataPagamentoDesc(tutorId: Long): List<Pagamento>
 }

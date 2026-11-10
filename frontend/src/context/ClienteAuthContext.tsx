@@ -17,6 +17,7 @@ interface ClienteAuthContexto {
   sair: () => void
   alterarSenha: (atual: string, nova: string) => Promise<void>
   marcarSenhaAlterada: () => void
+  atualizarTutor: (tutor: Tutor) => void
 }
 
 const Contexto = createContext<ClienteAuthContexto | null>(null)
@@ -44,14 +45,23 @@ export function ClienteAuthProvider({ children }: { children: ReactNode }) {
     return data.tutor
   }, [])
 
-  const sair = useCallback(() => {
+  const sair = useCallback(async () => {
+    await clienteApi.logout().catch(() => undefined)
     limparTokenCliente()
     setTutor(null)
     window.location.assign('/cliente/login')
   }, [])
 
   const alterarSenha = useCallback(async (atual: string, nova: string) => {
+    if (!tutor) return
     await clienteApi.alterarSenha(atual, nova)
+    const { data } = await clienteApi.login(tutor.cpf, nova)
+    localStorage.setItem('vetcare.cliente.token', data.token)
+    setTutor(data.tutor)
+  }, [tutor])
+
+  const atualizarTutor = useCallback((novo: Tutor) => {
+    setTutor(novo)
   }, [])
 
   const marcarSenhaAlterada = useCallback(() => {
@@ -59,8 +69,8 @@ export function ClienteAuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const valor = useMemo(
-    () => ({ tutor, carregando, entrar, sair, alterarSenha, marcarSenhaAlterada }),
-    [tutor, carregando, entrar, sair, alterarSenha, marcarSenhaAlterada],
+    () => ({ tutor, carregando, entrar, sair, alterarSenha, marcarSenhaAlterada, atualizarTutor }),
+    [tutor, carregando, entrar, sair, alterarSenha, marcarSenhaAlterada, atualizarTutor],
   )
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>

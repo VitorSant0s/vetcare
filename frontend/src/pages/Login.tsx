@@ -154,6 +154,11 @@ export function Login() {
               Acessar o portal do cliente
             </a>
           </p>
+          <p className="mt-2 text-center text-xs text-slate-500">
+            <a href="/privacidade" className="hover:underline">
+              Política de Privacidade e LGPD
+            </a>
+          </p>
         </div>
       </div>
     </div>

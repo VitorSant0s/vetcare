@@ -23,4 +23,8 @@ class AuthController(private val authService: AuthService) {
     @GetMapping("/me")
     fun me(@AuthenticationPrincipal usuario: UsuarioAutenticado): UsuarioResposta =
         authService.usuarioAtual(usuario.email)
+
+    @PostMapping("/logout")
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+    fun logout(@AuthenticationPrincipal usuario: UsuarioAutenticado) = authService.logout(usuario.email)
 }

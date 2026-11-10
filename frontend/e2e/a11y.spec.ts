@@ -33,6 +33,12 @@ test('login do cliente sem violações graves de acessibilidade', async ({ page 
   await semViolacoesGraves(page)
 })
 
+test('política de privacidade sem violações graves de acessibilidade', async ({ page }) => {
+  await page.goto('/privacidade')
+  await expect(page.getByRole('heading', { name: /política de privacidade e lgpd/i })).toBeVisible()
+  await semViolacoesGraves(page)
+})
+
 test('modal de usuário prende o foco, fecha com Escape e passa no axe', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('vetcare.token', 'token-de-teste'))
   await page.route('**/api/auth/me', (route) => route.fulfill({ json: admin }))

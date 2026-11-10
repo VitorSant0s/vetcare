@@ -49,6 +49,9 @@ interface ConsultaRepository : JpaRepository<Consulta, Long> {
     @EntityGraph(attributePaths = ["animal", "tutor", "veterinario"])
     fun findByDataHoraBetween(inicio: LocalDateTime, fim: LocalDateTime): List<Consulta>
 
+    @EntityGraph(attributePaths = ["animal", "tutor", "veterinario"])
+    fun findByTutorIdOrderByDataHoraDesc(tutorId: Long): List<Consulta>
+
     fun existsByVeterinarioIdAndDataHoraAfterAndStatus(
         veterinarioId: Long,
         dataHora: LocalDateTime,

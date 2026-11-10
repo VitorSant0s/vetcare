@@ -101,6 +101,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-15 — Notificações por caixa de saída com canal simulado](docs/adr/ADR-15-notificacoes-canal-simulado.md)
 - [ADR-16 — Portal do cliente com autenticação por CPF](docs/adr/ADR-16-portal-cliente.md)
 - [ADR-17 — Remoção de dados de demonstração e envio real por SMTP](docs/adr/ADR-17-remocao-de-mocks.md)
+- [ADR-18 — LGPD e endurecimento de segurança](docs/adr/ADR-18-lgpd-seguranca.md)
 
 ## Como rodar
 
@@ -178,6 +179,9 @@ O `.env` da raiz é carregado automaticamente. As principais:
 | `MAIL_AUTH` / `MAIL_STARTTLS` | `false` | Configuração TLS/autenticação do SMTP |
 | `MAIL_FROM` | `no-reply@vetcare.local` | Remetente dos avisos |
 | `NOTIFICACOES_CANAL` | `SMTP` | Canal de envio das notificações |
+| `RATE_LIMIT_ENABLED` | `true` | Proteção contra força bruta |
+| `RATE_LIMIT_MAX_ATTEMPTS` | `5` | Tentativas antes do bloqueio |
+| `RATE_LIMIT_WINDOW_MINUTES` | `15` | Duração do bloqueio |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Origens permitidas |
 
 Em produção, defina `JWT_SECRET` com 32+ caracteres e credenciais SMTP reais em cofre/variável
@@ -186,7 +190,7 @@ gerenciada.
 ## Testes
 
 ```bash
-# Back-end (84 testes de integração)
+# Back-end (92 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (10 testes)
@@ -206,6 +210,14 @@ atendimento, prontuário, prescrições, vacinação, pagamentos, notificações
 cliente e proteção do último administrador. Usam H2 em
 memória no perfil `test`, sem exigir Docker.
 
+## LGPD e privacidade
+
+- Política pública em `/privacidade`, com versão e data.
+- Consentimento registrado no banco no primeiro acesso do cliente, com versão e data.
+- O cliente pode **baixar uma cópia dos próprios dados** (JSON) no portal.
+- O cliente pode **solicitar a exclusão da conta**: os dados pessoais são anonimizados, o acesso é encerrado e os registros clínicos/financeiros são preservados pelo prazo legal.
+- Consentimento, exportação e exclusão são auditados.
+
 ## Segurança e auditoria
 
 - Senhas armazenadas com BCrypt.
@@ -224,6 +236,11 @@ memória no perfil `test`, sem exigir Docker.
 - Um administrador não pode desativar ou rebaixar a própria conta, e o sistema exige ao menos um
   administrador ativo.
 - CRMV é único quando informado e o cadastro de veterinário exige o registro profissional.
+- Limite de tentativas de login (5 em 15 minutos) com bloqueio temporário e auditoria.
+- Logout revoga todos os tokens anteriores do usuário/cliente via `token_version`.
+- Troca de senha invalida tokens antigos.
+- Cabeçalhos de segurança: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` e `Cache-Control` para APIs.
+- Política de privacidade, consentimento, exportação e exclusão de dados (LGPD).
 
 ## Principais endpoints
 
@@ -256,6 +273,11 @@ memória no perfil `test`, sem exigir Docker.
 | POST/DELETE | `/api/animais/{id}/compartilhamento` | Veterinário | Gera/revoga código do prontuário |
 | GET | `/api/prontuarios/compartilhados/{codigo}` | Veterinário | Prontuário compartilhado (somente leitura) |
 | GET | `/api/auditoria` | Administrador | Consulta da trilha de auditoria |
+| POST | `/api/auth/logout` | Autenticados | Revoga tokens da equipe |
+| POST | `/api/cliente/auth/logout` | Cliente | Revoga tokens do cliente |
+| POST | `/api/cliente/auth/consentimento` | Cliente | Registra consentimento LGPD |
+| GET | `/api/cliente/meus-dados` | Cliente | Exporta os dados pessoais |
+| DELETE | `/api/cliente/conta` | Cliente | Anonimiza a conta |
 | GET/POST/DELETE | `/api/veterinarios/me/bloqueios` | Veterinário | Bloqueio de dia de trabalho |
 
 A documentação interativa completa está no Swagger UI.

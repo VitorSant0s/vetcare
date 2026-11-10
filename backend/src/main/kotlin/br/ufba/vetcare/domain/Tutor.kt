@@ -39,6 +39,21 @@ class Tutor(
     @Column(name = "primeiro_acesso", nullable = false)
     var primeiroAcesso: Boolean = true,
 
+    @Column(name = "token_version", nullable = false)
+    var tokenVersion: Int = 0,
+
+    @Column(name = "consentimento_em")
+    var consentimentoEm: Instant? = null,
+
+    @Column(name = "consentimento_versao", length = 20)
+    var consentimentoVersao: String? = null,
+
+    @Column(nullable = false)
+    var anonimizado: Boolean = false,
+
+    @Column(name = "exclusao_solicitada_em")
+    var exclusaoSolicitadaEm: Instant? = null,
+
     @Column(name = "criado_em", nullable = false)
     var criadoEm: Instant = Instant.now(),
 

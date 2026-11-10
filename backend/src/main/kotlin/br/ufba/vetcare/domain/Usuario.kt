@@ -44,4 +44,7 @@ class Usuario(
 
     @Column(name = "atualizado_em", nullable = false)
     var atualizadoEm: Instant = Instant.now(),
+
+    @Column(name = "token_version", nullable = false)
+    var tokenVersion: Int = 0,
 )

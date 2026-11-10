@@ -20,5 +20,6 @@ class UsuarioDetailsService(private val repository: UsuarioRepository) {
         email = email,
         perfil = perfil,
         ativo = ativo,
+        tokenVersion = tokenVersion,
     )
 }

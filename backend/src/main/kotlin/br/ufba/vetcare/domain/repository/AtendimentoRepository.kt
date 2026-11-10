@@ -17,5 +17,8 @@ interface AtendimentoRepository : JpaRepository<Atendimento, Long> {
     fun findByVeterinarioIdOrderByDataHoraDesc(veterinarioId: Long): List<Atendimento>
 
     @EntityGraph(attributePaths = ["animal", "veterinario", "prescricoes"])
+    fun findByAnimalIdInOrderByDataHoraDesc(animalIds: List<Long>): List<Atendimento>
+
+    @EntityGraph(attributePaths = ["animal", "veterinario", "prescricoes"])
     override fun findById(id: Long): Optional<Atendimento>
 }

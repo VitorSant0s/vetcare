@@ -9,7 +9,6 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:5173',
     viewport: { width: 1440, height: 900 },
-    channel: process.env.CI ? undefined : 'chrome',
     trace: 'on-first-retry',
   },
   webServer: {

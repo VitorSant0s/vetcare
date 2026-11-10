@@ -1,6 +1,7 @@
 package br.ufba.vetcare.infrastructure.security
 
 import br.ufba.vetcare.domain.Usuario
+import br.ufba.vetcare.domain.repository.TutorRepository
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -16,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
     private val usuarioDetailsService: UsuarioDetailsService,
+    private val tutorRepository: TutorRepository,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
@@ -32,24 +34,32 @@ class JwtAuthenticationFilter(
                     if (claims["tipo"] == "CLIENTE") {
                         val tutorId = (claims["tutorId"] as? Number)?.toLong()
                         if (tutorId != null) {
-                            val principal = TutorAutenticado(
-                                id = tutorId,
-                                nome = claims["nome"] as? String ?: "",
-                                cpf = claims.subject ?: "",
-                                email = claims["email"] as? String ?: "",
-                            )
-                            val authentication = UsernamePasswordAuthenticationToken(
-                                principal,
-                                null,
-                                listOf(SimpleGrantedAuthority("ROLE_CLIENTE")),
-                            )
-                            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-                            SecurityContextHolder.getContext().authentication = authentication
+                            val tutor = tutorRepository.findById(tutorId).orElse(null)
+                            val versaoToken = (claims["tv"] as? Number)?.toInt() ?: 0
+                            if (tutor != null && tutor.ativo && !tutor.anonimizado &&
+                                tutor.tokenVersion == versaoToken
+                            ) {
+                                val principal = TutorAutenticado(
+                                    id = tutorId,
+                                    nome = tutor.nome,
+                                    cpf = tutor.cpf,
+                                    email = tutor.email,
+                                )
+                                val authentication = UsernamePasswordAuthenticationToken(
+                                    principal,
+                                    null,
+                                    listOf(SimpleGrantedAuthority("ROLE_CLIENTE")),
+                                )
+                                authentication.details =
+                                    WebAuthenticationDetailsSource().buildDetails(request)
+                                SecurityContextHolder.getContext().authentication = authentication
+                            }
                         }
                     } else {
                         val email = claims.subject
                         val usuario = email?.let { usuarioDetailsService.carregar(it) }
-                        if (usuario != null && usuario.ativo) {
+                        val versaoToken = (claims["tv"] as? Number)?.toInt() ?: 0
+                        if (usuario != null && usuario.ativo && usuario.tokenVersion == versaoToken) {
                             val authentication = UsernamePasswordAuthenticationToken(
                                 usuario,
                                 null,
@@ -79,6 +89,7 @@ data class UsuarioAutenticado(
     val email: String,
     val perfil: br.ufba.vetcare.domain.Perfil,
     val ativo: Boolean,
+    val tokenVersion: Int,
 )
 
 data class TutorAutenticado(

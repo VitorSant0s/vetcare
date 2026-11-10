@@ -22,6 +22,9 @@ export interface Tutor {
   ativo?: boolean
   portalConfigurado?: boolean
   primeiroAcesso?: boolean
+  consentimentoEm?: string | null
+  consentimentoVersao?: string | null
+  anonimizado?: boolean
   criadoEm: string
 }
 

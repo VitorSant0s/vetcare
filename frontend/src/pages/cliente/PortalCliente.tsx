@@ -7,14 +7,17 @@ import {
   CalendarPlus,
   ClipboardList,
   Clock,
+  Download,
   KeyRound,
   PawPrint,
   Pencil,
   Plus,
+  ShieldCheck,
+  Trash2,
 } from 'lucide-react'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { useToast } from '../../components/Toast'
-import { clienteApi, mensagemDeErro } from '../../lib/api'
+import { clienteApi, limparTokenCliente, mensagemDeErro } from '../../lib/api'
 import { formatarDataHora, idade, paraInputDateTime } from '../../lib/format'
 import type { Animal, SolicitacaoAgendamento } from '../../types'
 import {
@@ -55,7 +58,7 @@ const senhaSchema = z
 type SenhaForm = z.infer<typeof senhaSchema>
 
 export function PortalCliente() {
-  const { tutor, alterarSenha, marcarSenhaAlterada } = useClienteAuth()
+  const { tutor, alterarSenha, marcarSenhaAlterada, atualizarTutor } = useClienteAuth()
   const primeiroAcesso = tutor?.primeiroAcesso ?? false
   const { mostrar } = useToast()
   const [params, setParams] = useSearchParams()
@@ -71,6 +74,12 @@ export function PortalCliente() {
   const [modalSenha, setModalSenha] = useState(false)
   const [salvandoSenha, setSalvandoSenha] = useState(false)
   const [erroSenha, setErroSenha] = useState('')
+  const [consentimentoAceito, setConsentimentoAceito] = useState(false)
+  const [salvandoConsentimento, setSalvandoConsentimento] = useState(false)
+  const [erroConsentimento, setErroConsentimento] = useState('')
+  const [modalExclusao, setModalExclusao] = useState(false)
+  const [excluindoConta, setExcluindoConta] = useState(false)
+  const [exportando, setExportando] = useState(false)
 
   const [petSelecionado, setPetSelecionado] = useState('')
   const [dataPreferida, setDataPreferida] = useState(() => {
@@ -170,6 +179,55 @@ export function PortalCliente() {
       setErroPet(mensagemDeErro(error))
     } finally {
       setSalvandoPet(false)
+    }
+  }
+
+  async function registrarConsentimento() {
+    if (!consentimentoAceito) {
+      setErroConsentimento('Marque a caixa para continuar.')
+      return
+    }
+    setSalvandoConsentimento(true)
+    setErroConsentimento('')
+    try {
+      const { data } = await clienteApi.consentir('1.0')
+      atualizarTutor(data)
+      mostrar('Consentimento registrado. Obrigado!')
+    } catch (error) {
+      setErroConsentimento(mensagemDeErro(error))
+    } finally {
+      setSalvandoConsentimento(false)
+    }
+  }
+
+  async function exportarMeusDados() {
+    setExportando(true)
+    try {
+      const { data } = await clienteApi.meusDados()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'meus-dados-vetcare.json'
+      link.click()
+      URL.revokeObjectURL(url)
+      mostrar('Seus dados foram exportados.')
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+    } finally {
+      setExportando(false)
+    }
+  }
+
+  async function excluirMinhaConta() {
+    setExcluindoConta(true)
+    try {
+      await clienteApi.excluirConta()
+      limparTokenCliente()
+      window.location.assign('/cliente/login')
+    } catch (error) {
+      mostrar(mensagemDeErro(error), 'erro')
+      setExcluindoConta(false)
     }
   }
 
@@ -312,6 +370,35 @@ export function PortalCliente() {
               )}
             </Cartao>
           </div>
+
+          <Cartao className="p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                  <ShieldCheck className="h-4 w-4 text-brand-600" /> Privacidade e LGPD
+                </h2>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  Baixe uma cópia dos seus dados ou solicite a exclusão da conta.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="/privacidade"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  Política de privacidade
+                </a>
+                <Botao variante="contorno" onClick={exportarMeusDados} carregando={exportando}>
+                  <Download className="h-3.5 w-3.5" /> Baixar meus dados
+                </Botao>
+                <Botao variante="perigo" onClick={() => setModalExclusao(true)}>
+                  <Trash2 className="h-3.5 w-3.5" /> Excluir conta
+                </Botao>
+              </div>
+            </div>
+          </Cartao>
         </>
       )}
 
@@ -487,6 +574,74 @@ export function PortalCliente() {
           )}
         </Cartao>
       )}
+
+      <Modal
+        aberto={!!tutor && !tutor.consentimentoEm}
+        onFechar={() => undefined}
+        titulo="Consentimento LGPD"
+        descricao="Para usar o portal, precisamos do seu consentimento para tratar os dados pessoais e clínicos."
+        largura="max-w-lg"
+      >
+        <div className="space-y-4 text-sm text-slate-600">
+          <p>
+            Usamos seus dados para atendimento veterinário, prontuário, agenda, vacinação, avisos e
+            obrigações legais. Você pode acessar, corrigir, exportar ou solicitar a exclusão dos seus
+            dados.
+          </p>
+          <p>
+            Leia a{' '}
+            <a href="/privacidade" target="_blank" rel="noreferrer" className="font-medium text-brand-700 hover:underline">
+              Política de Privacidade e LGPD
+            </a>
+            .
+          </p>
+          <label className="flex items-start gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
+            <input
+              type="checkbox"
+              checked={consentimentoAceito}
+              onChange={(e) => setConsentimentoAceito(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300"
+            />
+            <span>
+              Li e concordo com o tratamento dos meus dados pessoais e dos dados clínicos dos meus pets.
+            </span>
+          </label>
+          {erroConsentimento && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+              {erroConsentimento}
+            </div>
+          )}
+          <Botao className="w-full" onClick={registrarConsentimento} carregando={salvandoConsentimento}>
+            Aceitar e continuar
+          </Botao>
+        </div>
+      </Modal>
+
+      <Modal
+        aberto={modalExclusao}
+        onFechar={() => setModalExclusao(false)}
+        titulo="Excluir minha conta"
+        descricao="Esta ação anonimiza seus dados pessoais e encerra o acesso ao portal."
+        largura="max-w-md"
+      >
+        <div className="space-y-4 text-sm text-slate-600">
+          <p>
+            Seus dados de identificação e contato serão anonimizados. Registros clínicos e financeiros
+            podem ser preservados pelo prazo legal aplicável à clínica.
+          </p>
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800">
+            A exclusão não poderá ser desfeita. Se quiser uma cópia, baixe seus dados antes.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Botao variante="contorno" onClick={() => setModalExclusao(false)}>
+              Cancelar
+            </Botao>
+            <Botao variante="perigo" onClick={excluirMinhaConta} carregando={excluindoConta}>
+              Excluir definitivamente
+            </Botao>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         aberto={modalPet}

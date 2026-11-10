@@ -5,6 +5,7 @@ import br.ufba.vetcare.application.exception.AutenticacaoException
 import br.ufba.vetcare.application.exception.ConflitoException
 import br.ufba.vetcare.application.exception.RecursoNaoEncontradoException
 import br.ufba.vetcare.application.exception.RegraNegocioException
+import br.ufba.vetcare.application.exception.TooManyRequestsException
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -38,6 +39,10 @@ class GlobalExceptionHandler {
     @ExceptionHandler(AutenticacaoException::class)
     fun autenticacao(ex: AutenticacaoException) =
         resposta(HttpStatus.UNAUTHORIZED, "Não autenticado", ex.message)
+
+    @ExceptionHandler(TooManyRequestsException::class)
+    fun muitasTentativas(ex: TooManyRequestsException) =
+        resposta(HttpStatus.TOO_MANY_REQUESTS, "Muitas tentativas", ex.message)
 
     @ExceptionHandler(AccessDeniedException::class)
     fun acessoNegado(ex: AccessDeniedException) =

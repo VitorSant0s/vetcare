@@ -18,6 +18,7 @@ import { RotaCliente } from './components/cliente/guards'
 import { LayoutCliente } from './components/cliente/LayoutCliente'
 import { ClienteLogin } from './pages/cliente/ClienteLogin'
 import { PortalCliente } from './pages/cliente/PortalCliente'
+import { Privacidade } from './pages/Privacidade'
 import { NaoEncontrado } from './pages/NaoEncontrado'
 import { Solicitacoes } from './pages/Solicitacoes'
 import { Pacientes } from './pages/Pacientes'
@@ -34,6 +35,7 @@ export default function App() {
         <ToastProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/privacidade" element={<Privacidade />} />
             <Route
               path="/cliente/login"
               element={

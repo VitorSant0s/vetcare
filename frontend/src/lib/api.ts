@@ -285,6 +285,10 @@ export const clienteApi = {
   me: () => apiCliente.get<Tutor>('/auth/me'),
   alterarSenha: (senhaAtual: string, novaSenha: string) =>
     apiCliente.put('/auth/senha', { senhaAtual, novaSenha }),
+  logout: () => apiCliente.post('/auth/logout'),
+  consentir: (versao = '1.0') => apiCliente.post<Tutor>('/auth/consentimento', { versao }),
+  meusDados: () => apiCliente.get<Record<string, unknown>>('/meus-dados'),
+  excluirConta: () => apiCliente.delete('/conta'),
   listarPets: () => apiCliente.get<Animal[]>('/pets'),
   criarPet: (payload: PetPayload) => apiCliente.post<Animal>('/pets', payload),
   atualizarPet: (id: number, payload: PetPayload) => apiCliente.put<Animal>(`/pets/${id}`, payload),

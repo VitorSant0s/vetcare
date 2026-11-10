@@ -13,6 +13,9 @@ interface NotificacaoRepository : JpaRepository<Notificacao, Long> {
     @EntityGraph(attributePaths = ["tutor", "consulta", "vacinacao"])
     fun findByStatusOrderByCriadoEm(status: StatusNotificacao): List<Notificacao>
 
+    @EntityGraph(attributePaths = ["tutor", "consulta", "vacinacao"])
+    fun findByTutorIdOrderByCriadoEmDesc(tutorId: Long): List<Notificacao>
+
     fun existsByTipoAndConsultaId(tipo: TipoNotificacao, consultaId: Long): Boolean
     fun existsByTipoAndVacinacaoId(tipo: TipoNotificacao, vacinacaoId: Long): Boolean
 }

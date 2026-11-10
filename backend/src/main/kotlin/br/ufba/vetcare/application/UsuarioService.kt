@@ -88,7 +88,10 @@ class UsuarioService(
         usuario.email = email
         usuario.perfil = novoPerfil
         usuario.ativo = request.ativo
-        request.senha?.takeIf { it.isNotBlank() }?.let { usuario.senha = passwordEncoder.encode(it)!! }
+        request.senha?.takeIf { it.isNotBlank() }?.let {
+            usuario.senha = passwordEncoder.encode(it)!!
+            usuario.tokenVersion += 1
+        }
         usuario.atualizadoEm = Instant.now()
         val salvo = repository.save(usuario)
         auditoriaService.registrar("USUARIO_ATUALIZADO", "Usuario", salvo.id)

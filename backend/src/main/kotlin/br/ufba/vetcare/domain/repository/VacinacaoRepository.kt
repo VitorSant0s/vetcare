@@ -11,6 +11,9 @@ interface VacinacaoRepository : JpaRepository<Vacinacao, Long> {
     fun findByAnimalIdOrderByDataAplicacaoDesc(animalId: Long): List<Vacinacao>
 
     @EntityGraph(attributePaths = ["animal", "veterinario"])
+    fun findByAnimalIdInOrderByDataAplicacaoDesc(animalIds: List<Long>): List<Vacinacao>
+
+    @EntityGraph(attributePaths = ["animal", "veterinario"])
     override fun findById(id: Long): Optional<Vacinacao>
 
     fun countByAnimalId(animalId: Long): Long

@@ -132,6 +132,11 @@ export function ClienteLogin() {
               </Botao>
             </form>
 
+            <p className="mt-5 text-center text-xs text-slate-500">
+              <a href="/privacidade" className="hover:underline">
+                Política de Privacidade e LGPD
+              </a>
+            </p>
           </div>
         </div>
       </div>

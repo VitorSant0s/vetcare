@@ -179,6 +179,9 @@ data class TutorResposta(
     val ativo: Boolean = true,
     val portalConfigurado: Boolean = false,
     val primeiroAcesso: Boolean = true,
+    val consentimentoEm: Instant? = null,
+    val consentimentoVersao: String? = null,
+    val anonimizado: Boolean = false,
     val criadoEm: Instant,
 ) {
     companion object {
@@ -192,6 +195,9 @@ data class TutorResposta(
             ativo = tutor.ativo,
             portalConfigurado = tutor.senha != null,
             primeiroAcesso = tutor.primeiroAcesso,
+            consentimentoEm = tutor.consentimentoEm,
+            consentimentoVersao = tutor.consentimentoVersao,
+            anonimizado = tutor.anonimizado,
             criadoEm = tutor.criadoEm,
         )
     }
@@ -756,3 +762,23 @@ data class BloqueioAgendaResposta(
             )
     }
 }
+
+
+// ---------- LGPD ----------
+
+data class ConsentimentoRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe a versão do termo")
+    @field:jakarta.validation.constraints.Size(max = 20, message = "Versão inválida")
+    val versao: String = "1.0",
+)
+
+data class MeusDadosResposta(
+    val tutor: TutorResposta,
+    val pets: List<AnimalResposta>,
+    val consultas: List<ConsultaResposta>,
+    val atendimentos: List<AtendimentoResposta>,
+    val vacinacoes: List<VacinacaoResposta>,
+    val pagamentos: List<PagamentoResposta>,
+    val solicitacoes: List<SolicitacaoResposta>,
+    val notificacoes: List<NotificacaoResposta>,
+)

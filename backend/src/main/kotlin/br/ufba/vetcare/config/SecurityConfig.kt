@@ -27,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableConfigurationProperties(JwtProperties::class, CorsProperties::class)
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val securityHeadersFilter: br.ufba.vetcare.infrastructure.security.SecurityHeadersFilter,
     private val corsProperties: CorsProperties,
 ) {
 
@@ -117,6 +118,7 @@ class SecurityConfig(
                     response.writer.write("""{"status":403,"erro":"Acesso negado","mensagem":"Seu perfil não tem permissão para esta operação."}""")
                 }
             }
+            .addFilterBefore(securityHeadersFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }

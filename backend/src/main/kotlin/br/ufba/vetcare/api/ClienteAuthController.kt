@@ -1,6 +1,7 @@
 package br.ufba.vetcare.api
 
 import br.ufba.vetcare.api.dto.AlterarSenhaRequest
+import br.ufba.vetcare.api.dto.ConsentimentoRequest
 import br.ufba.vetcare.api.dto.ClienteLoginRequest
 import br.ufba.vetcare.api.dto.ClienteLoginResponse
 import br.ufba.vetcare.api.dto.TutorResposta
@@ -27,10 +28,20 @@ class ClienteAuthController(private val service: ClienteAuthService) {
     @GetMapping("/me")
     fun me(@AuthenticationPrincipal tutor: TutorAutenticado): TutorResposta = service.me(tutor.id)
 
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun logout(@AuthenticationPrincipal tutor: TutorAutenticado) = service.logout(tutor.id)
+
     @PutMapping("/senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun alterarSenha(
         @AuthenticationPrincipal tutor: TutorAutenticado,
         @Valid @RequestBody request: AlterarSenhaRequest,
     ) = service.alterarSenha(tutor.id, request)
+
+    @PostMapping("/consentimento")
+    fun consentir(
+        @AuthenticationPrincipal tutor: TutorAutenticado,
+        @Valid @RequestBody request: ConsentimentoRequest,
+    ): TutorResposta = service.registrarConsentimento(tutor.id, request.versao)
 }

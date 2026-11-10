@@ -19,6 +19,9 @@ app:
     expiration-minutes: 60
   admin:
     enabled: false
+  security:
+    rate-limit:
+      enabled: false
   notificacoes:
     agendamento: false
     canal: TESTE

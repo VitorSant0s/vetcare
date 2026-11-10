@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import axios from 'axios'
-import { authApi } from '../lib/api'
+import { api, authApi } from '../lib/api'
 import type { Usuario } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -50,7 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data.usuario
   }, [])
 
-  const sair = useCallback(() => {
+  const sair = useCallback(async () => {
+    await api.post('/auth/logout').catch(() => undefined)
     localStorage.removeItem(TOKEN_KEY)
     setUsuario(null)
     window.location.assign('/login')
