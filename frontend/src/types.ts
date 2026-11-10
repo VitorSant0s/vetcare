@@ -223,3 +223,14 @@ export interface CompartilhamentoProntuario {
   criadoEm: string
   criadoPorNome: string
 }
+
+export interface Auditoria {
+  id: number
+  usuarioEmail?: string | null
+  acao: string
+  entidade?: string | null
+  entidadeId?: number | null
+  detalhes?: string | null
+  ip?: string | null
+  criadoEm: string
+}

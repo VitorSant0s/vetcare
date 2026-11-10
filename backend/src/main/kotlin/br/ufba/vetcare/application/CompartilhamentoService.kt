@@ -75,12 +75,31 @@ class CompartilhamentoService(
 
     @Transactional
     fun buscarPorCodigo(codigo: String): ProntuarioResposta {
-        val compartilhamento = repository.findByCodigoIgnoreCase(codigo.trim())
-            .orElseThrow { RecursoNaoEncontradoException("Código de prontuário não encontrado.") }
+        val compartilhamento = repository.findByCodigoIgnoreCase(codigo.trim()).orElse(null)
+        if (compartilhamento == null) {
+            auditoriaService.registrarIndependente(
+                acao = "PRONTUARIO_CODIGO_INVALIDO",
+                entidade = "Compartilhamento",
+                detalhes = "Código informado: ${codigo.take(12)}",
+            )
+            throw RecursoNaoEncontradoException("Código de prontuário não encontrado.")
+        }
         if (!compartilhamento.ativo) {
+            auditoriaService.registrarIndependente(
+                acao = "PRONTUARIO_CODIGO_REVOGADO",
+                entidade = "Animal",
+                entidadeId = compartilhamento.animal.id,
+                detalhes = "Código ${compartilhamento.codigo}",
+            )
             throw RegraNegocioException("Este código foi revogado. Peça um novo compartilhamento.")
         }
         if (compartilhamento.expiraEm.isBefore(Instant.now())) {
+            auditoriaService.registrarIndependente(
+                acao = "PRONTUARIO_CODIGO_EXPIRADO",
+                entidade = "Animal",
+                entidadeId = compartilhamento.animal.id,
+                detalhes = "Código ${compartilhamento.codigo}",
+            )
             throw RegraNegocioException("Este código expirou. Peça um novo compartilhamento.")
         }
         val prontuario = prontuarioService.montar(compartilhamento.animal.id!!, null)

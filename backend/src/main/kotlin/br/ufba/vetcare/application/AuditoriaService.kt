@@ -5,6 +5,8 @@ import br.ufba.vetcare.domain.repository.AuditoriaRepository
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 
@@ -20,6 +22,27 @@ class AuditoriaService(private val repository: AuditoriaRepository) {
         entidadeId: Long? = null,
         detalhes: String? = null,
         usuarioEmail: String? = emailAtual(),
+    ) = salvar(acao, entidade, entidadeId, detalhes, usuarioEmail)
+
+    /**
+     * Registra eventos de segurança que devem sobreviver ao rollback da operação
+     * (acesso negado, código inválido, tentativa bloqueada).
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun registrarIndependente(
+        acao: String,
+        entidade: String? = null,
+        entidadeId: Long? = null,
+        detalhes: String? = null,
+        usuarioEmail: String? = emailAtual(),
+    ) = salvar(acao, entidade, entidadeId, detalhes, usuarioEmail)
+
+    private fun salvar(
+        acao: String,
+        entidade: String?,
+        entidadeId: Long?,
+        detalhes: String?,
+        usuarioEmail: String?,
     ) {
         repository.save(
             Auditoria(

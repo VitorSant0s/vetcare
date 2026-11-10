@@ -22,6 +22,7 @@ import { NaoEncontrado } from './pages/NaoEncontrado'
 import { Solicitacoes } from './pages/Solicitacoes'
 import { Pacientes } from './pages/Pacientes'
 import { Prontuarios } from './pages/Prontuarios'
+import { AuditoriaPage } from './pages/Auditoria'
 import { PortalAdmin } from './pages/portal/PortalAdmin'
 import { PortalRecepcao } from './pages/portal/PortalRecepcao'
 import { PortalVeterinario } from './pages/portal/PortalVeterinario'
@@ -139,6 +140,14 @@ export default function App() {
                     <RotaPapeis papeis={['ADMINISTRADOR', 'RECEPCIONISTA']}>
                       <Notificacoes />
                     </RotaPapeis>
+                  }
+                />
+                <Route
+                  path="/auditoria"
+                  element={
+                    <RotaPerfil perfil="ADMINISTRADOR">
+                      <AuditoriaPage />
+                    </RotaPerfil>
                   }
                 />
                 <Route

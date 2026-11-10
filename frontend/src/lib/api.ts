@@ -19,6 +19,7 @@ import type {
   SolicitacaoAgendamento,
   PacienteClinico,
   CompartilhamentoProntuario,
+  Auditoria,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -306,4 +307,15 @@ export function limparTokenCliente() {
 
 export function tokenCliente(): string | null {
   return localStorage.getItem(TOKEN_CLIENTE)
+}
+
+export const auditoriaApi = {
+  listar: (params: {
+    inicio?: string
+    fim?: string
+    acao?: string
+    usuario?: string
+    page?: number
+    size?: number
+  }) => api.get<PageResponse<Auditoria>>('/auditoria', { params }),
 }

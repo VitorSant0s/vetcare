@@ -33,6 +33,12 @@ class VacinacaoService(
             throw RecursoNaoEncontradoException("Animal não encontrado.")
         }
         if (veterinarioId != null && !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, veterinarioId)) {
+            auditoriaService.registrarIndependente(
+                acao = "VACINACAO_ACESSO_NEGADO",
+                entidade = "Animal",
+                entidadeId = animalId,
+                detalhes = "Tentativa de acesso a vacinação de paciente fora da agenda",
+            )
             throw org.springframework.security.access.AccessDeniedException(
                 "Este paciente não faz parte da sua agenda clínica.",
             )
@@ -47,6 +53,12 @@ class VacinacaoService(
         if (solicitante.perfil == Perfil.VETERINARIO &&
             !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, solicitante.id)
         ) {
+            auditoriaService.registrarIndependente(
+                acao = "VACINACAO_ACESSO_NEGADO",
+                entidade = "Animal",
+                entidadeId = animalId,
+                detalhes = "Tentativa de registrar vacina em paciente fora da agenda",
+            )
             throw org.springframework.security.access.AccessDeniedException(
                 "Este paciente não faz parte da sua agenda clínica.",
             )

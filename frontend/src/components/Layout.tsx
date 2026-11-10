@@ -4,6 +4,7 @@ import {
   BarChart3,
   BellRing,
   Inbox,
+  ScrollText,
   CalendarDays,
   LayoutDashboard,
   LogOut,
@@ -35,6 +36,7 @@ const navegacao: { para: string; rotulo: string; icone: LucideIcon; papeis?: Per
   { para: '/relatorios', rotulo: 'Relatórios', icone: BarChart3, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
   { para: '/notificacoes', rotulo: 'Notificações', icone: BellRing, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
   { para: '/usuarios', rotulo: 'Usuários', icone: ShieldCheck, papeis: ['ADMINISTRADOR'] },
+  { para: '/auditoria', rotulo: 'Auditoria', icone: ScrollText, papeis: ['ADMINISTRADOR'] },
 ]
 
 export function Layout() {

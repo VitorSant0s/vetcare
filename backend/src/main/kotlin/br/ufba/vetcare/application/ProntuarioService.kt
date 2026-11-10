@@ -31,6 +31,12 @@ class ProntuarioService(
         val animal = animalRepository.findById(animalId)
             .orElseThrow { RecursoNaoEncontradoException("Animal não encontrado.") }
         if (veterinarioId != null && !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, veterinarioId)) {
+            auditoriaService.registrarIndependente(
+                acao = "PRONTUARIO_ACESSO_NEGADO",
+                entidade = "Animal",
+                entidadeId = animalId,
+                detalhes = "Tentativa de acesso a paciente fora da agenda do veterinário",
+            )
             throw org.springframework.security.access.AccessDeniedException(
                 "Este paciente não faz parte da sua agenda clínica.",
             )

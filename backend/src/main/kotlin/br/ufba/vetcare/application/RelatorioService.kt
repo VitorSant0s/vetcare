@@ -21,6 +21,7 @@ class RelatorioService(
     private val animalRepository: AnimalRepository,
     private val vacinacaoRepository: VacinacaoRepository,
     private val pagamentoService: PagamentoService,
+    private val auditoriaService: AuditoriaService,
 ) {
 
     @Transactional(readOnly = true)
@@ -35,6 +36,11 @@ class RelatorioService(
         val financeiro = pagamentoService.dashboard(dataInicio, dataFim)
         val zona = ZoneId.systemDefault()
 
+        auditoriaService.registrarIndependente(
+            acao = "RELATORIO_GERADO",
+            entidade = "Relatorio",
+            detalhes = "Período $dataInicio a $dataFim",
+        )
         return RelatorioResumo(
             inicio = dataInicio,
             fim = dataFim,

@@ -120,6 +120,7 @@ export function PortalAdmin() {
             <Atalho para="/financeiro" rotulo="Financeiro" />
             <Atalho para="/relatorios" rotulo="Relatórios" />
             <Atalho para="/notificacoes" rotulo="Notificações" />
+            <Atalho para="/auditoria" rotulo="Trilha de auditoria" />
           </div>
         </Cartao>
       </div>

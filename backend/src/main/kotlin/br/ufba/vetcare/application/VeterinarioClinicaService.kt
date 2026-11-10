@@ -18,10 +18,16 @@ class VeterinarioClinicaService(
     private val consultaRepository: ConsultaRepository,
     private val atendimentoRepository: AtendimentoRepository,
     private val vacinacaoRepository: VacinacaoRepository,
+    private val auditoriaService: AuditoriaService,
 ) {
 
     @Transactional(readOnly = true)
     fun meusPacientes(veterinarioId: Long): List<PacienteClinicoResposta> {
+        auditoriaService.registrarIndependente(
+            acao = "PACIENTES_CLINICOS_CONSULTADOS",
+            entidade = "Veterinario",
+            entidadeId = veterinarioId,
+        )
         val consultas = consultaRepository.findByVeterinarioIdOrderByDataHoraDesc(veterinarioId)
         val porAnimal = consultas.groupBy { it.animal.id!! }
         val hoje = LocalDate.now()
@@ -43,7 +49,13 @@ class VeterinarioClinicaService(
     }
 
     @Transactional(readOnly = true)
-    fun meusAtendimentos(veterinarioId: Long): List<AtendimentoResposta> =
-        atendimentoRepository.findByVeterinarioIdOrderByDataHoraDesc(veterinarioId)
+    fun meusAtendimentos(veterinarioId: Long): List<AtendimentoResposta> {
+        auditoriaService.registrarIndependente(
+            acao = "ATENDIMENTOS_CLINICOS_CONSULTADOS",
+            entidade = "Veterinario",
+            entidadeId = veterinarioId,
+        )
+        return atendimentoRepository.findByVeterinarioIdOrderByDataHoraDesc(veterinarioId)
             .map(AtendimentoResposta::de)
+    }
 }

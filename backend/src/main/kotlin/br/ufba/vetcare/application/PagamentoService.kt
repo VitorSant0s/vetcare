@@ -100,6 +100,11 @@ class PagamentoService(
             )
         }.filter { it.quantidade > 0 }
 
+        auditoriaService.registrarIndependente(
+            acao = "DASHBOARD_FINANCEIRO_ACESSADO",
+            entidade = "Pagamento",
+            detalhes = "Período ${periodo.first} a ${periodo.second}",
+        )
         return DashboardFinanceiro(
             inicio = periodo.first,
             fim = periodo.second,

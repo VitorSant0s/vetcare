@@ -40,6 +40,7 @@ O portal do veterinário foi ampliado para ser um espaço clínico:
 - **Prontuários:** lista dos atendimentos registrados pelo veterinário, com diagnóstico, prescrições e link para o histórico completo.
 - O veterinário só acessa prontuário, vacinação e dados de animais que atendem; a API valida essa regra, não apenas a interface.
 - **Compartilhamento de prontuário:** o veterinário responsável gera um código de 8 caracteres, válido por 7 dias, e outro veterinário consulta o prontuário em modo somente leitura informando o código. O código pode ser regenerado ou revogado, e todo acesso é auditado.
+- **Trilha de auditoria:** logins, acessos a prontuários, consultas de pacientes, relatórios, dashboards, compartilhamentos, tentativas negadas e códigos inválidos/expirados são gravados na tabela `auditoria`. Eventos de segurança usam transação independente para sobreviver a rollbacks. O Administrador consulta tudo em **Auditoria**, com filtros por período, ação e usuário.
 
 ### Extensão: Portal do Cliente
 
@@ -181,7 +182,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (79 testes de integração)
+# Back-end (81 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (11 testes)
@@ -247,6 +248,7 @@ memória no perfil `test`, sem exigir Docker.
 | GET | `/api/veterinarios/me/atendimentos` | Veterinário | Atendimentos registrados por mim |
 | POST/DELETE | `/api/animais/{id}/compartilhamento` | Veterinário | Gera/revoga código do prontuário |
 | GET | `/api/prontuarios/compartilhados/{codigo}` | Veterinário | Prontuário compartilhado (somente leitura) |
+| GET | `/api/auditoria` | Administrador | Consulta da trilha de auditoria |
 
 A documentação interativa completa está no Swagger UI.
 

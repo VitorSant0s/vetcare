@@ -68,6 +68,7 @@ class SecurityConfig(
                     .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
                     .requestMatchers("/api/solicitacoes/**")
                     .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
+                    .requestMatchers("/api/auditoria/**").hasRole("ADMINISTRADOR")
                     .requestMatchers("/api/usuarios/**").hasRole("ADMINISTRADOR")
                     .requestMatchers(HttpMethod.POST, "/api/consultas/*/atendimento")
                     .hasAnyRole("ADMINISTRADOR", "VETERINARIO")

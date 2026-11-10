@@ -57,6 +57,10 @@ class VeterinarioClinicaIntegrationTest : IntegrationTestBase() {
             get("/api/animais/${animalB.id}/prontuario").header("Authorization", bearer(token)),
         ).andExpect(status().isForbidden)
 
+        org.junit.jupiter.api.Assertions.assertTrue(
+            auditorias.findAll().any { it.acao == "PRONTUARIO_ACESSO_NEGADO" },
+        )
+
         mockMvc.perform(
             get("/api/animais/${animalB.id}").header("Authorization", bearer(token)),
         ).andExpect(status().isNotFound)

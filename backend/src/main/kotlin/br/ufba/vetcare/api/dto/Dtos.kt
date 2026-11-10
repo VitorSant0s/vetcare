@@ -696,3 +696,29 @@ data class CompartilhamentoResposta(
     val criadoEm: Instant,
     val criadoPorNome: String,
 )
+
+// ---------- Consulta da trilha de auditoria ----------
+
+data class AuditoriaResposta(
+    val id: Long,
+    val usuarioEmail: String?,
+    val acao: String,
+    val entidade: String?,
+    val entidadeId: Long?,
+    val detalhes: String?,
+    val ip: String?,
+    val criadoEm: Instant,
+) {
+    companion object {
+        fun de(auditoria: br.ufba.vetcare.domain.Auditoria) = AuditoriaResposta(
+            id = auditoria.id ?: 0,
+            usuarioEmail = auditoria.usuarioEmail,
+            acao = auditoria.acao,
+            entidade = auditoria.entidade,
+            entidadeId = auditoria.entidadeId,
+            detalhes = auditoria.detalhes,
+            ip = auditoria.ip,
+            criadoEm = auditoria.criadoEm,
+        )
+    }
+}
