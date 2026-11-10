@@ -7,6 +7,7 @@ import { Eye, EyeOff, LockKeyhole, Stethoscope } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { mensagemDeErro } from '../lib/api'
 import { Botao, Campo, Entrada } from '../components/ui'
+import { CaoCartoon, CoelhoCartoon, GatoCartoon } from '../components/AnimalArt'
 
 const schema = z.object({
   email: z.string().min(1, 'Informe o e-mail').email('E-mail inválido'),
@@ -69,6 +70,12 @@ export function Login() {
               </div>
             ))}
           </div>
+
+          <div className="relative mt-8 flex items-end gap-3">
+            <CaoCartoon size={110} className="-rotate-3 drop-shadow-lg" />
+            <GatoCartoon size={96} className="translate-y-2 drop-shadow-lg" />
+            <CoelhoCartoon size={86} className="drop-shadow-lg" />
+          </div>
         </div>
 
         <p className="relative text-xs text-brand-300">
@@ -78,9 +85,15 @@ export function Login() {
 
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5 py-10 lg:min-h-0">
         <div className="w-full max-w-md">
-          <div className="mb-8 flex items-center gap-2 lg:hidden">
-            <Stethoscope className="h-6 w-6 text-brand-600" />
-            <span className="text-lg font-semibold text-slate-900">VetCare</span>
+          <div className="mb-6 flex items-center justify-between lg:hidden">
+            <div className="flex items-center gap-2">
+              <Stethoscope className="h-6 w-6 text-brand-600" />
+              <span className="text-lg font-semibold text-slate-900">VetCare</span>
+            </div>
+            <div className="flex items-end">
+              <CaoCartoon size={54} />
+              <GatoCartoon size={48} />
+            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">

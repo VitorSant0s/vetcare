@@ -8,6 +8,7 @@ import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { mensagemDeErro } from '../../lib/api'
 import { formatarCpf } from '../../lib/format'
 import { Botao, Campo, Entrada } from '../../components/ui'
+import { CaoCartoon, CoelhoCartoon, GatoCartoon } from '../../components/AnimalArt'
 
 const schema = z.object({
   cpf: z.string().min(11, 'Informe o CPF'),
@@ -67,12 +68,24 @@ export function ClienteLogin() {
                 </div>
               ))}
             </div>
+
+            <div className="relative mt-8 flex items-end gap-3">
+              <CaoCartoon size={104} className="-rotate-3 drop-shadow-lg" />
+              <GatoCartoon size={92} className="translate-y-2 drop-shadow-lg" />
+              <CoelhoCartoon size={82} className="drop-shadow-lg" />
+            </div>
           </div>
 
           <div className="rounded-2xl bg-white p-7 shadow-2xl">
             <div className="mb-6">
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                <PawPrint className="h-5 w-5" />
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                  <PawPrint className="h-5 w-5" />
+                </div>
+                <div className="flex items-end lg:hidden">
+                  <CaoCartoon size={52} />
+                  <GatoCartoon size={46} />
+                </div>
               </div>
               <h2 className="text-xl font-semibold text-slate-900">Acesse o portal</h2>
               <p className="mt-1 text-sm text-slate-500">
