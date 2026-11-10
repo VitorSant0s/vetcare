@@ -1,6 +1,7 @@
 package br.ufba.vetcare.infrastructure.security
 
 import br.ufba.vetcare.config.JwtProperties
+import br.ufba.vetcare.domain.Tutor
 import br.ufba.vetcare.domain.Usuario
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -42,6 +43,21 @@ class JwtService(private val properties: JwtProperties) {
             .claim("id", usuario.id)
             .claim("nome", usuario.nome)
             .claim("perfil", usuario.perfil.name)
+            .issuedAt(Date.from(agora))
+            .expiration(Date.from(expiraEm))
+            .signWith(key)
+            .compact()
+    }
+
+    fun gerarTokenCliente(tutor: Tutor): String {
+        val agora = Instant.now()
+        val expiraEm = agora.plusSeconds(properties.expirationMinutes * 60)
+        return Jwts.builder()
+            .subject(tutor.cpf)
+            .claim("tipo", "CLIENTE")
+            .claim("tutorId", tutor.id)
+            .claim("nome", tutor.nome)
+            .claim("email", tutor.email)
             .issuedAt(Date.from(agora))
             .expiration(Date.from(expiraEm))
             .signWith(key)

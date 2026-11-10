@@ -30,6 +30,15 @@ class Tutor(
     @Column(length = 200)
     var endereco: String? = null,
 
+    @Column(length = 100)
+    var senha: String? = null,
+
+    @Column(nullable = false)
+    var ativo: Boolean = true,
+
+    @Column(name = "primeiro_acesso", nullable = false)
+    var primeiroAcesso: Boolean = true,
+
     @Column(name = "criado_em", nullable = false)
     var criadoEm: Instant = Instant.now(),
 

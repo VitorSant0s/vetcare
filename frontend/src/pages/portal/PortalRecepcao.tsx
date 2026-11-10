@@ -145,6 +145,12 @@ export function PortalRecepcao() {
               <PawPrint className="h-4 w-4 text-slate-400" /> Cadastrar animal
             </Link>
             <Link
+              to="/solicitacoes"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              <CalendarPlus className="h-4 w-4 text-slate-400" /> Solicitações
+            </Link>
+            <Link
               to="/financeiro"
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
             >

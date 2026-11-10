@@ -14,6 +14,7 @@ import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.TutorRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -23,6 +24,7 @@ class TutorService(
     private val repository: TutorRepository,
     private val animalRepository: AnimalRepository,
     private val consultaRepository: ConsultaRepository,
+    private val passwordEncoder: PasswordEncoder,
     private val auditoriaService: AuditoriaService,
 ) {
 
@@ -58,6 +60,8 @@ class TutorService(
                 email = request.email.trim().lowercase(),
                 telefone = request.telefone.trim(),
                 endereco = request.endereco?.trim()?.takeIf { it.isNotEmpty() },
+                senha = request.senha?.takeIf { it.isNotBlank() }?.let { passwordEncoder.encode(it)!! },
+                ativo = request.ativo,
             ),
         )
         auditoriaService.registrar("TUTOR_CRIADO", "Tutor", tutor.id, tutor.nome)
@@ -76,6 +80,11 @@ class TutorService(
         tutor.email = request.email.trim().lowercase()
         tutor.telefone = request.telefone.trim()
         tutor.endereco = request.endereco?.trim()?.takeIf { it.isNotEmpty() }
+        tutor.ativo = request.ativo
+        request.senha?.takeIf { it.isNotBlank() }?.let {
+            tutor.senha = passwordEncoder.encode(it)!!
+            tutor.primeiroAcesso = true
+        }
         tutor.atualizadoEm = Instant.now()
         val salvo = repository.save(tutor)
         auditoriaService.registrar("TUTOR_ATUALIZADO", "Tutor", salvo.id)

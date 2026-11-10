@@ -162,6 +162,11 @@ data class TutorRequest(
 
     @field:jakarta.validation.constraints.Size(max = 200, message = "Endereço muito longo")
     val endereco: String? = null,
+
+    @field:jakarta.validation.constraints.Size(min = 6, max = 72, message = "A senha deve ter entre 6 e 72 caracteres")
+    val senha: String? = null,
+
+    val ativo: Boolean = true,
 )
 
 data class TutorResposta(
@@ -171,6 +176,9 @@ data class TutorResposta(
     val email: String,
     val telefone: String,
     val endereco: String?,
+    val ativo: Boolean = true,
+    val portalConfigurado: Boolean = false,
+    val primeiroAcesso: Boolean = true,
     val criadoEm: Instant,
 ) {
     companion object {
@@ -181,6 +189,9 @@ data class TutorResposta(
             email = tutor.email,
             telefone = tutor.telefone,
             endereco = tutor.endereco,
+            ativo = tutor.ativo,
+            portalConfigurado = tutor.senha != null,
+            primeiroAcesso = tutor.primeiroAcesso,
             criadoEm = tutor.criadoEm,
         )
     }
@@ -204,8 +215,6 @@ data class AnimalRequest(
 
     val dataNascimento: LocalDate? = null,
 
-    @field:jakarta.validation.constraints.NotNull(message = "Selecione o tutor")
-    @field:jakarta.validation.constraints.Positive(message = "Tutor inválido")
     val tutorId: Long? = null,
 )
 
@@ -574,3 +583,93 @@ data class ProcessamentoNotificacoesResposta(
     val geradas: Int,
     val enviadas: Int,
 )
+
+
+// ---------- Portal do cliente (Sprint 5) ----------
+
+data class ClienteLoginRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o CPF")
+    val cpf: String = "",
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe a senha")
+    val senha: String = "",
+)
+
+data class ClienteLoginResponse(
+    val token: String,
+    val tipo: String = "Bearer",
+    val expiraEmSegundos: Long,
+    val tutor: TutorResposta,
+    val primeiroAcesso: Boolean,
+)
+
+data class AlterarSenhaRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe a senha atual")
+    val senhaAtual: String = "",
+
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe a nova senha")
+    @field:jakarta.validation.constraints.Size(min = 6, max = 72, message = "A nova senha deve ter entre 6 e 72 caracteres")
+    val novaSenha: String = "",
+)
+
+data class SolicitacaoRequest(
+    @field:jakarta.validation.constraints.NotNull(message = "Selecione o pet")
+    @field:jakarta.validation.constraints.Positive(message = "Pet inválido")
+    val animalId: Long? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Informe a data e o horário preferidos")
+    val dataPreferida: LocalDateTime? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Motivo muito longo")
+    val motivo: String? = null,
+)
+
+data class SolicitacaoDecisaoRequest(
+    @field:jakarta.validation.constraints.NotNull(message = "Selecione o veterinário")
+    @field:jakarta.validation.constraints.Positive(message = "Veterinário inválido")
+    val veterinarioId: Long? = null,
+
+    @field:jakarta.validation.constraints.NotNull(message = "Informe a data e o horário")
+    val dataHora: LocalDateTime? = null,
+
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Observação muito longa")
+    val observacao: String? = null,
+)
+
+data class SolicitacaoRecusaRequest(
+    @field:jakarta.validation.constraints.NotBlank(message = "Informe o motivo da recusa")
+    @field:jakarta.validation.constraints.Size(max = 500, message = "Motivo muito longo")
+    val motivo: String = "",
+)
+
+data class SolicitacaoResposta(
+    val id: Long,
+    val tutorId: Long,
+    val tutorNome: String,
+    val animalId: Long,
+    val animalNome: String,
+    val dataPreferida: LocalDateTime,
+    val motivo: String?,
+    val status: String,
+    val observacaoResposta: String?,
+    val consultaId: Long?,
+    val criadoEm: Instant,
+    val analisadoEm: Instant?,
+) {
+    companion object {
+        fun de(solicitacao: br.ufba.vetcare.domain.SolicitacaoAgendamento) = SolicitacaoResposta(
+            id = solicitacao.id ?: 0,
+            tutorId = solicitacao.tutor.id ?: 0,
+            tutorNome = solicitacao.tutor.nome,
+            animalId = solicitacao.animal.id ?: 0,
+            animalNome = solicitacao.animal.nome,
+            dataPreferida = solicitacao.dataPreferida,
+            motivo = solicitacao.motivo,
+            status = solicitacao.status.name,
+            observacaoResposta = solicitacao.observacaoResposta,
+            consultaId = solicitacao.consulta?.id,
+            criadoEm = solicitacao.criadoEm,
+            analisadoEm = solicitacao.analisadoEm,
+        )
+    }
+}

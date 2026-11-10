@@ -2,7 +2,7 @@
 
 Sistema de gestão para clínicas veterinárias desenvolvido para a disciplina **Engenharia de Software 1** do Instituto de Computação da UFBA.
 
-Esta é a **Sprint 4** do Trabalho II: implementação de aproximadamente 90% dos requisitos funcionais do VetCare, sobre a arquitetura definida na Etapa 1.
+Esta é a **Sprint 5** do Trabalho II: 16/17 requisitos funcionais implementados, acrescidos do **Portal do Cliente** como extensão do escopo original.
 
 ![Agenda do VetCare](docs/relatorio/img/02-agenda.png)
 
@@ -30,6 +30,18 @@ Esta é a **Sprint 4** do Trabalho II: implementação de aproximadamente 90% do
 **16 de 17 requisitos = 94,1%**, dentro da meta de aproximadamente 90%.
 
 Fora do escopo: apenas REQ03 (recuperação de senha).
+
+### Extensão: Portal do Cliente
+
+Além dos 17 requisitos, o cliente (tutor) possui um portal próprio com login por CPF e senha:
+
+- consulta, cadastro e edição dos próprios pets;
+- solicitação de agendamento com data/horário preferidos e motivo;
+- acompanhamento do status do pedido (pendente, aprovado ou recusado);
+- troca de senha no primeiro acesso.
+
+A recepção recebe os pedidos em **Solicitações**, aprova escolhendo veterinário e horário — gerando
+a consulta oficial — ou recusa com motivo. A decisão está na [ADR-16](docs/adr/ADR-16-portal-cliente.md).
 
 ## Portais por perfil
 
@@ -74,6 +86,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-13 — Atributos profissionais na entidade Usuário](docs/adr/ADR-13-atributos-profissionais-usuario.md)
 - [ADR-14 — Atendimento como elo entre consulta, prontuário e prescrição](docs/adr/ADR-14-atendimento-prontuario.md)
 - [ADR-15 — Notificações por caixa de saída com canal simulado](docs/adr/ADR-15-notificacoes-canal-simulado.md)
+- [ADR-16 — Portal do cliente com autenticação por CPF](docs/adr/ADR-16-portal-cliente.md)
 
 ## Como rodar
 
@@ -133,6 +146,7 @@ As contas abaixo só são criadas quando `APP_SEED=true`:
 | Administrador | `admin@vetcare.com` | `Admin@123` |
 | Recepcionista | `recepcao@vetcare.com` | `Recepcao@123` |
 | Veterinário | `vet@vetcare.com` | `Vet@123` |
+| Cliente (portal) | CPF `123.456.789-09` | `Cliente@123` |
 
 O seed também cria tutores, animais e uma consulta de exemplo. Em qualquer ambiente compartilhado,
 use `APP_SEED=false` e remova/altere essas contas.
@@ -157,7 +171,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (60 testes de integração)
+# Back-end (70 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (11 testes)
@@ -170,8 +184,8 @@ cd frontend && npm run build
 Os testes de back-end cobrem autenticação (incluindo token adulterado), RBAC, CRUD de usuários,
 tutores, animais e veterinários, auditoria, agendamento, conflito de horário (inclusive segundos no
 mesmo minuto), vínculo animal/tutor, cancelamento com liberação do horário, cache da agenda,
-atendimento, prontuário, prescrições, vacinação, pagamentos, notificações, relatórios e proteção
-do último administrador. Usam H2 em
+atendimento, prontuário, prescrições, vacinação, pagamentos, notificações, relatórios, portal do
+cliente e proteção do último administrador. Usam H2 em
 memória no perfil `test`, sem exigir Docker.
 
 ## Segurança e auditoria
@@ -215,6 +229,10 @@ memória no perfil `test`, sem exigir Docker.
 | GET | `/api/financeiro/dashboard` | Admin/Recepção | REQ15 |
 | GET/POST | `/api/notificacoes` e `/processar` | Admin/Recepção | REQ16 |
 | GET | `/api/relatorios/resumo` | Admin/Recepção | REQ17 |
+| POST | `/api/cliente/auth/login` | Público | Login do cliente por CPF (extensão) |
+| GET/POST/PUT | `/api/cliente/pets` | Cliente | Pets do próprio tutor (extensão) |
+| GET/POST | `/api/cliente/solicitacoes` | Cliente | Pedidos de agendamento (extensão) |
+| GET/POST | `/api/solicitacoes` e `/aprovar`/`/recusar` | Admin/Recepção | Análise dos pedidos (extensão) |
 
 A documentação interativa completa está no Swagger UI.
 
@@ -234,6 +252,8 @@ vetcare/
 
 ## Documentos
 
+- [Relatório da Sprint 5 (PDF)](docs/relatorio/relatorio-sprint-5.pdf)
+- [Apresentação da Sprint 5 (PPTX)](docs/slides/VetCare-Sprint-5.pptx)
 - [Relatório da Sprint 4 (PDF)](docs/relatorio/relatorio-sprint-4.pdf)
 - [Apresentação da Sprint 4 (PPTX)](docs/slides/VetCare-Sprint-4.pptx)
 - [Relatório da Sprint 3 (PDF)](docs/relatorio/relatorio-sprint-3.pdf)

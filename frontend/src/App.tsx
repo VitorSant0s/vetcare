@@ -13,7 +13,13 @@ import { ProntuarioAnimal } from './pages/Prontuario'
 import { Financeiro } from './pages/Financeiro'
 import { Relatorios } from './pages/Relatorios'
 import { Notificacoes } from './pages/Notificacoes'
+import { ClienteAuthProvider } from './context/ClienteAuthContext'
+import { RotaCliente } from './components/cliente/guards'
+import { LayoutCliente } from './components/cliente/LayoutCliente'
+import { ClienteLogin } from './pages/cliente/ClienteLogin'
+import { PortalCliente } from './pages/cliente/PortalCliente'
 import { NaoEncontrado } from './pages/NaoEncontrado'
+import { Solicitacoes } from './pages/Solicitacoes'
 import { PortalAdmin } from './pages/portal/PortalAdmin'
 import { PortalRecepcao } from './pages/portal/PortalRecepcao'
 import { PortalVeterinario } from './pages/portal/PortalVeterinario'
@@ -25,6 +31,25 @@ export default function App() {
         <ToastProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/cliente/login"
+              element={
+                <ClienteAuthProvider>
+                  <ClienteLogin />
+                </ClienteAuthProvider>
+              }
+            />
+            <Route
+              element={
+                <ClienteAuthProvider>
+                  <RotaCliente />
+                </ClienteAuthProvider>
+              }
+            >
+              <Route element={<LayoutCliente />}>
+                <Route path="/portal/cliente" element={<PortalCliente />} />
+              </Route>
+            </Route>
             <Route element={<RotaProtegida />}>
               <Route path="/portal" element={<RedirecionarPortal />} />
               <Route element={<Layout />}>
@@ -58,6 +83,14 @@ export default function App() {
                 <Route path="/animais" element={<Animais />} />
                 <Route path="/animais/:animalId/prontuario" element={<ProntuarioAnimal />} />
                 <Route path="/veterinarios" element={<Veterinarios />} />
+                <Route
+                  path="/solicitacoes"
+                  element={
+                    <RotaPapeis papeis={['ADMINISTRADOR', 'RECEPCIONISTA']}>
+                      <Solicitacoes />
+                    </RotaPapeis>
+                  }
+                />
                 <Route
                   path="/financeiro"
                   element={

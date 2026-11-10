@@ -28,17 +28,36 @@ class JwtAuthenticationFilter(
             val token = header.removePrefix("Bearer ").trim()
             try {
                 val claims = jwtService.extrairClaims(token)
-                val email = claims.subject
-                if (email != null && SecurityContextHolder.getContext().authentication == null) {
-                    val usuario = usuarioDetailsService.carregar(email)
-                    if (usuario != null && usuario.ativo) {
-                        val authentication = UsernamePasswordAuthenticationToken(
-                            usuario,
-                            null,
-                            listOf(SimpleGrantedAuthority("ROLE_${usuario.perfil.name}")),
-                        )
-                        authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-                        SecurityContextHolder.getContext().authentication = authentication
+                if (SecurityContextHolder.getContext().authentication == null) {
+                    if (claims["tipo"] == "CLIENTE") {
+                        val tutorId = (claims["tutorId"] as? Number)?.toLong()
+                        if (tutorId != null) {
+                            val principal = TutorAutenticado(
+                                id = tutorId,
+                                nome = claims["nome"] as? String ?: "",
+                                cpf = claims.subject ?: "",
+                                email = claims["email"] as? String ?: "",
+                            )
+                            val authentication = UsernamePasswordAuthenticationToken(
+                                principal,
+                                null,
+                                listOf(SimpleGrantedAuthority("ROLE_CLIENTE")),
+                            )
+                            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                            SecurityContextHolder.getContext().authentication = authentication
+                        }
+                    } else {
+                        val email = claims.subject
+                        val usuario = email?.let { usuarioDetailsService.carregar(it) }
+                        if (usuario != null && usuario.ativo) {
+                            val authentication = UsernamePasswordAuthenticationToken(
+                                usuario,
+                                null,
+                                listOf(SimpleGrantedAuthority("ROLE_${usuario.perfil.name}")),
+                            )
+                            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                            SecurityContextHolder.getContext().authentication = authentication
+                        }
                     }
                 }
             } catch (_: ExpiredJwtException) {
@@ -60,4 +79,11 @@ data class UsuarioAutenticado(
     val email: String,
     val perfil: br.ufba.vetcare.domain.Perfil,
     val ativo: Boolean,
+)
+
+data class TutorAutenticado(
+    val id: Long,
+    val nome: String,
+    val cpf: String,
+    val email: String,
 )

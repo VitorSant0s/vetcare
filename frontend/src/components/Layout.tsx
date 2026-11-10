@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 import {
   BarChart3,
   BellRing,
+  Inbox,
   CalendarDays,
   LayoutDashboard,
   LogOut,
@@ -26,6 +27,7 @@ const navegacao: { para: string; rotulo: string; icone: LucideIcon; papeis?: Per
   { para: '/tutores', rotulo: 'Tutores', icone: Users },
   { para: '/animais', rotulo: 'Animais', icone: PawPrint },
   { para: '/veterinarios', rotulo: 'Veterinários', icone: Stethoscope },
+  { para: '/solicitacoes', rotulo: 'Solicitações', icone: Inbox, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
   { para: '/financeiro', rotulo: 'Financeiro', icone: Wallet, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
   { para: '/relatorios', rotulo: 'Relatórios', icone: BarChart3, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },
   { para: '/notificacoes', rotulo: 'Notificações', icone: BellRing, papeis: ['ADMINISTRADOR', 'RECEPCIONISTA'] },

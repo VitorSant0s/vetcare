@@ -19,6 +19,9 @@ export interface Tutor {
   email: string
   telefone: string
   endereco?: string | null
+  ativo?: boolean
+  portalConfigurado?: boolean
+  primeiroAcesso?: boolean
   criadoEm: string
 }
 
@@ -185,4 +188,19 @@ export interface Notificacao {
   erro?: string | null
   criadoEm: string
   enviadoEm?: string | null
+}
+
+export interface SolicitacaoAgendamento {
+  id: number
+  tutorId: number
+  tutorNome: string
+  animalId: number
+  animalNome: string
+  dataPreferida: string
+  motivo?: string | null
+  status: 'PENDENTE' | 'APROVADA' | 'RECUSADA' | 'CANCELADA'
+  observacaoResposta?: string | null
+  consultaId?: number | null
+  criadoEm: string
+  analisadoEm?: string | null
 }

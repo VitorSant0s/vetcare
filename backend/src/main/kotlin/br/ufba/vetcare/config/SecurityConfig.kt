@@ -58,8 +58,16 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/auth/login", "/actuator/health", "/actuator/info").permitAll()
+                    .requestMatchers(
+                        "/api/auth/login",
+                        "/api/cliente/auth/login",
+                        "/actuator/health",
+                        "/actuator/info",
+                    ).permitAll()
                     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                    .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
+                    .requestMatchers("/api/solicitacoes/**")
+                    .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                     .requestMatchers("/api/usuarios/**").hasRole("ADMINISTRADOR")
                     .requestMatchers(HttpMethod.POST, "/api/consultas/*/atendimento")
                     .hasAnyRole("ADMINISTRADOR", "VETERINARIO")

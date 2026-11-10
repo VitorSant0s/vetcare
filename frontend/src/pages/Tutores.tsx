@@ -10,6 +10,7 @@ import { camposDeErro, mensagemDeErro, tutoresApi } from '../lib/api'
 import type { PageResponse, Tutor } from '../types'
 import {
   AreaTexto,
+  Badge,
   Botao,
   Busca,
   CabecalhoPagina,
@@ -29,11 +30,26 @@ const schema = z.object({
   email: z.string().min(1, 'Informe o e-mail').email('E-mail inválido'),
   telefone: z.string().min(10, 'Telefone inválido'),
   endereco: z.string().optional(),
+  senha: z
+    .string()
+    .optional()
+    .refine((valor) => !valor || valor.length >= 6, {
+      message: 'A senha deve ter ao menos 6 caracteres',
+    }),
+  ativo: z.boolean(),
 })
 
 type Formulario = z.infer<typeof schema>
 
-const vazio: Formulario = { nome: '', cpf: '', email: '', telefone: '', endereco: '' }
+const vazio: Formulario = {
+  nome: '',
+  cpf: '',
+  email: '',
+  telefone: '',
+  endereco: '',
+  senha: '',
+  ativo: true,
+}
 
 export function Tutores() {
   const { usuario } = useAuth()
@@ -92,6 +108,8 @@ export function Tutores() {
       email: tutor.email,
       telefone: formatarTelefone(tutor.telefone),
       endereco: tutor.endereco ?? '',
+      senha: '',
+      ativo: tutor.ativo ?? true,
     })
     setModalAberto(true)
   }
@@ -105,6 +123,8 @@ export function Tutores() {
       email: dadosForm.email.trim(),
       telefone: dadosForm.telefone.trim(),
       endereco: dadosForm.endereco?.trim() || null,
+      senha: dadosForm.senha?.trim() || undefined,
+      ativo: dadosForm.ativo,
     }
     try {
       if (editando) {
@@ -179,6 +199,7 @@ export function Tutores() {
                     <th className="px-4 py-3 font-medium">Nome</th>
                     <th className="px-4 py-3 font-medium">CPF</th>
                     <th className="px-4 py-3 font-medium">Contato</th>
+                    <th className="px-4 py-3 font-medium">Portal</th>
                     <th className="px-4 py-3 font-medium">Endereço</th>
                     {podeEditar && <th className="px-4 py-3 text-right font-medium">Ações</th>}
                   </tr>
@@ -193,6 +214,11 @@ export function Tutores() {
                       <td className="px-4 py-3">
                         <p className="text-slate-700">{formatarTelefone(tutor.telefone)}</p>
                         <p className="text-xs text-slate-400">{tutor.email}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge tom={tutor.portalConfigurado ? 'verde' : 'ambar'}>
+                          {tutor.portalConfigurado ? 'Ativo' : 'Sem senha'}
+                        </Badge>
                       </td>
                       <td className="max-w-56 px-4 py-3 text-slate-500">
                         <span className="line-clamp-1">{tutor.endereco || '—'}</span>
@@ -267,6 +293,21 @@ export function Tutores() {
           <Campo label="Endereço" erro={errors.endereco?.message}>
             <AreaTexto placeholder="Rua, número, bairro - cidade" rows={2} {...register('endereco')} />
           </Campo>
+          <Campo
+            label={editando ? 'Nova senha do portal (opcional)' : 'Senha do portal do cliente'}
+            erro={errors.senha?.message}
+          >
+            <Entrada
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              autoComplete="new-password"
+              {...register('senha')}
+            />
+          </Campo>
+          <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700">
+            <input type="checkbox" className="h-4 w-4 rounded border-slate-300" {...register('ativo')} />
+            Tutor ativo (pode acessar o portal do cliente)
+          </label>
 
           {erroApi && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">

@@ -16,6 +16,7 @@ import type {
   Notificacao,
   FormaPagamento,
   StatusPagamento,
+  SolicitacaoAgendamento,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -88,12 +89,21 @@ export const usuariosApi = {
   excluir: (id: number) => api.delete(`/usuarios/${id}`),
 }
 
+export interface TutorPayload {
+  nome: string
+  cpf: string
+  email: string
+  telefone: string
+  endereco?: string | null
+  senha?: string
+  ativo: boolean
+}
+
 export const tutoresApi = {
   listar: (termo?: string, page = 0, size = 20) =>
     api.get<PageResponse<Tutor>>('/tutores', { params: { termo, page, size } }),
-  criar: (payload: Omit<Tutor, 'id' | 'criadoEm'>) => api.post<Tutor>('/tutores', payload),
-  atualizar: (id: number, payload: Omit<Tutor, 'id' | 'criadoEm'>) =>
-    api.put<Tutor>(`/tutores/${id}`, payload),
+  criar: (payload: TutorPayload) => api.post<Tutor>('/tutores', payload),
+  atualizar: (id: number, payload: TutorPayload) => api.put<Tutor>(`/tutores/${id}`, payload),
   excluir: (id: number) => api.delete(`/tutores/${id}`),
 }
 
@@ -217,4 +227,74 @@ export const relatoriosApi = {
 export const notificacoesApi = {
   listar: () => api.get<Notificacao[]>('/notificacoes'),
   processar: () => api.post<{ geradas: number; enviadas: number }>('/notificacoes/processar'),
+}
+
+// ---------- Portal do cliente ----------
+
+const TOKEN_CLIENTE = 'vetcare.cliente.token'
+
+export const apiCliente = axios.create({ baseURL: '/api/cliente', timeout: 15000 })
+
+apiCliente.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_CLIENTE)
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+apiCliente.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && !String(error.config?.url ?? '').includes('/auth/login')) {
+      localStorage.removeItem(TOKEN_CLIENTE)
+      if (!window.location.pathname.startsWith('/cliente/login')) {
+        window.location.assign('/cliente/login')
+      }
+    }
+    return Promise.reject(error)
+  },
+)
+
+export interface PetPayload {
+  nome: string
+  especie: string
+  raca?: string | null
+  sexo?: string | null
+  dataNascimento?: string | null
+}
+
+export const clienteApi = {
+  login: (cpf: string, senha: string) =>
+    apiCliente.post<{
+      token: string
+      tipo: string
+      expiraEmSegundos: number
+      tutor: Tutor
+      primeiroAcesso: boolean
+    }>('/auth/login', { cpf, senha }),
+  me: () => apiCliente.get<Tutor>('/auth/me'),
+  alterarSenha: (senhaAtual: string, novaSenha: string) =>
+    apiCliente.put('/auth/senha', { senhaAtual, novaSenha }),
+  listarPets: () => apiCliente.get<Animal[]>('/pets'),
+  criarPet: (payload: PetPayload) => apiCliente.post<Animal>('/pets', payload),
+  atualizarPet: (id: number, payload: PetPayload) => apiCliente.put<Animal>(`/pets/${id}`, payload),
+  listarSolicitacoes: () => apiCliente.get<SolicitacaoAgendamento[]>('/solicitacoes'),
+  solicitar: (payload: { animalId: number; dataPreferida: string; motivo?: string | null }) =>
+    apiCliente.post<SolicitacaoAgendamento>('/solicitacoes', payload),
+}
+
+export const solicitacoesApi = {
+  listar: (status?: string) =>
+    api.get<SolicitacaoAgendamento[]>('/solicitacoes', { params: { status } }),
+  aprovar: (id: number, payload: { veterinarioId: number; dataHora: string; observacao?: string | null }) =>
+    api.post<SolicitacaoAgendamento>(`/solicitacoes/${id}/aprovar`, payload),
+  recusar: (id: number, motivo: string) =>
+    api.post<SolicitacaoAgendamento>(`/solicitacoes/${id}/recusar`, { motivo }),
+}
+
+export function limparTokenCliente() {
+  localStorage.removeItem(TOKEN_CLIENTE)
+}
+
+export function tokenCliente(): string | null {
+  return localStorage.getItem(TOKEN_CLIENTE)
 }

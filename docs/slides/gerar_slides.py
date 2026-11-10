@@ -1,4 +1,4 @@
-"""Gera a apresentação da Sprint 4 do VetCare.
+"""Gera a apresentação da Sprint 5 do VetCare.
 
 Uso:
     uv run --with python-pptx python docs/slides/gerar_slides.py
@@ -13,7 +13,7 @@ from pptx.util import Inches, Pt, Emu
 
 RAIZ = Path(__file__).resolve().parents[2]
 IMG = RAIZ / "docs" / "relatorio" / "img"
-SAIDA = RAIZ / "docs" / "slides" / "VetCare-Sprint-4.pptx"
+SAIDA = RAIZ / "docs" / "slides" / "VetCare-Sprint-5.pptx"
 
 VERDE = RGBColor(0x12, 0x6A, 0x53)
 VERDE_CLARO = RGBColor(0xEE, 0xFB, 0xF5)
@@ -143,7 +143,7 @@ def imagem(slide, nome, x, y, largura, legenda=None):
 
 
 def rodape(slide, numero):
-    caixa(slide, 0.75, 7.02, 8, 0.3, "VetCare · Sprint 4 · Engenharia de Software 1 · UFBA 2026", 9, CINZA)
+    caixa(slide, 0.75, 7.02, 8, 0.3, "VetCare · Sprint 5 · Engenharia de Software 1 · UFBA 2026", 9, CINZA)
     caixa(slide, 11.9, 7.02, 0.7, 0.3, str(numero), 9, CINZA, alinhamento=PP_ALIGN.RIGHT)
 
 
@@ -154,8 +154,8 @@ faixa.fill.solid()
 faixa.fill.fore_color.rgb = VERDE_MEDIO
 caixa(s, 1.0, 1.0, 11, 0.4, "UNIVERSIDADE FEDERAL DA BAHIA · INSTITUTO DE COMPUTAÇÃO", 14, RGBColor(0xAE, 0xEA, 0xD0), True)
 caixa(s, 1.0, 2.15, 11.3, 1.8, "VetCare", 62, BRANCO, True)
-caixa(s, 1.0, 3.45, 10.8, 1.2, "Sprint 4 — financeiro, notificações\ne relatórios gerenciais", 30, RGBColor(0xD5, 0xF5, 0xE5))
-caixa(s, 1.0, 5.2, 10.8, 0.5, "Trabalho II · Implementação de ~90% dos requisitos funcionais", 16, RGBColor(0xAE, 0xEA, 0xD0))
+caixa(s, 1.0, 3.45, 10.8, 1.2, "Sprint 5 — Portal do Cliente\ne solicitações de agendamento", 30, RGBColor(0xD5, 0xF5, 0xE5))
+caixa(s, 1.0, 5.2, 10.8, 0.5, "Trabalho II · 16/17 requisitos + Portal do Cliente", 16, RGBColor(0xAE, 0xEA, 0xD0))
 caixa(s, 1.0, 6.4, 6, 0.4, "Vitor de Jesus Santos", 15, BRANCO, True)
 caixa(s, 1.0, 6.8, 8, 0.4, "Prof.ª Dra. Larissa Barbosa Leôncio Pinheiro · Novembro de 2026", 12, RGBColor(0xAE, 0xEA, 0xD0))
 
@@ -163,7 +163,7 @@ caixa(s, 1.0, 6.8, 8, 0.4, "Prof.ª Dra. Larissa Barbosa Leôncio Pinheiro · No
 s = slide_novo()
 titulo(s, "Objetivo e entregáveis", "O que esta sprint se propõe a entregar")
 bullets(s, [
-    "Implementar aproximadamente 90% dos requisitos funcionais do VetCare",
+    "Consolidar 16/17 requisitos e entregar o Portal do Cliente",
     "Manter a arquitetura definida na Etapa 1, registrando desvios em ADRs",
     "Entregar o sistema em funcionamento, não apenas protótipos",
     "Repositório público no GitHub com README e instruções de execução",
@@ -172,14 +172,14 @@ bullets(s, [
 
 cartao(s, 7.6, 2.05, 2.35, 1.35, "Requisitos", "16 de 17")
 cartao(s, 10.15, 2.05, 2.35, 1.35, "Cobertura", "94,1%")
-cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "60")
+cartao(s, 7.6, 3.65, 2.35, 1.35, "Testes back", "70")
 cartao(s, 10.15, 3.65, 2.35, 1.35, "Testes front", "11")
-caixa(s, 7.6, 5.4, 4.9, 1.0, "Sistema completo, do agendamento ao resultado financeiro.", 14, CINZA)
+caixa(s, 7.6, 5.4, 4.9, 1.0, "Cliente com portal próprio e recepção no controle da agenda.", 14, CINZA)
 rodape(s, 2)
 
 # ---------------------------------------------------------------- slide 3
 s = slide_novo()
-titulo(s, "Recorte acumulado", "Dezesseis requisitos cobrem toda a operação da clínica")
+titulo(s, "Recorte acumulado", "16/17 requisitos + Portal do Cliente como extensão")
 tabela(s,
        ["Bloco", "Requisitos", "Qtd.", "Situação"],
        [
@@ -187,12 +187,13 @@ tabela(s,
            ["Agenda", "REQ07, REQ08, REQ09", "3", "Implementado"],
            ["Clínico", "REQ10, REQ11, REQ12, REQ13", "4", "Implementado"],
            ["Gestão", "REQ14, REQ15, REQ16, REQ17", "4", "Implementado"],
+           ["Extensão", "Portal do Cliente (fora dos 17)", "—", "Implementado"],
        ],
-       y=2.0, h=3.1, larguras=[3.2, 5.8, 1.2, 1.9], tamanho=13)
-caixa(s, 0.85, 5.5, 11.6, 0.9,
-      "Cobertura: 16 de 17 requisitos = 94,1%. Fora do escopo: apenas REQ03.", 16, VERDE, True)
-caixa(s, 0.85, 6.3, 11.6, 0.5,
-      "Fluxo completo: login → agenda → atendimento → prontuário → pagamento → relatório.", 12, CINZA)
+       y=1.9, h=3.7, larguras=[3.0, 5.9, 1.1, 2.0], tamanho=12)
+caixa(s, 0.85, 5.9, 11.6, 0.7,
+      "Cobertura: 16 de 17 requisitos = 94,1%. Fora do escopo original: REQ03.", 15, VERDE, True)
+caixa(s, 0.85, 6.55, 11.6, 0.4,
+      "Portal do cliente: pets, pedidos de agendamento e aprovação pela recepção.", 11, CINZA)
 rodape(s, 3)
 
 # ---------------------------------------------------------------- slide 4
@@ -243,6 +244,7 @@ tabela(s,
            ["vacinacoes", "Aplicação e próxima dose"],
            ["pagamentos", "Valores, formas e período"],
            ["notificacoes", "Caixa de saída de avisos"],
+           ["solicitacoes", "Pedidos de agendamento do cliente"],
            ["auditoria", "Trilha imutável de eventos"],
        ],
        x=6.8, y=2.45, w=5.7, h=2.9, larguras=[1.8, 3.9], tamanho=12)
@@ -266,6 +268,7 @@ bullets(s, [
     "Portais protegidos no front e permissões revalidadas na API",
     "Atendimento e prontuário restritos ao veterinário responsável (ou admin)",
     "Financeiro, notificações e relatórios restritos a admin e recepção",
+    "Cliente: JWT próprio, isolamento por tutor e troca de senha no primeiro acesso",
     "401 sem token e 403 sem permissão, com JSON padronizado",
     "Auditoria de login, falhas de login e todas as mutações (usuário, IP, data/hora)",
     "Teste automatizado comprova que recepcionista não acessa /api/usuarios",
@@ -292,16 +295,16 @@ rodape(s, 7)
 
 # ---------------------------------------------------------------- slide 8
 s = slide_novo()
-titulo(s, "Financeiro e relatórios", "Pagamentos, indicadores e consolidação gerencial")
-imagem(s, "20-financeiro.png", 0.7, 1.85, 6.6, "Dashboard financeiro com formas de pagamento (REQ14/15)")
-imagem(s, "22-relatorios.png", 7.75, 1.85, 4.9, "Relatório gerencial com exportação CSV (REQ17)")
+titulo(s, "Portal do Cliente", "Login por CPF e ambiente separado do sistema interno")
+imagem(s, "24-cliente-login.png", 0.7, 1.85, 6.6, "Login do cliente por CPF e senha")
+imagem(s, "25-portal-cliente.png", 7.75, 1.85, 4.9, "Início do portal com pets e pedidos")
 rodape(s, 8)
 
 # ---------------------------------------------------------------- slide 9
 s = slide_novo()
-titulo(s, "Notificações e caixa de saída", "Avisos de consulta e vacina processados por canal simulado")
-imagem(s, "23-notificacoes.png", 0.7, 1.85, 6.6, "Avisos enviados ao tutor (REQ16)")
-imagem(s, "21-financeiro-modal.png", 7.75, 1.85, 4.9, "Registro de pagamento vinculado à consulta (REQ14)")
+titulo(s, "Pets e pedidos de agendamento", "Cliente gerencia os próprios animais e solicita horários")
+imagem(s, "26-cliente-pets.png", 0.7, 1.85, 6.6, "Pets do próprio tutor")
+imagem(s, "29-solicitacoes.png", 7.75, 1.85, 4.9, "Recepção aprova ou recusa os pedidos")
 rodape(s, 9)
 
 # ---------------------------------------------------------------- slide 10
@@ -310,7 +313,7 @@ titulo(s, "Testes e evidências", "Verificação automatizada e ensaio de ponta 
 tabela(s,
        ["Suíte", "Testes", "Cobertura principal"],
        [
-           ["Back-end (JUnit + MockMvc)", "60", "Auth, RBAC, clínica, financeiro, notificações e relatórios"],
+           ["Back-end (JUnit + MockMvc)", "70", "Auth, RBAC, clínica, financeiro, notificações, relatórios e portal"],
            ["Front-end (Vitest + RTL)", "11", "Formatadores, login, datas, doses e contas de demonstração"],
        ],
        y=1.95, h=1.6, larguras=[3.8, 1.3, 6.6], tamanho=12)
@@ -322,6 +325,7 @@ bullets(s, [
     "POST atendimento → 201 · prontuário → 200",
     "POST pagamento → 201 · dashboard → 200",
     "POST notificações → 3 enviadas · relatório → 200",
+    "Login cliente → 200 · pedido → 201 · aprovação → 200",
     "GET agenda → consulta criada presente",
     "GET /usuarios: recepção 403, admin 200",
     "Health-check: db UP e redis UP",
@@ -343,14 +347,15 @@ bullets(s, [
     "ADR-13: CRMV e especialidade em Usuario",
     "ADR-14: atendimento, prontuário e prescrição",
     "ADR-15: notificações com canal simulado",
+    "ADR-16: portal do cliente com login por CPF",
     "ADR-01 a ADR-09 mantidas sem alteração",
 ], 0.95, 2.4, 5.6, 2.0, 14, 6)
 
 caixa(s, 6.9, 1.95, 5.6, 0.4, "Próximas sprints", 16, VERDE, True)
 bullets(s, [
-    "REQ03: recuperação de senha (único restante)",
+    "REQ03: recuperação de senha (equipe e cliente)",
+    "Cancelamento de pedidos e histórico no portal",
     "Integração real de e-mail/SMS",
-    "Receita e relatórios em PDF",
 ], 7.0, 2.4, 5.6, 3.2, 13, 5)
 caixa(s, 0.9, 5.65, 11.5, 0.7, "A base operacional está pronta para evoluir com baixo acoplamento.", 17, VERDE, True)
 rodape(s, 11)
@@ -358,7 +363,7 @@ rodape(s, 11)
 # ---------------------------------------------------------------- slide 12
 s = slide_novo(VERDE)
 caixa(s, 1.0, 2.3, 11, 1.0, "Obrigado!", 54, BRANCO, True)
-caixa(s, 1.0, 3.55, 11, 0.5, "VetCare — Sprint 4", 24, RGBColor(0xD5, 0xF5, 0xE5))
+caixa(s, 1.0, 3.55, 11, 0.5, "VetCare — Sprint 5", 24, RGBColor(0xD5, 0xF5, 0xE5))
 caixa(s, 1.0, 4.5, 11, 0.4, "Vitor de Jesus Santos · Engenharia de Software 1 · UFBA 2026", 15, RGBColor(0xAE, 0xEA, 0xD0))
 caixa(s, 1.0, 5.4, 11, 0.5, "github.com/<usuario>/vetcare", 14, RGBColor(0xAE, 0xEA, 0xD0))
 

@@ -72,6 +72,8 @@ class DataSeeder(
                 email = "ana.souza@email.com",
                 telefone = "(71) 98888-1111",
                 endereco = "Rua das Acácias, 120 - Salvador/BA",
+                senha = passwordEncoder.encode("Cliente@123")!!,
+                primeiroAcesso = false,
             ),
         )
         val bruno = tutores.save(

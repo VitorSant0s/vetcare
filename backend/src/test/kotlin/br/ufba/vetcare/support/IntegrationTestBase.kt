@@ -107,6 +107,21 @@ abstract class IntegrationTestBase {
         ),
     )
 
+    protected fun definirSenhaTutor(tutor: Tutor, senha: String = "Cliente@123"): Tutor {
+        tutor.senha = passwordEncoder.encode(senha)!!
+        tutor.primeiroAcesso = false
+        return tutores.save(tutor)
+    }
+
+    protected fun loginCliente(cpf: String, senha: String = "Cliente@123"): String {
+        val resposta = mockMvc.perform(
+            post("/api/cliente/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"cpf":"$cpf","senha":"$senha"}"""),
+        ).andExpect(status().isOk).andReturn().response.contentAsString
+        return JsonPath.read(resposta, "$.token")
+    }
+
     protected fun login(email: String, senha: String = "Senha@123"): String {
         val resposta = mockMvc.perform(
             post("/api/auth/login")

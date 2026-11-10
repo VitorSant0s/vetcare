@@ -38,6 +38,8 @@ class AuditoriaService(private val repository: AuditoriaRepository) {
         if (!autenticacao.isAuthenticated) return null
         return when (val principal = autenticacao.principal) {
             is br.ufba.vetcare.infrastructure.security.UsuarioAutenticado -> principal.email
+            is br.ufba.vetcare.infrastructure.security.TutorAutenticado ->
+                principal.email.ifBlank { principal.cpf }
             else -> autenticacao.name
         }
     }

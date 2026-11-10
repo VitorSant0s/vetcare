@@ -105,6 +105,8 @@ class ConsultaService(
         return repository.listarAgenda(inicio, fim, veterinarioId).map(ConsultaResposta::de)
     }
 
+    fun referencia(id: Long): br.ufba.vetcare.domain.Consulta = repository.getReferenceById(id)
+
     @Transactional(readOnly = true)
     fun buscar(id: Long, veterinarioId: Long? = null): ConsultaResposta {
         val consulta = if (veterinarioId != null) {
