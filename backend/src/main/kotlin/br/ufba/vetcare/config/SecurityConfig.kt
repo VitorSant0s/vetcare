@@ -79,6 +79,7 @@ class SecurityConfig(
                     .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                     .requestMatchers("/api/notificacoes/**")
                     .hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
+                    .requestMatchers("/api/veterinarios/me/**").hasRole("VETERINARIO")
                     .requestMatchers(HttpMethod.POST, "/api/veterinarios/**").hasRole("ADMINISTRADOR")
                     .requestMatchers(HttpMethod.PUT, "/api/veterinarios/**").hasRole("ADMINISTRADOR")
                     .requestMatchers(HttpMethod.DELETE, "/api/veterinarios/**").hasRole("ADMINISTRADOR")

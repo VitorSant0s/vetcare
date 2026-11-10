@@ -204,3 +204,12 @@ export interface SolicitacaoAgendamento {
   criadoEm: string
   analisadoEm?: string | null
 }
+
+export interface PacienteClinico {
+  animal: Animal
+  ultimaConsulta?: string | null
+  totalConsultas: number
+  proximaVacina?: string | null
+  tipoVacina?: string | null
+  vacinaAtrasada: boolean
+}

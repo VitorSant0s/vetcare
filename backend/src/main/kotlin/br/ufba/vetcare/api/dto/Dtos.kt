@@ -673,3 +673,14 @@ data class SolicitacaoResposta(
         )
     }
 }
+
+// ---------- Área médica do veterinário ----------
+
+data class PacienteClinicoResposta(
+    val animal: AnimalResposta,
+    val ultimaConsulta: LocalDateTime?,
+    val totalConsultas: Long,
+    val proximaVacina: LocalDate?,
+    val tipoVacina: String?,
+    val vacinaAtrasada: Boolean,
+)

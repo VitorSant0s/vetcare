@@ -53,6 +53,7 @@ class VacinacaoIntegrationTest : IntegrationTestBase() {
         val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO, nome = "Dra. Camila")
         val tutor = criarTutor()
         val animal = criarAnimal(tutor)
+        criarConsulta(animal, tutor, vet)
         val token = login("vet@teste.com")
 
         mockMvc.perform(

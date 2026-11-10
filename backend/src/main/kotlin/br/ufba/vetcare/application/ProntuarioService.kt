@@ -27,9 +27,14 @@ class ProntuarioService(
 ) {
 
     @Transactional
-    fun montar(animalId: Long): ProntuarioResposta {
+    fun montar(animalId: Long, veterinarioId: Long? = null): ProntuarioResposta {
         val animal = animalRepository.findById(animalId)
             .orElseThrow { RecursoNaoEncontradoException("Animal não encontrado.") }
+        if (veterinarioId != null && !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, veterinarioId)) {
+            throw org.springframework.security.access.AccessDeniedException(
+                "Este paciente não faz parte da sua agenda clínica.",
+            )
+        }
 
         val resposta = ProntuarioResposta(
             animal = AnimalResposta.de(animal),

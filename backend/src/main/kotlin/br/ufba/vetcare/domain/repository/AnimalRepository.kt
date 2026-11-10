@@ -27,6 +27,34 @@ interface AnimalRepository : JpaRepository<Animal, Long> {
     fun findAllByTutorIdAndAtivoTrue(tutorId: Long): List<Animal>
 
     fun countByTutorId(tutorId: Long): Long
+
+    @EntityGraph(attributePaths = ["tutor"])
+    @Query(
+        """
+        select distinct a from Animal a
+        where a.ativo = true
+          and exists (select 1 from Consulta c where c.animal = a and c.veterinario.id = :veterinarioId)
+        order by a.nome
+        """,
+    )
+    fun findAllByVeterinario(@Param("veterinarioId") veterinarioId: Long, pageable: Pageable): Page<Animal>
+
+    @EntityGraph(attributePaths = ["tutor"])
+    @Query(
+        """
+        select distinct a from Animal a
+        where a.ativo = true
+          and exists (select 1 from Consulta c where c.animal = a and c.veterinario.id = :veterinarioId)
+          and (lower(a.nome) like lower(concat('%', :termo, '%'))
+               or lower(a.tutor.nome) like lower(concat('%', :termo, '%')))
+        order by a.nome
+        """,
+    )
+    fun buscarPorVeterinario(
+        @Param("veterinarioId") veterinarioId: Long,
+        @Param("termo") termo: String,
+        pageable: Pageable,
+    ): Page<Animal>
     fun countByAtivoTrue(): Long
     fun countByCriadoEmBetween(inicio: java.time.Instant, fim: java.time.Instant): Long
 }

@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/veterinarios")
-class VeterinarioController(private val service: VeterinarioService) {
+class VeterinarioController(
+    private val service: VeterinarioService,
+    private val clinicaService: br.ufba.vetcare.application.VeterinarioClinicaService,
+) {
 
     @GetMapping
     fun listar(
@@ -29,6 +32,14 @@ class VeterinarioController(private val service: VeterinarioService) {
         @AuthenticationPrincipal usuario: UsuarioAutenticado,
     ): List<VeterinarioResposta> =
         service.listar(incluirInativos && usuario.perfil == Perfil.ADMINISTRADOR)
+
+    @GetMapping("/me/pacientes")
+    fun meusPacientes(@AuthenticationPrincipal usuario: UsuarioAutenticado): List<br.ufba.vetcare.api.dto.PacienteClinicoResposta> =
+        clinicaService.meusPacientes(usuario.id)
+
+    @GetMapping("/me/atendimentos")
+    fun meusAtendimentos(@AuthenticationPrincipal usuario: UsuarioAutenticado): List<br.ufba.vetcare.api.dto.AtendimentoResposta> =
+        clinicaService.meusAtendimentos(usuario.id)
 
     @GetMapping("/{id}")
     fun buscar(@PathVariable id: Long): VeterinarioResposta = service.buscar(id)

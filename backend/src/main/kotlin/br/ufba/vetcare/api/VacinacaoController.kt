@@ -3,6 +3,7 @@ package br.ufba.vetcare.api
 import br.ufba.vetcare.api.dto.VacinacaoRequest
 import br.ufba.vetcare.api.dto.VacinacaoResposta
 import br.ufba.vetcare.application.VacinacaoService
+import br.ufba.vetcare.domain.Perfil
 import br.ufba.vetcare.infrastructure.security.UsuarioAutenticado
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -21,7 +22,13 @@ import org.springframework.web.bind.annotation.RestController
 class VacinacaoController(private val service: VacinacaoService) {
 
     @GetMapping("/animais/{animalId}/vacinacoes")
-    fun listar(@PathVariable animalId: Long): List<VacinacaoResposta> = service.listar(animalId)
+    fun listar(
+        @PathVariable animalId: Long,
+        @AuthenticationPrincipal solicitante: UsuarioAutenticado,
+    ): List<VacinacaoResposta> = service.listar(
+        animalId,
+        if (solicitante.perfil == Perfil.VETERINARIO) solicitante.id else null,
+    )
 
     @PostMapping("/animais/{animalId}/vacinacoes")
     @ResponseStatus(HttpStatus.CREATED)

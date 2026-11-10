@@ -38,6 +38,11 @@ interface ConsultaRepository : JpaRepository<Consulta, Long> {
 
     fun existsByTutorId(tutorId: Long): Boolean
 
+    fun existsByAnimalIdAndVeterinarioId(animalId: Long, veterinarioId: Long): Boolean
+
+    @EntityGraph(attributePaths = ["animal", "tutor", "veterinario"])
+    fun findByVeterinarioIdOrderByDataHoraDesc(veterinarioId: Long): List<Consulta>
+
     @EntityGraph(attributePaths = ["animal", "tutor", "veterinario"])
     fun findByAnimalIdOrderByDataHoraDesc(animalId: Long): List<Consulta>
 

@@ -7,6 +7,7 @@ import br.ufba.vetcare.application.exception.RegraNegocioException
 import br.ufba.vetcare.domain.Perfil
 import br.ufba.vetcare.domain.Vacinacao
 import br.ufba.vetcare.domain.repository.AnimalRepository
+import br.ufba.vetcare.domain.repository.ConsultaRepository
 import br.ufba.vetcare.domain.repository.UsuarioRepository
 import br.ufba.vetcare.domain.repository.VacinacaoRepository
 import br.ufba.vetcare.infrastructure.security.UsuarioAutenticado
@@ -22,13 +23,19 @@ class VacinacaoService(
     private val repository: VacinacaoRepository,
     private val animalRepository: AnimalRepository,
     private val usuarioRepository: UsuarioRepository,
+    private val consultaRepository: ConsultaRepository,
     private val auditoriaService: AuditoriaService,
 ) {
 
     @Transactional(readOnly = true)
-    fun listar(animalId: Long): List<VacinacaoResposta> {
+    fun listar(animalId: Long, veterinarioId: Long? = null): List<VacinacaoResposta> {
         if (!animalRepository.existsById(animalId)) {
             throw RecursoNaoEncontradoException("Animal não encontrado.")
+        }
+        if (veterinarioId != null && !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, veterinarioId)) {
+            throw org.springframework.security.access.AccessDeniedException(
+                "Este paciente não faz parte da sua agenda clínica.",
+            )
         }
         return repository.findByAnimalIdOrderByDataAplicacaoDesc(animalId).map(VacinacaoResposta::de)
     }
@@ -37,6 +44,13 @@ class VacinacaoService(
     fun criar(animalId: Long, request: VacinacaoRequest, solicitante: UsuarioAutenticado): VacinacaoResposta {
         val animal = animalRepository.findById(animalId)
             .orElseThrow { RecursoNaoEncontradoException("Animal não encontrado.") }
+        if (solicitante.perfil == Perfil.VETERINARIO &&
+            !consultaRepository.existsByAnimalIdAndVeterinarioId(animalId, solicitante.id)
+        ) {
+            throw org.springframework.security.access.AccessDeniedException(
+                "Este paciente não faz parte da sua agenda clínica.",
+            )
+        }
         val dataAplicacao = request.dataAplicacao
             ?: throw RegraNegocioException("Informe a data de aplicação.")
         if (dataAplicacao.isAfter(LocalDate.now())) {

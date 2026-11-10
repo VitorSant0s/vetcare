@@ -20,6 +20,8 @@ import { ClienteLogin } from './pages/cliente/ClienteLogin'
 import { PortalCliente } from './pages/cliente/PortalCliente'
 import { NaoEncontrado } from './pages/NaoEncontrado'
 import { Solicitacoes } from './pages/Solicitacoes'
+import { Pacientes } from './pages/Pacientes'
+import { Prontuarios } from './pages/Prontuarios'
 import { PortalAdmin } from './pages/portal/PortalAdmin'
 import { PortalRecepcao } from './pages/portal/PortalRecepcao'
 import { PortalVeterinario } from './pages/portal/PortalVeterinario'
@@ -82,6 +84,22 @@ export default function App() {
                 <Route path="/tutores" element={<Tutores />} />
                 <Route path="/animais" element={<Animais />} />
                 <Route path="/animais/:animalId/prontuario" element={<ProntuarioAnimal />} />
+                <Route
+                  path="/pacientes"
+                  element={
+                    <RotaPerfil perfil="VETERINARIO">
+                      <Pacientes />
+                    </RotaPerfil>
+                  }
+                />
+                <Route
+                  path="/prontuarios"
+                  element={
+                    <RotaPerfil perfil="VETERINARIO">
+                      <Prontuarios />
+                    </RotaPerfil>
+                  }
+                />
                 <Route path="/veterinarios" element={<Veterinarios />} />
                 <Route
                   path="/solicitacoes"

@@ -31,6 +31,15 @@ Esta é a **Sprint 5** do Trabalho II: 16/17 requisitos funcionais implementados
 
 Fora do escopo: apenas REQ03 (recuperação de senha).
 
+### Área médica do veterinário
+
+O portal do veterinário foi ampliado para ser um espaço clínico:
+
+- **Painel clínico:** consultas do dia, pacientes, vacinas a vencer e últimos atendimentos.
+- **Meus pacientes:** apenas animais que já tiveram consulta com o veterinário logado, com última consulta, próxima vacina e acesso ao prontuário.
+- **Prontuários:** lista dos atendimentos registrados pelo veterinário, com diagnóstico, prescrições e link para o histórico completo.
+- O veterinário só acessa prontuário, vacinação e dados de animais que atendem; a API valida essa regra, não apenas a interface.
+
 ### Extensão: Portal do Cliente
 
 Além dos 17 requisitos, o cliente (tutor) possui um portal próprio com login por CPF e senha:
@@ -171,7 +180,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 ## Testes
 
 ```bash
-# Back-end (70 testes de integração)
+# Back-end (74 testes de integração)
 cd backend && ./mvnw test
 
 # Front-end (11 testes)
@@ -233,6 +242,8 @@ memória no perfil `test`, sem exigir Docker.
 | GET/POST/PUT | `/api/cliente/pets` | Cliente | Pets do próprio tutor (extensão) |
 | GET/POST | `/api/cliente/solicitacoes` | Cliente | Pedidos de agendamento (extensão) |
 | GET/POST | `/api/solicitacoes` e `/aprovar`/`/recusar` | Admin/Recepção | Análise dos pedidos (extensão) |
+| GET | `/api/veterinarios/me/pacientes` | Veterinário | Meus pacientes (extensão clínica) |
+| GET | `/api/veterinarios/me/atendimentos` | Veterinário | Atendimentos registrados por mim |
 
 A documentação interativa completa está no Swagger UI.
 

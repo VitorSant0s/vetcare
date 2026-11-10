@@ -17,6 +17,7 @@ import type {
   FormaPagamento,
   StatusPagamento,
   SolicitacaoAgendamento,
+  PacienteClinico,
 } from '../types'
 
 const TOKEN_KEY = 'vetcare.token'
@@ -153,6 +154,8 @@ export interface VeterinarioPayload {
 export const veterinariosApi = {
   listar: (incluirInativos = false) =>
     api.get<Veterinario[]>('/veterinarios', { params: { incluirInativos } }),
+  meusPacientes: () => api.get<PacienteClinico[]>('/veterinarios/me/pacientes'),
+  meusAtendimentos: () => api.get<Atendimento[]>('/veterinarios/me/atendimentos'),
   criar: (payload: VeterinarioPayload) => api.post<Veterinario>('/veterinarios', payload),
   atualizar: (id: number, payload: VeterinarioPayload) =>
     api.put<Veterinario>(`/veterinarios/${id}`, payload),

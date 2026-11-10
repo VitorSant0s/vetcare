@@ -18,7 +18,13 @@ class RelatorioIntegrationTest : IntegrationTestBase() {
         val vet = criarUsuario("vet@teste.com", Perfil.VETERINARIO)
         val tutor = criarTutor()
         val animal = criarAnimal(tutor)
-        criarConsulta(animal, tutor, vet, status = br.ufba.vetcare.domain.StatusConsulta.REALIZADA)
+        criarConsulta(
+            animal,
+            tutor,
+            vet,
+            dataHora = LocalDate.now().atTime(10, 0),
+            status = br.ufba.vetcare.domain.StatusConsulta.REALIZADA,
+        )
         val token = login("admin@teste.com")
 
         mockMvc.perform(

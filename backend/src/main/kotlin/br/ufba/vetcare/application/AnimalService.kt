@@ -28,18 +28,25 @@ class AnimalService(
 ) {
 
     @Transactional(readOnly = true)
-    fun listar(termo: String?, page: Int, size: Int): PageResponse<AnimalResposta> {
+    fun listar(termo: String?, page: Int, size: Int, veterinarioId: Long? = null): PageResponse<AnimalResposta> {
         val pageable = PageRequest.of(page.coerceAtLeast(0), size.coerceIn(1, 100), Sort.by("nome"))
-        val resultado = if (termo.isNullOrBlank()) {
-            repository.findAllByAtivoTrue(pageable)
-        } else {
-            repository.buscar(termo.trim(), pageable)
+        val resultado = when {
+            veterinarioId != null && termo.isNullOrBlank() -> repository.findAllByVeterinario(veterinarioId, pageable)
+            veterinarioId != null -> repository.buscarPorVeterinario(veterinarioId, termo!!.trim(), pageable)
+            termo.isNullOrBlank() -> repository.findAllByAtivoTrue(pageable)
+            else -> repository.buscar(termo.trim(), pageable)
         }
         return resultado.map(AnimalResposta::de).toPageResponse()
     }
 
     @Transactional(readOnly = true)
-    fun buscar(id: Long): AnimalResposta = AnimalResposta.de(obter(id))
+    fun buscar(id: Long, veterinarioId: Long? = null): AnimalResposta {
+        val animal = obter(id)
+        if (veterinarioId != null && !consultaRepository.existsByAnimalIdAndVeterinarioId(id, veterinarioId)) {
+            throw RecursoNaoEncontradoException("Paciente não encontrado na sua agenda.")
+        }
+        return AnimalResposta.de(animal)
+    }
 
     @Transactional(readOnly = true)
     fun listarPorTutor(tutorId: Long): List<AnimalResposta> {
