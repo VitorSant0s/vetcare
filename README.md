@@ -162,6 +162,20 @@ demais usuários, veterinários e tutores são cadastrados pelo próprio sistema
 O cliente não possui auto-cadastro: a recepção cadastra o tutor e define a senha do portal; no
 primeiro acesso o cliente troca a senha.
 
+### Acessos de demonstração
+
+A tela de login possui atalhos que preenchem as credenciais abaixo. São contas de demonstração:
+
+| Perfil | Acesso | Senha |
+|---|---|---|
+| Administrador | `admin@vetcare.com` | `Admin@123` |
+| Recepcionista | `recepcao@vetcare.com` | `Recepcao@123` |
+| Veterinário | `vet@vetcare.com` | `Vet@123` |
+| Cliente | CPF `529.982.247-25` | `Cliente@2026` |
+
+Em produção, altere essas senhas e defina `VITE_DEMO_LOGINS=false` no build do front-end para
+esconder os atalhos.
+
 ### Variáveis de ambiente
 
 O `.env` da raiz é carregado automaticamente. As principais:

@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, LockKeyhole, Stethoscope } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, Stethoscope, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { mensagemDeErro } from '../lib/api'
 import { Botao, Campo, Entrada } from '../components/ui'
 import { CaoCartoon, CoelhoCartoon, GatoCartoon } from '../components/AnimalArt'
+
+const demo = [
+  { perfil: 'Administrador', email: 'admin@vetcare.com', senha: 'Admin@123' },
+  { perfil: 'Recepcionista', email: 'recepcao@vetcare.com', senha: 'Recepcao@123' },
+  { perfil: 'Veterinário', email: 'vet@vetcare.com', senha: 'Vet@123' },
+]
 
 const schema = z.object({
   email: z.string().min(1, 'Informe o e-mail').email('E-mail inválido'),
@@ -19,12 +25,14 @@ type Formulario = z.infer<typeof schema>
 
 export function Login() {
   const { entrar } = useAuth()
+  const mostrarDemo = import.meta.env.VITE_DEMO_LOGINS !== 'false'
   const navigate = useNavigate()
   const [erro, setErro] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Formulario>({ resolver: zodResolver(schema) })
 
@@ -147,6 +155,31 @@ export function Login() {
               </Botao>
             </form>
           </div>
+
+          {mostrarDemo && (
+          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-500 uppercase">
+              <Zap className="h-3.5 w-3.5 text-amber-500" /> Acesso rápido — demonstração
+            </p>
+            <div className="space-y-1">
+              {demo.map((conta) => (
+                <button
+                  key={conta.email}
+                  type="button"
+                  onClick={() => {
+                    setValue('email', conta.email)
+                    setValue('senha', conta.senha)
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs text-slate-600 hover:bg-white"
+                >
+                  <span className="font-medium">{conta.perfil}</span>
+                  <span className="text-slate-500">{conta.email}</span>
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-slate-500">Clique para preencher. Uso apenas em demonstração.</p>
+          </div>
+          )}
 
           <p className="mt-5 text-center text-xs text-slate-500">
             É cliente da clínica?{' '}

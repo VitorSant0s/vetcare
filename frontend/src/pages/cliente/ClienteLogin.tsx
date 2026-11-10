@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, HeartHandshake, PawPrint } from 'lucide-react'
+import { Eye, EyeOff, HeartHandshake, PawPrint, Zap } from 'lucide-react'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { mensagemDeErro } from '../../lib/api'
 import { formatarCpf } from '../../lib/format'
@@ -19,6 +19,7 @@ type Formulario = z.infer<typeof schema>
 
 export function ClienteLogin() {
   const { entrar } = useClienteAuth()
+  const mostrarDemo = import.meta.env.VITE_DEMO_LOGINS !== 'false'
   const navigate = useNavigate()
   const [erro, setErro] = useState('')
   const [mostrarSenha, setMostrarSenha] = useState(false)
@@ -131,6 +132,26 @@ export function ClienteLogin() {
                 Entrar
               </Botao>
             </form>
+
+            {mostrarDemo && (
+            <div className="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4">
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-500 uppercase">
+                <Zap className="h-3.5 w-3.5 text-amber-500" /> Acesso rápido — demonstração
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setValue('cpf', '529.982.247-25')
+                  setValue('senha', 'Cliente@2026')
+                }}
+                className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs text-slate-600 hover:bg-white"
+              >
+                <span className="font-medium">Maria Oliveira</span>
+                <span className="text-slate-500">CPF 529.982.247-25</span>
+              </button>
+              <p className="mt-2 text-[11px] text-slate-500">Clique para preencher. Uso apenas em demonstração.</p>
+            </div>
+            )}
 
             <p className="mt-5 text-center text-xs text-slate-500">
               <a href="/privacidade" className="hover:underline">
