@@ -303,6 +303,7 @@ vetcare/
 
 - [Relatório da Sprint 5 (PDF)](docs/relatorio/relatorio-sprint-5.pdf)
 - [Apresentação da Sprint 5 (PPTX)](docs/slides/VetCare-Sprint-5.pptx)
+- [Apresentação da Etapa 2 (PPTX)](docs/slides/VetCare-Etapa-2.pptx)
 - [Relatório da Sprint 4 (PDF)](docs/relatorio/relatorio-sprint-4.pdf)
 - [Apresentação da Sprint 4 (PPTX)](docs/slides/VetCare-Sprint-4.pptx)
 - [Relatório da Sprint 3 (PDF)](docs/relatorio/relatorio-sprint-3.pdf)
