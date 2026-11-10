@@ -6,7 +6,6 @@ import { z } from 'zod'
 import {
   CalendarPlus,
   ClipboardList,
-  Clock,
   Download,
   KeyRound,
   PawPrint,
@@ -123,8 +122,6 @@ export function PortalCliente() {
     if (primeiroAcesso) setModalSenha(true)
   }, [primeiroAcesso])
 
-  const pendentes = solicitacoes.filter((s) => s.status === 'PENDENTE').length
-  const aprovadas = solicitacoes.filter((s) => s.status === 'APROVADA').length
   const proxima = useMemo(
     () =>
       [...solicitacoes]
@@ -289,36 +286,6 @@ export function PortalCliente() {
 
       {aba === 'inicio' && (
         <>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Cartao className="flex items-center gap-3 p-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                <PawPrint className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Meus pets</p>
-                <p className="text-2xl font-semibold text-slate-900">{pets.length}</p>
-              </div>
-            </Cartao>
-            <Cartao className="flex items-center gap-3 p-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Pedidos pendentes</p>
-                <p className="text-2xl font-semibold text-slate-900">{pendentes}</p>
-              </div>
-            </Cartao>
-            <Cartao className="flex items-center gap-3 p-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
-                <CalendarPlus className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Agendamentos confirmados</p>
-                <p className="text-2xl font-semibold text-slate-900">{aprovadas}</p>
-              </div>
-            </Cartao>
-          </div>
-
           <div className="grid gap-4 lg:grid-cols-3">
             <Cartao className="p-4 lg:col-span-2">
               <h2 className="text-sm font-semibold text-slate-800">Seus pets</h2>
