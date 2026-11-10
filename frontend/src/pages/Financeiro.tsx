@@ -254,11 +254,11 @@ export function Financeiro() {
                   <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                       <tr>
-                        <th className="px-3 py-2 font-medium">Data</th>
-                        <th className="px-3 py-2 font-medium">Tutor</th>
-                        <th className="px-3 py-2 font-medium">Forma</th>
-                        <th className="px-3 py-2 font-medium">Status</th>
-                        <th className="px-3 py-2 text-right font-medium">Valor</th>
+                        <th scope="col" className="px-3 py-2 font-medium">Data</th>
+                        <th scope="col" className="px-3 py-2 font-medium">Tutor</th>
+                        <th scope="col" className="px-3 py-2 font-medium">Forma</th>
+                        <th scope="col" className="px-3 py-2 font-medium">Status</th>
+                        <th scope="col" className="px-3 py-2 text-right font-medium">Valor</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">

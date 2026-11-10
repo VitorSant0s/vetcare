@@ -141,12 +141,12 @@ export function AuditoriaPage() {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                   <tr>
-                    <th className="px-4 py-2 font-medium">Data/hora</th>
-                    <th className="px-4 py-2 font-medium">Usuário</th>
-                    <th className="px-4 py-2 font-medium">Ação</th>
-                    <th className="px-4 py-2 font-medium">Entidade</th>
-                    <th className="px-4 py-2 font-medium">Detalhes</th>
-                    <th className="px-4 py-2 font-medium">IP</th>
+                    <th scope="col" className="px-4 py-2 font-medium">Data/hora</th>
+                    <th scope="col" className="px-4 py-2 font-medium">Usuário</th>
+                    <th scope="col" className="px-4 py-2 font-medium">Ação</th>
+                    <th scope="col" className="px-4 py-2 font-medium">Entidade</th>
+                    <th scope="col" className="px-4 py-2 font-medium">Detalhes</th>
+                    <th scope="col" className="px-4 py-2 font-medium">IP</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

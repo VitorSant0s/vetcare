@@ -192,6 +192,9 @@ cd backend && ./mvnw test
 # Front-end (10 testes)
 cd frontend && npm test
 
+# Acessibilidade (Playwright + axe)
+cd frontend && npm run test:e2e
+
 # Build de produção do front-end
 cd frontend && npm run build
 ```

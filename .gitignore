@@ -20,3 +20,7 @@ coverage/
 
 # Superpowers / scratch
 .superpowers/
+
+# Playwright
+frontend/playwright-report/
+frontend/test-results/

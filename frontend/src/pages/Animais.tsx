@@ -196,11 +196,11 @@ export function Animais() {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 text-xs tracking-wide text-slate-500 uppercase">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Animal</th>
-                    <th className="px-4 py-3 font-medium">Espécie</th>
-                    <th className="px-4 py-3 font-medium">Tutor</th>
-                    <th className="px-4 py-3 font-medium">Nascimento</th>
-                    {podeEditar && <th className="px-4 py-3 text-right font-medium">Ações</th>}
+                    <th scope="col" className="px-4 py-3 font-medium">Animal</th>
+                    <th scope="col" className="px-4 py-3 font-medium">Espécie</th>
+                    <th scope="col" className="px-4 py-3 font-medium">Tutor</th>
+                    <th scope="col" className="px-4 py-3 font-medium">Nascimento</th>
+                    {podeEditar && <th scope="col" className="px-4 py-3 text-right font-medium">Ações</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

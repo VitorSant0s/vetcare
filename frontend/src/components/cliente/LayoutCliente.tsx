@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CalendarPlus, ClipboardList, LogOut, Menu, PawPrint, Stethoscope, X } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
@@ -16,6 +16,8 @@ export function LayoutCliente() {
   const { tutor, sair } = useClienteAuth()
   const location = useLocation()
   const [menuAberto, setMenuAberto] = useState(false)
+  const menuRef = useRef<HTMLElement>(null)
+  const botaoMenuRef = useRef<HTMLButtonElement>(null)
   const abaAtual = new URLSearchParams(location.search).get('aba') ?? 'inicio'
 
   const conteudo = (
@@ -71,11 +73,37 @@ export function LayoutCliente() {
 
   useEffect(() => {
     if (!menuAberto) return
+    const focaveis = () =>
+      Array.from(
+        menuRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [],
+      )
+    window.setTimeout(() => focaveis()[0]?.focus(), 0)
+
     function aoTeclar(evento: KeyboardEvent) {
-      if (evento.key === 'Escape') setMenuAberto(false)
+      if (evento.key === 'Escape') {
+        evento.preventDefault()
+        setMenuAberto(false)
+        return
+      }
+      if (evento.key !== 'Tab') return
+      const elementos = focaveis()
+      if (elementos.length === 0) return
+      const primeiro = elementos[0]
+      const ultimo = elementos[elementos.length - 1]
+      if (evento.shiftKey && document.activeElement === primeiro) {
+        evento.preventDefault()
+        ultimo.focus()
+      } else if (!evento.shiftKey && document.activeElement === ultimo) {
+        evento.preventDefault()
+        primeiro.focus()
+      }
     }
+
     document.addEventListener('keydown', aoTeclar)
-    return () => document.removeEventListener('keydown', aoTeclar)
+    return () => {
+      document.removeEventListener('keydown', aoTeclar)
+      botaoMenuRef.current?.focus()
+    }
   }, [menuAberto])
 
   return (
@@ -93,7 +121,7 @@ export function LayoutCliente() {
       {menuAberto && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/40" onClick={() => setMenuAberto(false)} />
-          <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
+          <aside ref={menuRef} className="relative flex h-full w-72 flex-col bg-white shadow-xl">
             <button
               onClick={() => setMenuAberto(false)}
               className="absolute top-4 right-4 rounded-lg p-1 text-slate-500 hover:bg-slate-100"
@@ -109,6 +137,7 @@ export function LayoutCliente() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
           <button
+            ref={botaoMenuRef}
             onClick={() => setMenuAberto(true)}
             className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
             aria-label="Abrir menu"

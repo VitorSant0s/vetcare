@@ -39,3 +39,30 @@ jobs:
       - name: Build de produção
         working-directory: frontend
         run: npm run build
+
+  e2e:
+    name: Acessibilidade (Playwright + axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalar dependências
+        working-directory: frontend
+        run: npm ci
+      - name: Instalar navegador
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Testes de acessibilidade
+        working-directory: frontend
+        run: npm run test:e2e
+      - name: Salvar relatório em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7

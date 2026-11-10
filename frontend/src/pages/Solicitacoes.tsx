@@ -179,10 +179,10 @@ export function Solicitacoes() {
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                 <tr>
-                  <th className="px-4 py-2 font-medium">Pet / Tutor</th>
-                  <th className="px-4 py-2 font-medium">Preferência</th>
-                  <th className="px-4 py-2 font-medium">Status</th>
-                  <th className="px-4 py-2 font-medium">Resposta</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Pet / Tutor</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Preferência</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Status</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Resposta</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

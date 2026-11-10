@@ -27,6 +27,10 @@ Escopo: SPA React/Tailwind do VetCare (portais administrativo, recepção, veter
 | 10 | Animações sem respeitar preferência do usuário | Baixa | CSS global | `prefers-reduced-motion` desativa animações/transições |
 | 11 | Impressão de relatórios incluía menu e botões | Baixa | CSS | `@media print` oculta navegação e botões |
 | 12 | Contraste de textos pequenos em cards e tabelas | Média | Várias telas | Substituição global de `text-slate-400` por `text-slate-500` |
+| 13 | Erros de formulário não associados ao campo | Alta | `Campo` | Contexto de campo com `id`, `aria-invalid`, `aria-describedby` e erro com `role="alert"` |
+| 14 | Cabeçalhos de tabela sem escopo | Média | Listagens | `scope="col"` em todas as colunas |
+| 15 | Menu mobile sem foco preso | Média | Layouts | Foco inicial, Tab preso, Escape e retorno ao botão |
+| 16 | Falta de teste automatizado de acessibilidade | Alta | CI | Playwright + axe-core cobrindo logins e modal |
 
 ## O que já estava correto
 
@@ -44,11 +48,10 @@ Escopo: SPA React/Tailwind do VetCare (portais administrativo, recepção, veter
 
 | Prioridade | Item |
 |---|---|
-| Alta | Associar erros aos campos com `aria-describedby` e `aria-invalid` (exige IDs por campo no `Campo`) |
-| Alta | Rodar axe/Lighthouse em CI e corrigir o que for encontrado |
-| Média | Prender foco também no menu mobile e devolvê-lo ao botão |
-| Média | Adicionar `<caption>` e `scope="col"` nas tabelas de dados |
-| Média | Adicionar testes de teclado para modais, menus e formulários |
+| Alta | Rodar Lighthouse além do axe e acompanhar Core Web Vitals |
+| Média | Adicionar `<caption>` descritivo em cada tabela de dados |
+| Média | Ampliar testes de teclado para menu mobile e todos os formulários |
+| Média | Testes axe nas demais telas autenticadas (agenda, prontuário, financeiro) |
 | Baixa | Revisar texto alternativo de gráficos e barras do financeiro |
 | Baixa | Code splitting: bundle principal em ~630 kB |
 | Baixa | Documentar tokens de design em um arquivo único |
@@ -62,6 +65,14 @@ Escopo: SPA React/Tailwind do VetCare (portais administrativo, recepção, veter
 5. **Revisão humana:** comparar com o design system, testar teclado, zoom 200%/400%, leitor de tela e responsividade.
 6. **Automação:** TypeScript estrito, ESLint jsx-a11y, axe/Playwright, testes de componentes e snapshots visuais.
 7. **Medição:** Core Web Vitals, contraste, tamanho de bundle e cobertura de testes.
+
+## Automação implementada
+
+- `frontend/e2e/a11y.spec.ts` com Playwright + axe-core.
+- Cobertura atual: login interno, login do cliente e modal de usuário (foco preso, Escape e retorno de foco).
+- Regra de falha: violações `critical` ou `serious` quebram a suíte.
+- Job `e2e` no GitHub Actions instala Chromium e roda `npm run test:e2e`.
+- Relatório do Playwright é publicado como artefato quando a suíte falha.
 
 ## Resultado
 

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { createContext, useContext, useEffect, useId, useRef } from 'react'
 import type {
   ButtonHTMLAttributes,
   InputHTMLAttributes,
@@ -58,41 +58,79 @@ interface CampoProps {
   className?: string
 }
 
+interface CampoContexto {
+  id: string
+  errorId: string
+  erro?: string
+  obrigatorio?: boolean
+}
+
+const CampoContext = createContext<CampoContexto | null>(null)
+
 export function Campo({ label, erro, obrigatorio, children, className }: CampoProps) {
+  const id = useId()
+  const errorId = `${id}-erro`
   return (
-    <label className={clsx('block', className)}>
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label}
-        {obrigatorio && (
-          <>
-            <span className="text-red-500" aria-hidden="true"> *</span>
-            <span className="sr-only"> (obrigatório)</span>
-          </>
-        )}
-      </span>
-      {children}
-      {erro && (
-        <span role="alert" className="mt-1 block text-xs text-red-600">
-          {erro}
+    <CampoContext.Provider value={{ id, errorId, erro, obrigatorio }}>
+      <label htmlFor={id} className={clsx('block', className)}>
+        <span className="mb-1.5 block text-sm font-medium text-slate-700">
+          {label}
+          {obrigatorio && (
+            <>
+              <span className="text-red-500" aria-hidden="true"> *</span>
+              <span className="sr-only"> (obrigatório)</span>
+            </>
+          )}
         </span>
-      )}
-    </label>
+        {children}
+        {erro && (
+          <span id={errorId} role="alert" className="mt-1 block text-xs text-red-600">
+            {erro}
+          </span>
+        )}
+      </label>
+    </CampoContext.Provider>
   )
 }
 
 const estiloInput =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm placeholder:text-slate-500 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 focus:outline-none disabled:bg-slate-100'
 
+function atributosDoCampo(campo: CampoContexto | null, id?: string) {
+  if (!campo) return {}
+  return {
+    id: id ?? campo.id,
+    'aria-invalid': campo.erro ? true : undefined,
+    'aria-describedby': campo.erro ? campo.errorId : undefined,
+    'aria-required': campo.obrigatorio || undefined,
+  }
+}
+
 export function Entrada(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={clsx(estiloInput, props.className)} />
+  const campo = useContext(CampoContext)
+  return <input {...atributosDoCampo(campo, props.id)} {...props} className={clsx(estiloInput, props.className)} />
 }
 
 export function AreaTexto(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea {...props} className={clsx(estiloInput, 'min-h-24 resize-y', props.className)} />
+  const campo = useContext(CampoContext)
+  return (
+    <textarea
+      {...atributosDoCampo(campo, props.id)}
+      {...props}
+      className={clsx(estiloInput, 'min-h-24 resize-y', props.className)}
+    />
+  )
 }
 
 export function Selecao(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} className={clsx(estiloInput, 'pr-8', props.className)} />
+  const campo = useContext(CampoContext)
+  return (
+    <select
+      {...atributosDoCampo(campo, props.id)}
+      {...props}
+      className={clsx(estiloInput, 'pr-8', props.className)}
+    />
+  )
 }
 
 export function Busca({

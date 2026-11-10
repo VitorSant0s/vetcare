@@ -335,11 +335,11 @@ export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: bo
                           <table className="w-full text-left text-sm">
                             <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                               <tr>
-                                <th className="px-3 py-2 font-medium">Medicamento</th>
-                                <th className="px-3 py-2 font-medium">Dosagem</th>
-                                <th className="px-3 py-2 font-medium">Frequência</th>
-                                <th className="px-3 py-2 font-medium">Duração</th>
-                                <th className="px-3 py-2 font-medium">Orientações</th>
+                                <th scope="col" className="px-3 py-2 font-medium">Medicamento</th>
+                                <th scope="col" className="px-3 py-2 font-medium">Dosagem</th>
+                                <th scope="col" className="px-3 py-2 font-medium">Frequência</th>
+                                <th scope="col" className="px-3 py-2 font-medium">Duração</th>
+                                <th scope="col" className="px-3 py-2 font-medium">Orientações</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -377,12 +377,12 @@ export function ProntuarioAnimal({ compartilhado = false }: { compartilhado?: bo
                 <table className="w-full text-left text-sm">
                   <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                     <tr>
-                      <th className="px-3 py-2 font-medium">Vacina</th>
-                      <th className="px-3 py-2 font-medium">Aplicação</th>
-                      <th className="px-3 py-2 font-medium">Próxima dose</th>
-                      <th className="px-3 py-2 font-medium">Aplicada por</th>
-                      <th className="px-3 py-2 font-medium">Lote</th>
-                      {podeExcluirVacina && <th className="px-3 py-2 text-right font-medium">Ações</th>}
+                      <th scope="col" className="px-3 py-2 font-medium">Vacina</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Aplicação</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Próxima dose</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Aplicada por</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Lote</th>
+                      {podeExcluirVacina && <th scope="col" className="px-3 py-2 text-right font-medium">Ações</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
