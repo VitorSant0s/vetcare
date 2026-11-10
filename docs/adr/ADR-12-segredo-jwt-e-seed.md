@@ -1,5 +1,7 @@
 # ADR-12 — Segredo JWT sem valor padrão e seed opt-in
 
+> **Substituída parcialmente pela ADR-17.** O seed foi removido; o administrador inicial agora vem do `.env`.
+
 ## Contexto
 
 A revisão de segurança da Sprint 1 identificou dois riscos na configuração inicial:

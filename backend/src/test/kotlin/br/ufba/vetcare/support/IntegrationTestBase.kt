@@ -13,6 +13,7 @@ import br.ufba.vetcare.domain.repository.UsuarioRepository
 import com.jayway.jsonpath.JsonPath
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -25,6 +26,7 @@ import java.time.LocalDate
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(CanalNotificacaoTestConfig::class)
 @ActiveProfiles("test")
 @Transactional
 abstract class IntegrationTestBase {

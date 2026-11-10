@@ -17,10 +17,11 @@ app:
   jwt:
     secret: vetcare-test-secret-0123456789abcdef0123456789abcdef
     expiration-minutes: 60
-  seed:
+  admin:
     enabled: false
   notificacoes:
     agendamento: false
+    canal: TESTE
 
 logging:
   level:

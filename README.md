@@ -100,6 +100,7 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 - [ADR-14 — Atendimento como elo entre consulta, prontuário e prescrição](docs/adr/ADR-14-atendimento-prontuario.md)
 - [ADR-15 — Notificações por caixa de saída com canal simulado](docs/adr/ADR-15-notificacoes-canal-simulado.md)
 - [ADR-16 — Portal do cliente com autenticação por CPF](docs/adr/ADR-16-portal-cliente.md)
+- [ADR-17 — Remoção de dados de demonstração e envio real por SMTP](docs/adr/ADR-17-remocao-de-mocks.md)
 
 ## Como rodar
 
@@ -115,8 +116,8 @@ Decisões arquiteturais da Etapa 1 preservadas: JWT (ADR-03), PostgreSQL (ADR-04
 cp .env.example .env
 ```
 
-O Spring Boot importa esse `.env` automaticamente. Ele habilita os dados de demonstração
-(`APP_SEED=true`) e permite ajustar senha do banco, segredo JWT e portas.
+O Spring Boot importa esse `.env` automaticamente. Ele define o administrador inicial, a conexão
+com o banco, o segredo JWT e as credenciais de SMTP. Não há seed nem contas de demonstração.
 
 ### 2. Subir banco e cache
 
@@ -134,8 +135,8 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080`. O Flyway cria o esquema e, com `APP_SEED=true`, o seed de
-demonstração na primeira execução.
+A API sobe em `http://localhost:8080`. O Flyway cria o esquema; se ainda não existir administrador
+ativo, `ADMIN_EMAIL` e `ADMIN_PASSWORD` criam o primeiro acesso.
 
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - Health-check: http://localhost:8080/actuator/health
@@ -150,19 +151,14 @@ npm run dev
 
 Acesse `http://localhost:5173`.
 
-### Credenciais de demonstração
+### Primeiro acesso
 
-As contas abaixo só são criadas quando `APP_SEED=true`:
+Não existe seed. O **administrador inicial** é criado na primeira inicialização a partir de
+`ADMIN_EMAIL`, `ADMIN_PASSWORD` (mínimo 8 caracteres) e `ADMIN_NOME` no `.env`. Depois disso, os
+demais usuários, veterinários e tutores são cadastrados pelo próprio sistema.
 
-| Perfil | E-mail | Senha |
-|---|---|---|
-| Administrador | `admin@vetcare.com` | `Admin@123` |
-| Recepcionista | `recepcao@vetcare.com` | `Recepcao@123` |
-| Veterinário | `vet@vetcare.com` | `Vet@123` |
-| Cliente (portal) | CPF `123.456.789-09` | `Cliente@123` |
-
-O seed também cria tutores, animais e uma consulta de exemplo. Em qualquer ambiente compartilhado,
-use `APP_SEED=false` e remova/altere essas contas.
+O cliente não possui auto-cadastro: a recepção cadastra o tutor e define a senha do portal; no
+primeiro acesso o cliente troca a senha.
 
 ### Variáveis de ambiente
 
@@ -175,11 +171,17 @@ O `.env` da raiz é carregado automaticamente. As principais:
 | `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Cache da agenda |
 | `JWT_SECRET` | vazio | Assinatura dos tokens; vazio gera segredo aleatório por execução |
 | `JWT_EXPIRATION_MINUTES` | `120` | Validade do token |
-| `APP_SEED` | `false` | Dados de demonstração |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | vazio | Administrador inicial criado no primeiro start |
+| `ADMIN_NOME` | `Administrador` | Nome do administrador inicial |
+| `MAIL_HOST` / `MAIL_PORT` | `localhost` / `25` | Servidor SMTP para notificações reais |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | vazio | Autenticação SMTP |
+| `MAIL_AUTH` / `MAIL_STARTTLS` | `false` | Configuração TLS/autenticação do SMTP |
+| `MAIL_FROM` | `no-reply@vetcare.local` | Remetente dos avisos |
+| `NOTIFICACOES_CANAL` | `SMTP` | Canal de envio das notificações |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Origens permitidas |
 
-Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gerenciada e mantenha
-`APP_SEED=false`.
+Em produção, defina `JWT_SECRET` com 32+ caracteres e credenciais SMTP reais em cofre/variável
+gerenciada.
 
 ## Testes
 
@@ -187,7 +189,7 @@ Em produção, defina `JWT_SECRET` com 32+ caracteres em um cofre/variável gere
 # Back-end (84 testes de integração)
 cd backend && ./mvnw test
 
-# Front-end (11 testes)
+# Front-end (10 testes)
 cd frontend && npm test
 
 # Build de produção do front-end
@@ -206,7 +208,7 @@ memória no perfil `test`, sem exigir Docker.
 - Senhas armazenadas com BCrypt.
 - Tokens JWT assinados com HMAC-SHA256, contendo perfil do usuário.
 - `JWT_SECRET` não tem valor padrão: sem configuração, um segredo aleatório é gerado por execução.
-- Seed de demonstração é opt-in (`APP_SEED=false` por padrão) e não registra senhas em log.
+- Não há seed nem contas padrão; o administrador inicial vem do `.env` e não é registrado em log.
 - Autorização por perfil na borda da API:
   - **Administrador:** usuários, tutores, animais e agenda.
   - **Recepcionista:** tutores, animais e agendamento.
@@ -270,6 +272,9 @@ vetcare/
 ```
 
 ## Documentos
+
+> Os relatórios e apresentações das sprints anteriores registram o ambiente de demonstração da época.
+> A versão atual não possui seed nem contas padrão: o administrador inicial vem do `.env`.
 
 - [Relatório da Sprint 5 (PDF)](docs/relatorio/relatorio-sprint-5.pdf)
 - [Apresentação da Sprint 5 (PPTX)](docs/slides/VetCare-Sprint-5.pptx)

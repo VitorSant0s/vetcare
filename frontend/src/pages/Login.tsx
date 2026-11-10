@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, LockKeyhole, PawPrint, Stethoscope } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, Stethoscope } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { mensagemDeErro } from '../lib/api'
 import { Botao, Campo, Entrada } from '../components/ui'
@@ -15,11 +15,6 @@ const schema = z.object({
 
 type Formulario = z.infer<typeof schema>
 
-const demo = [
-  { perfil: 'Administrador', email: 'admin@vetcare.com', senha: 'Admin@123' },
-  { perfil: 'Recepcionista', email: 'recepcao@vetcare.com', senha: 'Recepcao@123' },
-  { perfil: 'Veterinário', email: 'vet@vetcare.com', senha: 'Vet@123' },
-]
 
 export function Login() {
   const { entrar } = useAuth()
@@ -29,7 +24,6 @@ export function Login() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Formulario>({ resolver: zodResolver(schema) })
 
@@ -141,27 +135,6 @@ export function Login() {
             </form>
           </div>
 
-          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white/60 p-4">
-            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-500 uppercase">
-              <PawPrint className="h-3.5 w-3.5" /> Contas de demonstração
-            </p>
-            <div className="space-y-1">
-              {demo.map((conta) => (
-                <button
-                  key={conta.email}
-                  type="button"
-                  onClick={() => {
-                    setValue('email', conta.email)
-                    setValue('senha', conta.senha)
-                  }}
-                  className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs text-slate-600 hover:bg-slate-100"
-                >
-                  <span className="font-medium">{conta.perfil}</span>
-                  <span className="text-slate-400">{conta.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,9 @@
 package br.ufba.vetcare.application
 
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
 
 /**
@@ -11,13 +14,27 @@ interface CanalNotificacao {
 }
 
 /**
- * Adaptador de desenvolvimento: registra o envio no log em vez de chamar um provedor real.
+ * Envio real por SMTP, configurado por MAIL_HOST, MAIL_PORT, MAIL_USERNAME,
+ * MAIL_PASSWORD, MAIL_FROM e NOTIFICACOES_CANAL=SMTP.
  */
 @Component
-class EmailSimuladoCanal : CanalNotificacao {
-    private val log = LoggerFactory.getLogger(javaClass)
+@ConditionalOnProperty(
+    prefix = "app.notificacoes",
+    name = ["canal"],
+    havingValue = "SMTP",
+    matchIfMissing = true,
+)
+class SmtpCanalNotificacao(
+    private val mailSender: JavaMailSender,
+    @Value("\${app.notificacoes.remetente:no-reply@vetcare.local}") private val remetente: String,
+) : CanalNotificacao {
 
     override fun enviar(destinatario: String, mensagem: String) {
-        log.info("[EMAIL SIMULADO] Para: {} | {}", destinatario, mensagem)
+        val email = SimpleMailMessage()
+        email.from = remetente
+        email.setTo(destinatario)
+        email.subject = "VetCare - aviso da clínica"
+        email.text = mensagem
+        mailSender.send(email)
     }
 }

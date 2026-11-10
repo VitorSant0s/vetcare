@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, HeartHandshake, PawPrint, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, HeartHandshake, PawPrint } from 'lucide-react'
 import { useClienteAuth } from '../../context/ClienteAuthContext'
 import { mensagemDeErro } from '../../lib/api'
 import { formatarCpf } from '../../lib/format'
@@ -118,15 +118,6 @@ export function ClienteLogin() {
                 Entrar
               </Botao>
             </form>
-
-            <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-xs text-slate-500">
-              <p className="flex items-center gap-1.5 font-medium text-slate-600">
-                <ShieldCheck className="h-3.5 w-3.5" /> Acesso de demonstração
-              </p>
-              <p className="mt-1">
-                CPF <strong>123.456.789-09</strong> · senha <strong>Cliente@123</strong>
-              </p>
-            </div>
 
             <p className="mt-5 text-center text-xs text-slate-400">
               É da equipe da clínica?{' '}

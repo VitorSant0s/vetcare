@@ -26,10 +26,5 @@ describe('tela de login', () => {
     expect(screen.getByRole('button', { name: /entrar/i })).toBeInTheDocument()
   })
 
-  it('oferece as contas de demonstração', () => {
-    renderizarLogin()
-    expect(screen.getByText('admin@vetcare.com')).toBeInTheDocument()
-    expect(screen.getByText('recepcao@vetcare.com')).toBeInTheDocument()
-    expect(screen.getByText('vet@vetcare.com')).toBeInTheDocument()
-  })
+
 })
