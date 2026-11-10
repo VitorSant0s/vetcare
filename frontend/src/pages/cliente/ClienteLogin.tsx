@@ -132,12 +132,6 @@ export function ClienteLogin() {
               </Botao>
             </form>
 
-            <p className="mt-5 text-center text-xs text-slate-500">
-              É da equipe da clínica?{' '}
-              <a href="/login" className="font-medium text-brand-700 hover:underline">
-                Acessar o sistema interno
-              </a>
-            </p>
           </div>
         </div>
       </div>
