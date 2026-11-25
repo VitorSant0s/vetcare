@@ -24,3 +24,6 @@ coverage/
 # Playwright
 frontend/playwright-report/
 frontend/test-results/
+
+# LibreOffice lock files
+docs/slides/.~lock.*

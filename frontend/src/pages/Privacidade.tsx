@@ -79,7 +79,7 @@ export function Privacidade() {
       <main className="mx-auto max-w-4xl px-5 py-8">
         <div className="mb-6 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900">
           <p className="flex items-center gap-2 font-medium">
-            <LockKeyhole className="h-4 w-4" /> Versão 1.0 · atualizada em 10/11/2026
+            <LockKeyhole className="h-4 w-4" /> Versão 1.0 · atualizada em 01/11/2026
           </p>
           <p className="mt-1 text-brand-800">
             Este documento explica como a clínica trata os dados pessoais de tutores e animais no
